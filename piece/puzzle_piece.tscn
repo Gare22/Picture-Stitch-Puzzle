@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://piece/puzzle_piece.gd" id="1_a74qk"]
+
+[node name="PuzzlePiece" type="TextureRect"]
+script = ExtResource("1_a74qk")
+
+[node name="PieceLabel" type="Label" parent="."]
+visible = false
+layout_mode = 0
+size_flags_horizontal = 4
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://board/puzzle_board.gd" id="1_c7uit"]
+
+[node name="PuzzleBoard" type="GridContainer"]
+script = ExtResource("1_c7uit")
