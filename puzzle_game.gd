@@ -7,6 +7,7 @@ extends Node
 @onready var restart_button: Button = $RestartButton
 @onready var win_message: Label = $WinMessage
 @onready var win_button: Button = $WinButton
+@onready var level_select_button: Button = $LevelSelectButton
 
 var elapsed_time: float = 0.0
 var is_complete: bool = false
@@ -14,14 +15,24 @@ var is_complete: bool = false
 ## Default puzzle dimensions.
 const DEFAULT_COLUMNS: int = 4
 const DEFAULT_ROWS: int = 4
-const SOURCE_IMAGE_PATH: String = "res://assets/puzzle_image.png"
+
+## The "New Puzzle" button on the win overlay — reused as "Next Puzzle".
+@onready var next_button: Button = $WinButton
 
 
 func _ready() -> void:
-	var image = load(SOURCE_IMAGE_PATH) as Texture2D
-	if image == null:
-		push_error("Picture Puzzle: Could not load source image at ", SOURCE_IMAGE_PATH)
+	var level: Dictionary = LevelManager.get_current_level()
+	if level.is_empty():
+		push_error("Picture Puzzle: No level selected")
 		return
+
+	var image = load(level["path"]) as Texture2D
+	if image == null:
+		push_error("Picture Puzzle: Could not load image at ", level["path"])
+		return
+
+	# Update the title / win message to show which puzzle this is
+	win_message.text = "Complete!  (%s)" % level["name"]
 
 	# Locate the PuzzleBoard — it's a direct child
 	var board = $PuzzleBoard
@@ -35,10 +46,12 @@ func _ready() -> void:
 
 	menu_button.pressed.connect(_on_menu_pressed)
 	restart_button.pressed.connect(_on_restart_pressed)
-	win_button.pressed.connect(_on_menu_pressed)
+	win_button.pressed.connect(_on_next_pressed)
+	level_select_button.pressed.connect(_on_level_select_pressed)
 
 	win_message.visible = false
 	win_button.visible = false
+	level_select_button.visible = false
 
 
 func _process(delta: float) -> void:
@@ -67,11 +80,22 @@ static func _format_time(total_seconds: float) -> String:
 
 
 func _on_menu_pressed() -> void:
-	get_tree().reload_current_scene()
+	get_tree().change_scene_to_file("res://level_select.tscn")
 
 
 func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
+
+
+## Advance to the next puzzle image.
+func _on_next_pressed() -> void:
+	LevelManager.advance_level()
+	get_tree().reload_current_scene()
+
+
+## Return to the level selection screen.
+func _on_level_select_pressed() -> void:
+	get_tree().change_scene_to_file("res://level_select.tscn")
 
 
 ## Called by PuzzleBoard when all pieces are in their correct positions.
@@ -79,3 +103,4 @@ func on_puzzle_complete() -> void:
 	is_complete = true
 	win_message.visible = true
 	win_button.visible = true
+	level_select_button.visible = true

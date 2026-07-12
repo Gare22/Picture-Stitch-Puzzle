@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://c4d547oil8flu"]
+
+[ext_resource type="Script" uid="uid://cs68a8oul5rg1" path="res://autoload/level_manager.gd" id="1_lm"]
+[ext_resource type="Texture2D" uid="uid://b02asoqsfysq5" path="res://assets/gradient_sunset.png" id="2_sunset"]
+[ext_resource type="Texture2D" uid="uid://m6rnimmwtxtx" path="res://assets/gradient_ocean.png" id="3_ocean"]
+[ext_resource type="Texture2D" uid="uid://bsnt0diomdlwo" path="res://assets/gradient_rainbow.png" id="4_rainbow"]
+[ext_resource type="Texture2D" uid="uid://bbrwrywfq41c5" path="res://assets/gradient_neon.png" id="5_neon"]
+[ext_resource type="Texture2D" uid="uid://bwbxwgovynngt" path="res://assets/gradient_pastel.png" id="6_pastel"]
+[ext_resource type="Texture2D" uid="uid://cgvpcfn0efsyd" path="res://assets/gradient_fire.png" id="7_fire"]
+[ext_resource type="Texture2D" uid="uid://68wvectvdq80" path="res://assets/best.png" id="8_best"]
+[ext_resource type="Texture2D" uid="uid://dlv20uramjxf6" path="res://assets/landscape_teal_spiral.png" id="9_2wtu7"]
+[ext_resource type="Texture2D" uid="uid://dj6wu3ib7krvc" path="res://assets/portrait_aurora_grid.png" id="11_6xuwj"]
+[ext_resource type="Texture2D" uid="uid://c0i4x33idhc15" path="res://assets/portrait_constellation.png" id="12_a2nha"]
+[ext_resource type="Texture2D" uid="uid://07apeypwgl87" path="res://assets/portrait_fire_squares.png" id="13_fjsef"]
+[ext_resource type="Texture2D" uid="uid://csnde82gpx6oy" path="res://assets/portrait_forest_rings.png" id="15_23gue"]
+[ext_resource type="Texture2D" uid="uid://p72niimuwyr2" path="res://assets/portrait_lava_diamonds.png" id="16_21472"]
+[ext_resource type="Texture2D" uid="uid://4an2mjsarr38" path="res://assets/portrait_ocean_waves.png" id="18_nqtqp"]
+[ext_resource type="Texture2D" uid="uid://chq1gvqdyyfxp" path="res://assets/portrait_sunset_star.png" id="20_xljmb"]
+[ext_resource type="Texture2D" uid="uid://cwhisnjfsnrao" path="res://assets/portrait_twilight_triangles.png" id="21_kitv8"]
+[ext_resource type="Texture2D" uid="uid://big04geo8ltiq" path="res://assets/square_cherry_blossom.png" id="22_2kg5l"]
+
+[node name="LevelManager" type="Node" unique_id=948858568]
+script = ExtResource("1_lm")
+level_images = Array[Texture2D]([ExtResource("8_best"), ExtResource("7_fire"), ExtResource("5_neon"), ExtResource("3_ocean"), ExtResource("6_pastel"), ExtResource("4_rainbow"), ExtResource("2_sunset"), ExtResource("9_2wtu7"), ExtResource("11_6xuwj"), ExtResource("12_a2nha"), ExtResource("13_fjsef"), ExtResource("15_23gue"), ExtResource("16_21472"), ExtResource("18_nqtqp"), ExtResource("20_xljmb"), ExtResource("21_kitv8"), ExtResource("22_2kg5l")])
