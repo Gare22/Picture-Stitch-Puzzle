@@ -19,6 +19,9 @@ var draw_right := true
 @onready var pickup_sound: AudioStreamPlayer = $PickupSound
 @onready var drop_sound: AudioStreamPlayer = $DropSound
 
+## Prevents the drop sound from firing twice (once in _drop_data, once in NOTIFICATION_DRAG_END).
+var _drop_handled: bool = false
+
 
 ## Returns the piece label, resolving it lazily if @onready hasn't fired yet.
 func get_piece_label() -> Label:
@@ -59,6 +62,7 @@ func _draw() -> void:
 
 func _get_drag_data(at_position: Vector2) -> Variant:
 	_play_blip(pickup_sound)
+	_drop_handled = false
 
 	# Hide the original piece while dragging
 	modulate = Color(1.0, 1.0, 1.0, 0.3)
@@ -88,6 +92,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	_drop_handled = true
 	_play_blip(drop_sound)
 
 	# Restore opacity on both pieces
@@ -101,6 +106,8 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END:
-		# Drag was cancelled (dropped outside a valid target) — restore opacity
-		_play_blip(drop_sound)
+		# Only play the drop sound here if _drop_data didn't already handle it
+		if not _drop_handled:
+			_play_blip(drop_sound)
+		_drop_handled = false
 		modulate = Color(1.0, 1.0, 1.0, 1.0)
