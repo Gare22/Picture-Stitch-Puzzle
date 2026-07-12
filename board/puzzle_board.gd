@@ -48,16 +48,28 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 	var pieces = []
 	pieces.resize(columns_count * rows_count)
 
+	var img_w := source_image.get_width()
+	var img_h := source_image.get_height()
+
 	for row in range(rows_count):
 		for col in range(columns_count):
 			var idx = row * columns_count + col
 			var piece = piece_scene.instantiate()
 			piece.name = "Piece_%d" % idx
 
+			# Compute integer pixel boundaries so every pixel is covered
+			# with no gaps or overlaps (handles non-divisible dimensions).
+			var x_start := col * img_w / columns_count
+			var x_end := (col + 1) * img_w / columns_count
+			var y_start := row * img_h / rows_count
+			var y_end := (row + 1) * img_h / rows_count
+			var region_w := x_end - x_start
+			var region_h := y_end - y_start
+
 			# Slice with AtlasTexture
 			var atlas = AtlasTexture.new()
 			atlas.atlas = source_image
-			atlas.region = Rect2(col * cell_w, row * cell_h, cell_w, cell_h)
+			atlas.region = Rect2(x_start, y_start, region_w, region_h)
 			piece.texture = atlas
 			piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			piece.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
