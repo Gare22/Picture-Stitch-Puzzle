@@ -12,17 +12,28 @@ extends Node
 var elapsed_time: float = 0.0
 var is_complete: bool = false
 
+## When true, cycles through all grid sizes 3×3→6×6 for testing.
+@export var test_grid_cycle: bool = false
+
 ## Test-mode puzzle dimensions: cycles through all 3×3 to 6×6 combos.
 static var _test_cols: int = 3
 static var _test_rows: int = 3
-var puzzle_columns: int = _test_cols
-var puzzle_rows: int = _test_rows
+
+var puzzle_columns: int
+var puzzle_rows: int
 
 ## The "New Puzzle" button on the win overlay — reused as "Next Puzzle".
 @onready var next_button: Button = $WinButton
 
 
 func _ready() -> void:
+	if test_grid_cycle:
+		puzzle_columns = _test_cols
+		puzzle_rows = _test_rows
+	else:
+		puzzle_columns = randi_range(3, 6)
+		puzzle_rows = randi_range(3, 6)
+
 	var level: Dictionary = LevelManager.get_current_level()
 	if level.is_empty():
 		push_error("Picture Puzzle: No level selected")
@@ -47,12 +58,13 @@ func _ready() -> void:
 	board.setup(image, puzzle_columns, puzzle_rows)
 
 	# Advance test grid size for next puzzle
-	_test_cols += 1
-	if _test_cols > 6:
-		_test_cols = 3
-		_test_rows += 1
-		if _test_rows > 6:
-			_test_rows = 3
+	if test_grid_cycle:
+		_test_cols += 1
+		if _test_cols > 6:
+			_test_cols = 3
+			_test_rows += 1
+			if _test_rows > 6:
+				_test_rows = 3
 
 	menu_button.pressed.connect(_on_menu_pressed)
 	restart_button.pressed.connect(_on_restart_pressed)
