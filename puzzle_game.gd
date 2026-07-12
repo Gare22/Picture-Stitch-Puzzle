@@ -12,9 +12,11 @@ extends Node
 var elapsed_time: float = 0.0
 var is_complete: bool = false
 
-## Random puzzle dimensions (3 to 6).
-var puzzle_columns: int = randi_range(3, 6)
-var puzzle_rows: int = randi_range(3, 6)
+## Test-mode puzzle dimensions: cycles through all 3×3 to 6×6 combos.
+static var _test_cols: int = 3
+static var _test_rows: int = 3
+var puzzle_columns: int = _test_cols
+var puzzle_rows: int = _test_rows
 
 ## The "New Puzzle" button on the win overlay — reused as "Next Puzzle".
 @onready var next_button: Button = $WinButton
@@ -43,6 +45,14 @@ func _ready() -> void:
 	# Set to true to show numbered labels on each piece (for debugging)
 	board.test_mode = false
 	board.setup(image, puzzle_columns, puzzle_rows)
+
+	# Advance test grid size for next puzzle
+	_test_cols += 1
+	if _test_cols > 6:
+		_test_cols = 3
+		_test_rows += 1
+		if _test_rows > 6:
+			_test_rows = 3
 
 	menu_button.pressed.connect(_on_menu_pressed)
 	restart_button.pressed.connect(_on_restart_pressed)
