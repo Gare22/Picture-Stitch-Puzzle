@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://do4e6jms0sph3"]
+
+[ext_resource type="Script" uid="uid://cxauuqo6g17tu" path="res://level_select.gd" id="1_ls"]
+
+[node name="LevelSelect" type="Control" unique_id=156040848]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ls")
+
+[node name="Title" type="Label" parent="." unique_id=1848227941]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 15.0
+offset_right = -20.0
+offset_bottom = 55.0
+grow_horizontal = 2
+text = "Select a Puzzle"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=24152581]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 65.0
+offset_right = -16.0
+offset_bottom = -55.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer" unique_id=186500959]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="BackButton" type="Button" parent="." unique_id=1072905673]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 130.0
+offset_top = -45.0
+offset_right = -130.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Back"

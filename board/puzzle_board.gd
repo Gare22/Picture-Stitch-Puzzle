@@ -14,7 +14,6 @@ var grid_indices: Array[int] = []
 const SIDE_PADDING: float = 16.0
 const TOP_PADDING: float = 50.0   # room for timer
 const BOTTOM_PADDING: float = 50.0 # room for menu button
-const MAX_HEIGHT_SHRINK: float = 100.0
 
 
 ## Called by GameManager after instantiation.
@@ -37,27 +36,12 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 	var board_w = cell_w * columns_count
 	var board_h = cell_h * rows_count
 
-	# Scale the board to fill available height, but constrain width
-	var board_scale = avail_h / board_h
-	var scaled_w = board_w * board_scale
-	if scaled_w > avail_w:
-		board_scale = avail_w / board_w
-		# Check if height would be too constrained
-		var scaled_h = board_h * board_scale
-		if scaled_h < avail_h - MAX_HEIGHT_SHRINK:
-			board_scale = (avail_h - MAX_HEIGHT_SHRINK) / board_h
+	# Scale the board to fit within available area (maintain aspect ratio)
+	var board_scale = minf(avail_w / board_w, avail_h / board_h)
 
 	# Determine the final display cell size
 	var cell_display_w = cell_w * board_scale
 	var cell_display_h = cell_h * board_scale
-
-	# Position the board centered in the available area
-	var total_board_w = cell_display_w * columns_count
-	var total_board_h = cell_display_h * rows_count
-	position = Vector2(
-		(viewport_size.x - total_board_w) * 0.5,
-		TOP_PADDING + (avail_h - total_board_h) * 0.5
-	)
 
 	# ---- Create pieces ----
 	var piece_scene = preload("res://piece/puzzle_piece.tscn")
@@ -75,8 +59,10 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 			atlas.atlas = source_image
 			atlas.region = Rect2(col * cell_w, row * cell_h, cell_w, cell_h)
 			piece.texture = atlas
-
+			piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			piece.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			piece.custom_minimum_size = Vector2(cell_display_w, cell_display_h)
+			piece.size = piece.custom_minimum_size
 			piece.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 			piece.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
@@ -117,9 +103,18 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 		var piece = pieces[grid_indices[i]]
 		add_child(piece)
 
-	# Since our parent is a plain Node (not a Container), the GridContainer
-	# doesn't auto-size. Set its size to fit all children.
-	size = get_minimum_size()
+	# Set size explicitly from calculated dimensions (don't rely on
+	# get_minimum_size() which can differ due to GridContainer internals).
+	var total_board_w = cell_display_w * columns_count
+	var total_board_h = cell_display_h * rows_count
+	custom_minimum_size = Vector2(total_board_w, total_board_h)
+	size = custom_minimum_size
+
+	# Center the board in the available area
+	position = Vector2(
+		(viewport_size.x - total_board_w) * 0.5,
+		TOP_PADDING + (avail_h - total_board_h) * 0.5
+	)
 
 	update_borders()
 

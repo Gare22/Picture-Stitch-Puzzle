@@ -11,6 +11,7 @@ theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
 [node name="TimerLabel" type="Label" parent="." unique_id=422968927]
+visible = false
 custom_minimum_size = Vector2(400, 30)
 offset_top = 10.0
 offset_right = 400.0
@@ -51,4 +52,13 @@ offset_left = 100.0
 offset_top = 330.0
 offset_right = 300.0
 offset_bottom = 380.0
-text = "New Puzzle"
+text = "Next Puzzle"
+
+[node name="LevelSelectButton" type="Button" parent="." unique_id=1059629034]
+visible = false
+custom_minimum_size = Vector2(200, 40)
+offset_left = 100.0
+offset_top = 390.0
+offset_right = 300.0
+offset_bottom = 430.0
+text = "Level Select"
