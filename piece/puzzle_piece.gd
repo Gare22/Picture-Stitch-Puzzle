@@ -15,12 +15,22 @@ var draw_right := true
 ## Reference to the label shown in test mode.
 @onready var piece_label: Label = $PieceLabel
 
+## Audio players with randomized pitch for variety.
+@onready var pickup_sound: AudioStreamPlayer = $PickupSound
+@onready var drop_sound: AudioStreamPlayer = $DropSound
+
 
 ## Returns the piece label, resolving it lazily if @onready hasn't fired yet.
 func get_piece_label() -> Label:
 	if piece_label == null:
 		piece_label = $PieceLabel
 	return piece_label
+
+
+## Play a sound with slight random pitch variation.
+func _play_blip(player: AudioStreamPlayer) -> void:
+	player.pitch_scale = randf_range(0.85, 1.15)
+	player.play()
 
 
 ## Update border flags and trigger a redraw.
@@ -48,6 +58,8 @@ func _draw() -> void:
 
 
 func _get_drag_data(at_position: Vector2) -> Variant:
+	_play_blip(pickup_sound)
+
 	# Hide the original piece while dragging
 	modulate = Color(1.0, 1.0, 1.0, 0.3)
 
@@ -76,6 +88,8 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	_play_blip(drop_sound)
+
 	# Restore opacity on both pieces
 	modulate = Color(1.0, 1.0, 1.0, 1.0)
 	data.modulate = Color(1.0, 1.0, 1.0, 1.0)
@@ -88,4 +102,5 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END:
 		# Drag was cancelled (dropped outside a valid target) — restore opacity
+		_play_blip(drop_sound)
 		modulate = Color(1.0, 1.0, 1.0, 1.0)
