@@ -1,3 +1,4 @@
+class_name PuzzlePiece
 extends TextureRect
 
 ## Stores the grid position this piece SHOULD be at when the puzzle is solved.
@@ -13,6 +14,13 @@ var draw_right := true
 
 ## Reference to the label shown in test mode.
 @onready var piece_label: Label = $PieceLabel
+
+
+## Returns the piece label, resolving it lazily if @onready hasn't fired yet.
+func get_piece_label() -> Label:
+	if piece_label == null:
+		piece_label = $PieceLabel
+	return piece_label
 
 
 ## Update border flags and trigger a redraw.
@@ -43,17 +51,22 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	# Hide the original piece while dragging
 	modulate = Color(1.0, 1.0, 1.0, 0.3)
 
-	# Create a full-opacity preview that looks exactly like the piece
+	# Godot positions the drag preview's top-left at the mouse cursor
+	# and overrides its position every frame. To visually center the
+	# piece on the cursor, we offset the TextureRect *inside* a wrapper.
+	var wrapper = Control.new()
+	wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	var preview = TextureRect.new()
 	preview.texture = texture
 	preview.expand_mode = EXPAND_IGNORE_SIZE
 	preview.stretch_mode = STRETCH_KEEP_ASPECT_CENTERED
 	preview.size = size
+	preview.position = -size * 0.5   # center within wrapper → center on cursor
 	preview.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
-	# Offset the preview so the cursor is at the center of the piece
-	preview.position = -size * 0.5
-	set_drag_preview(preview)
+	wrapper.add_child(preview)
+	set_drag_preview(wrapper)
 
 	return self
 

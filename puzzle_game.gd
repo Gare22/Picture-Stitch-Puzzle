@@ -20,13 +20,13 @@ const SOURCE_IMAGE_PATH: String = "res://assets/puzzle_image.png"
 func _ready() -> void:
 	var image = load(SOURCE_IMAGE_PATH) as Texture2D
 	if image == null:
-		push_error("Slide Puzzle: Could not load source image at ", SOURCE_IMAGE_PATH)
+		push_error("Picture Puzzle: Could not load source image at ", SOURCE_IMAGE_PATH)
 		return
 
 	# Locate the PuzzleBoard — it's a direct child
 	var board = $PuzzleBoard
 	if board == null:
-		push_error("Slide Puzzle: PuzzleBoard node not found")
+		push_error("Picture Puzzle: PuzzleBoard node not found")
 		return
 
 	# Set to true to show numbered labels on each piece (for debugging)

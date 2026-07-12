@@ -82,8 +82,8 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 
 			# Test-mode label
 			if test_mode:
-				piece.piece_label.visible = true
-				piece.piece_label.text = str(idx + 1)
+				piece.get_piece_label().visible = true
+				piece.get_piece_label().text = str(idx + 1)
 
 			pieces[idx] = piece
 
@@ -117,6 +117,10 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 		var piece = pieces[grid_indices[i]]
 		add_child(piece)
 
+	# Since our parent is a plain Node (not a Container), the GridContainer
+	# doesn't auto-size. Set its size to fit all children.
+	size = get_minimum_size()
+
 	update_borders()
 
 
@@ -127,12 +131,21 @@ func get_correct_index(grid_pos: int) -> int:
 	return grid_indices[grid_pos]
 
 
+## Returns only PuzzlePiece children (filters out drag previews, etc.)
+func get_pieces() -> Array:
+	var result: Array = []
+	for child in get_children():
+		if child is PuzzlePiece:
+			result.append(child)
+	return result
+
+
 ## Re-evaluates which borders should be drawn for every piece.
 ## A border is hidden only when a piece's correctly-adjacent neighbor is beside it.
 func update_borders() -> void:
-	var all_pieces = get_children()
+	var all_pieces = get_pieces()
 	for i in range(all_pieces.size()):
-		var piece: Variant = all_pieces[i]
+		var piece = all_pieces[i]
 		var col = i % columns_count
 		var row = int(float(i) / columns_count)
 		var my_idx = get_correct_index(i)
@@ -172,7 +185,7 @@ func update_borders() -> void:
 ## Swap two pieces: exchange their textures and grid_indices, then re-evaluate borders.
 func swap_pieces(piece_a, piece_b) -> void:
 	# Find grid positions of both pieces
-	var pieces = get_children()
+	var pieces = get_pieces()
 	var pos_a = -1
 	var pos_b = -1
 	for i in range(pieces.size()):
@@ -196,9 +209,9 @@ func swap_pieces(piece_a, piece_b) -> void:
 
 	# Also swap test-mode labels if visible
 	if test_mode:
-		var temp_label = piece_a.piece_label.text
-		piece_a.piece_label.text = piece_b.piece_label.text
-		piece_b.piece_label.text = temp_label
+		var temp_label = piece_a.get_piece_label().text
+		piece_a.get_piece_label().text = piece_b.get_piece_label().text
+		piece_b.get_piece_label().text = temp_label
 
 	update_borders()
 	check_win()
