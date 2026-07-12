@@ -162,14 +162,14 @@ func update_borders() -> void:
 			if neighbor_idx == my_idx + columns_count:
 				draw_bottom = false
 
-		# Left
-		if col > 0:
+		# Left — only hide if the piece's correct position isn't at the left edge
+		if col > 0 and my_idx % columns_count > 0:
 			var neighbor_idx = get_correct_index(i - 1)
 			if neighbor_idx == my_idx - 1:
 				draw_left = false
 
-		# Right
-		if col < columns_count - 1:
+		# Right — only hide if the piece's correct position isn't at the right edge
+		if col < columns_count - 1 and my_idx % columns_count < columns_count - 1:
 			var neighbor_idx = get_correct_index(i + 1)
 			if neighbor_idx == my_idx + 1:
 				draw_right = false
