@@ -5,9 +5,10 @@
 
 [node name="PuzzleGame" type="Node" unique_id=1092117998]
 script = ExtResource("1_fbgxn")
-test_grid_cycle = false
 
 [node name="PuzzleBoard" parent="." unique_id=1425944829 instance=ExtResource("2_i3a0x")]
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
 
 [node name="TimerLabel" type="Label" parent="." unique_id=422968927]
 visible = false
