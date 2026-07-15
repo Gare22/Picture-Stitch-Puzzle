@@ -15,6 +15,10 @@ const SIDE_PADDING: float = 16.0
 const TOP_PADDING: float = 50.0   # room for timer
 const BOTTOM_PADDING: float = 50.0 # room for menu button
 
+## Display dimensions of each cell (set by setup()).
+var cell_display_w: float = 0.0
+var cell_display_h: float = 0.0
+
 
 ## Called by GameManager after instantiation.
 ## Slices the source image into a grid, creates pieces, shuffles them, and draws borders.
@@ -39,9 +43,11 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 	# Scale the board to fit within available area (maintain aspect ratio)
 	var board_scale = minf(avail_w / board_w, avail_h / board_h)
 
-	# Determine the final display cell size
-	var cell_display_w = cell_w * board_scale
-	var cell_display_h = cell_h * board_scale
+	# Determine the final display cell size.
+	# Round UP to the nearest integer to prevent 1-pixel gaps between
+	# pieces caused by GridContainer rounding fractional positions.
+	cell_display_w = ceili(cell_w * board_scale)
+	cell_display_h = ceili(cell_h * board_scale)
 
 	# ---- Create pieces ----
 	var piece_scene = preload("res://piece/puzzle_piece.tscn")
@@ -72,7 +78,7 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 			atlas.region = Rect2(x_start, y_start, region_w, region_h)
 			piece.texture = atlas
 			piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			piece.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			piece.stretch_mode = TextureRect.STRETCH_SCALE
 			piece.custom_minimum_size = Vector2(cell_display_w, cell_display_h)
 			piece.size = piece.custom_minimum_size
 			piece.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -145,6 +151,183 @@ func get_pieces() -> Array:
 		if child is PuzzlePiece:
 			result.append(child)
 	return result
+
+
+## Returns the grid position index of a given piece, or -1 if not found.
+func get_grid_pos(piece: PuzzlePiece) -> int:
+	var pieces = get_pieces()
+	for i in range(pieces.size()):
+		if pieces[i] == piece:
+			return i
+	return -1
+
+
+## Returns all grid positions in the merged group containing grid_pos.
+## A merged group is a connected component of pieces with no borders between them.
+func get_merged_group(grid_pos: int) -> Array[int]:
+	var visited: Dictionary = {}
+	var group: Array[int] = []
+	var stack: Array[int] = [grid_pos]
+	visited[grid_pos] = true
+
+	while stack.size() > 0:
+		var pos: int = stack.pop_back()
+		group.append(pos)
+
+		var col: int = pos % columns_count
+		var row: int = pos / columns_count
+		var my_correct: int = grid_indices[pos]
+
+		# Up
+		if row > 0:
+			var n_pos: int = pos - columns_count
+			if not visited.has(n_pos):
+				var their_correct: int = grid_indices[n_pos]
+				if their_correct == my_correct - columns_count:
+					visited[n_pos] = true
+					stack.append(n_pos)
+
+		# Down
+		if row < rows_count - 1:
+			var n_pos: int = pos + columns_count
+			if not visited.has(n_pos):
+				var their_correct: int = grid_indices[n_pos]
+				if their_correct == my_correct + columns_count:
+					visited[n_pos] = true
+					stack.append(n_pos)
+
+		# Left
+		if col > 0 and my_correct % columns_count > 0:
+			var n_pos: int = pos - 1
+			if not visited.has(n_pos):
+				var their_correct: int = grid_indices[n_pos]
+				if their_correct == my_correct - 1:
+					visited[n_pos] = true
+					stack.append(n_pos)
+
+		# Right
+		if col < columns_count - 1 and my_correct % columns_count < columns_count - 1:
+			var n_pos: int = pos + 1
+			if not visited.has(n_pos):
+				var their_correct: int = grid_indices[n_pos]
+				if their_correct == my_correct + 1:
+					visited[n_pos] = true
+					stack.append(n_pos)
+
+	return group
+
+
+## Returns true if the group can be dropped at the target position.
+## Checks: all target positions must be within bounds.
+func can_drop_group(group_positions: Array[int], anchor_grid_pos: int, drop_grid_pos: int) -> bool:
+	var anchor_col: int = anchor_grid_pos % columns_count
+	var anchor_row: int = anchor_grid_pos / columns_count
+	var drop_col: int = drop_grid_pos % columns_count
+	var drop_row: int = drop_grid_pos / columns_count
+
+	var col_offset: int = drop_col - anchor_col
+	var row_offset: int = drop_row - anchor_row
+
+	for pos in group_positions:
+		var pos_col: int = pos % columns_count
+		var pos_row: int = pos / columns_count
+		var target_col: int = pos_col + col_offset
+		var target_row: int = pos_row + row_offset
+
+		if target_col < 0 or target_col >= columns_count:
+			return false
+		if target_row < 0 or target_row >= rows_count:
+			return false
+
+	return true
+
+
+## Moves the merged group from source positions to target positions.
+## All pieces move by the same offset relative to the anchor piece.
+## Handles partial overlap (e.g. moving a 2x2 group one position over).
+func swap_group(group_positions: Array[int], anchor_grid_pos: int, drop_grid_pos: int) -> bool:
+	if not can_drop_group(group_positions, anchor_grid_pos, drop_grid_pos):
+		return false
+
+	var anchor_col: int = anchor_grid_pos % columns_count
+	var anchor_row: int = anchor_grid_pos / columns_count
+	var drop_col: int = drop_grid_pos % columns_count
+	var drop_row: int = drop_grid_pos / columns_count
+
+	var col_offset: int = drop_col - anchor_col
+	var row_offset: int = drop_row - anchor_row
+
+	# Build sets for quick lookup
+	var source_set: Dictionary = {}
+	for pos in group_positions:
+		source_set[pos] = true
+
+	# Compute target positions (same order as group_positions)
+	var target_positions: Array[int] = []
+	for pos in group_positions:
+		var pos_col: int = pos % columns_count
+		var pos_row: int = pos / columns_count
+		var target: int = (pos_row + row_offset) * columns_count + (pos_col + col_offset)
+		target_positions.append(target)
+
+	var target_set: Dictionary = {}
+	for pos in target_positions:
+		target_set[pos] = true
+
+	var pieces = get_pieces()
+
+	# Save all source textures and grid_indices
+	var saved_textures: Array = []
+	var saved_indices: Array[int] = []
+	for pos in group_positions:
+		saved_textures.append(pieces[pos].texture)
+		saved_indices.append(grid_indices[pos])
+
+	# Save target-only textures/indices (targets that aren't also sources)
+	var target_only_textures: Array = []
+	var target_only_indices: Array[int] = []
+	for pos in target_positions:
+		if not source_set.has(pos):
+			target_only_textures.append(pieces[pos].texture)
+			target_only_indices.append(grid_indices[pos])
+
+	# Place source textures at target positions
+	for i in range(group_positions.size()):
+		var t: int = target_positions[i]
+		pieces[t].texture = saved_textures[i]
+		grid_indices[t] = saved_indices[i]
+
+	# Place target-only textures at source-only positions (sources that aren't targets)
+	var source_only: Array[int] = []
+	for pos in group_positions:
+		if not target_set.has(pos):
+			source_only.append(pos)
+
+	for i in range(source_only.size()):
+		var s: int = source_only[i]
+		pieces[s].texture = target_only_textures[i]
+		grid_indices[s] = target_only_indices[i]
+
+	# Swap test labels if visible
+	if test_mode:
+		var saved_labels: Array = []
+		for pos in group_positions:
+			saved_labels.append(pieces[pos].get_piece_label().text)
+
+		var target_only_labels: Array = []
+		for pos in target_positions:
+			if not source_set.has(pos):
+				target_only_labels.append(pieces[pos].get_piece_label().text)
+
+		for i in range(group_positions.size()):
+			pieces[target_positions[i]].get_piece_label().text = saved_labels[i]
+
+		for i in range(source_only.size()):
+			pieces[source_only[i]].get_piece_label().text = target_only_labels[i]
+
+	update_borders()
+	check_win()
+	return true
 
 
 ## Re-evaluates which borders should be drawn for every piece.
