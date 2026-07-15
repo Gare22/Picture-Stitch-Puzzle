@@ -43,9 +43,11 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 	# Scale the board to fit within available area (maintain aspect ratio)
 	var board_scale = minf(avail_w / board_w, avail_h / board_h)
 
-	# Determine the final display cell size
-	cell_display_w = cell_w * board_scale
-	cell_display_h = cell_h * board_scale
+	# Determine the final display cell size.
+	# Round UP to the nearest integer to prevent 1-pixel gaps between
+	# pieces caused by GridContainer rounding fractional positions.
+	cell_display_w = ceili(cell_w * board_scale)
+	cell_display_h = ceili(cell_h * board_scale)
 
 	# ---- Create pieces ----
 	var piece_scene = preload("res://piece/puzzle_piece.tscn")
@@ -76,7 +78,7 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 			atlas.region = Rect2(x_start, y_start, region_w, region_h)
 			piece.texture = atlas
 			piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			piece.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			piece.stretch_mode = TextureRect.STRETCH_SCALE
 			piece.custom_minimum_size = Vector2(cell_display_w, cell_display_h)
 			piece.size = piece.custom_minimum_size
 			piece.size_flags_horizontal = Control.SIZE_SHRINK_CENTER

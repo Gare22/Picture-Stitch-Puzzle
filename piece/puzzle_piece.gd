@@ -47,8 +47,9 @@ func set_borders(top: bool, bottom: bool, left: bool, right: bool) -> void:
 
 func _draw() -> void:
 	var border_color = Color(0.15, 0.15, 0.15, 1.0)
-	var w = size.x
-	var h = size.y
+	# Snap to integer pixel boundaries to prevent sub-pixel rendering artifacts
+	var w: float = floorf(size.x)
+	var h: float = floorf(size.y)
 
 	if draw_top:
 		draw_line(Vector2(0.0, 0.0), Vector2(w, 0.0), border_color, 4.0)
@@ -87,7 +88,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		var preview := TextureRect.new()
 		preview.texture = piece.texture
 		preview.expand_mode = EXPAND_IGNORE_SIZE
-		preview.stretch_mode = STRETCH_KEEP_ASPECT_CENTERED
+		preview.stretch_mode = STRETCH_SCALE
 		preview.size = size
 		preview.position = Vector2(col_diff * size.x, row_diff * size.y) - size * 0.5
 		preview.modulate = Color(1.0, 1.0, 1.0, 1.0)
