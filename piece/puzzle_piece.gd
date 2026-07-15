@@ -19,6 +19,8 @@ var draw_right := true
 @onready var pickup_sound: AudioStreamPlayer = $PickupSound
 @onready var drop_sound: AudioStreamPlayer = $DropSound
 
+## Stores the merged group pieces during a drag for cleanup on drag end.
+var _drag_group_pieces: Array = []
 
 
 ## Returns the piece label, resolving it lazily if @onready hasn't fired yet.
@@ -61,47 +63,71 @@ func _draw() -> void:
 func _get_drag_data(at_position: Vector2) -> Variant:
 	_play_blip(pickup_sound)
 
-	# Hide the original piece while dragging
-	modulate = Color(1.0, 1.0, 1.0, 0.3)
+	var board = get_parent()
+	var my_grid_pos: int = board.get_grid_pos(self)
+	var group: Array[int] = board.get_merged_group(my_grid_pos)
 
-	# Godot positions the drag preview's top-left at the mouse cursor
-	# and overrides its position every frame. To visually center the
-	# piece on the cursor, we offset the TextureRect *inside* a wrapper.
-	var wrapper = Control.new()
+	# Make all merged pieces semi-transparent
+	_drag_group_pieces = []
+	for pos in group:
+		var piece = board.get_pieces()[pos]
+		if piece != null:
+			piece.modulate = Color(1.0, 1.0, 1.0, 0.3)
+			_drag_group_pieces.append(piece)
+
+	# Build drag preview showing all merged pieces
+	var wrapper := Control.new()
 	wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var preview = TextureRect.new()
-	preview.texture = texture
-	preview.expand_mode = EXPAND_IGNORE_SIZE
-	preview.stretch_mode = STRETCH_KEEP_ASPECT_CENTERED
-	preview.size = size
-	preview.position = -size * 0.5   # center within wrapper → center on cursor
-	preview.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	for pos in group:
+		var piece = board.get_pieces()[pos]
+		var col_diff: int = (pos % board.columns_count) - (my_grid_pos % board.columns_count)
+		var row_diff: int = (pos / board.columns_count) - (my_grid_pos / board.columns_count)
 
-	wrapper.add_child(preview)
+		var preview := TextureRect.new()
+		preview.texture = piece.texture
+		preview.expand_mode = EXPAND_IGNORE_SIZE
+		preview.stretch_mode = STRETCH_KEEP_ASPECT_CENTERED
+		preview.size = size
+		preview.position = Vector2(col_diff * size.x, row_diff * size.y) - size * 0.5
+		preview.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+		wrapper.add_child(preview)
+
 	set_drag_preview(wrapper)
 
-	return self
+	return {
+		"anchor_piece": self,
+		"group_positions": group,
+		"anchor_grid_pos": my_grid_pos,
+	}
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	return data != null and data != self
+	if data == null or not data is Dictionary:
+		return false
+	if data.get("anchor_piece") == self:
+		return false
+
+	var board = get_parent()
+	var drop_grid_pos: int = board.get_grid_pos(self)
+	if drop_grid_pos < 0:
+		return false
+
+	return board.can_drop_group(data["group_positions"], data["anchor_grid_pos"], drop_grid_pos)
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	_play_blip(drop_sound)
 
-	# Restore opacity on both pieces
-	modulate = Color(1.0, 1.0, 1.0, 1.0)
-	data.modulate = Color(1.0, 1.0, 1.0, 1.0)
-
 	var board = get_parent()
-	if board != null and board.has_method(&"swap_pieces"):
-		board.swap_pieces(data, self)
+	var drop_grid_pos: int = board.get_grid_pos(self)
+	board.swap_group(data["group_positions"], data["anchor_grid_pos"], drop_grid_pos)
 
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END:
-		# Only play the drop sound here if _drop_data didn't already handle it
-		#_play_blip(drop_sound)
-		modulate = Color(1.0, 1.0, 1.0, 1.0)
+		for piece in _drag_group_pieces:
+			if piece != null:
+				piece.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		_drag_group_pieces = []
