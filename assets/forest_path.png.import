@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://m6rnimmwtxtx"
-path="res://.godot/imported/gradient_ocean.png-62b1dff34c7e173ddce05e1185e393f0.ctex"
+uid="uid://b4sandqyukif8"
+path="res://.godot/imported/forest_path.png-8aae4017b0417a43de72bb3a545ec272.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gradient_ocean.png"
-dest_files=["res://.godot/imported/gradient_ocean.png-62b1dff34c7e173ddce05e1185e393f0.ctex"]
+source_file="res://assets/forest_path.png"
+dest_files=["res://.godot/imported/forest_path.png-8aae4017b0417a43de72bb3a545ec272.ctex"]
 
 [params]
 

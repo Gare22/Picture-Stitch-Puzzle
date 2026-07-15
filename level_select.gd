@@ -26,6 +26,8 @@ func _build_grid() -> void:
 		btn.custom_minimum_size = THUMB_SIZE
 		btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		btn.mouse_filter = Control.MOUSE_FILTER_PASS
+		btn.mouse_force_pass_scroll_events = true
 
 		# Load thumbnail texture
 		var tex = load(level["path"]) as Texture2D

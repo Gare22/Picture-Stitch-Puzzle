@@ -23,6 +23,7 @@ LevelManager="*res://autoload/level_manager.tscn"
 window/size/viewport_width=400
 window/size/viewport_height=640
 window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 window/handheld/orientation=1
 
 [rendering]

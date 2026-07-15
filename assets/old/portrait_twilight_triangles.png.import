@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chq1gvqdyyfxp"
-path="res://.godot/imported/portrait_sunset_star.png-4b20a24206a5d8a96ccef39987b574b1.ctex"
+uid="uid://cmqegawm0loyn"
+path="res://.godot/imported/portrait_twilight_triangles.png-8d9ef72ef82fa95e148b41f41870c64e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/portrait_sunset_star.png"
-dest_files=["res://.godot/imported/portrait_sunset_star.png-4b20a24206a5d8a96ccef39987b574b1.ctex"]
+source_file="res://assets/old/portrait_twilight_triangles.png"
+dest_files=["res://.godot/imported/portrait_twilight_triangles.png-8d9ef72ef82fa95e148b41f41870c64e.ctex"]
 
 [params]
 

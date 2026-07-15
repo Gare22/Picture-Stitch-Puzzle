@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b02asoqsfysq5"
-path="res://.godot/imported/gradient_sunset.png-3ab6e56a2a5678a5cea5f1f3d0a2a91a.ctex"
+uid="uid://clntcwbmqx1w7"
+path="res://.godot/imported/portrait_forest_rings.png-b75fa8fcd8af16dc045f03530406134e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gradient_sunset.png"
-dest_files=["res://.godot/imported/gradient_sunset.png-3ab6e56a2a5678a5cea5f1f3d0a2a91a.ctex"]
+source_file="res://assets/old/portrait_forest_rings.png"
+dest_files=["res://.godot/imported/portrait_forest_rings.png-b75fa8fcd8af16dc045f03530406134e.ctex"]
 
 [params]
 

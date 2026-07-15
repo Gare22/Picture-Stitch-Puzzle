@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwbxwgovynngt"
-path="res://.godot/imported/gradient_pastel.png-fe765d96129d6c197c90307bc48d8834.ctex"
+uid="uid://cnf5rn72d73cn"
+path="res://.godot/imported/portrait_constellation.png-b0aebdb8fa849170300b7e238445873e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gradient_pastel.png"
-dest_files=["res://.godot/imported/gradient_pastel.png-fe765d96129d6c197c90307bc48d8834.ctex"]
+source_file="res://assets/old/portrait_constellation.png"
+dest_files=["res://.godot/imported/portrait_constellation.png-b0aebdb8fa849170300b7e238445873e.ctex"]
 
 [params]
 

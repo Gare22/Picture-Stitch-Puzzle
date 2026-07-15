@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://csnde82gpx6oy"
-path="res://.godot/imported/portrait_forest_rings.png-eeb168b39f72e996e726262270a73760.ctex"
+uid="uid://b8gfjan6axx7v"
+path="res://.godot/imported/gradient_pastel.png-12ec3066072fb595162e016633eaabed.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/portrait_forest_rings.png"
-dest_files=["res://.godot/imported/portrait_forest_rings.png-eeb168b39f72e996e726262270a73760.ctex"]
+source_file="res://assets/old/gradient_pastel.png"
+dest_files=["res://.godot/imported/gradient_pastel.png-12ec3066072fb595162e016633eaabed.ctex"]
 
 [params]
 

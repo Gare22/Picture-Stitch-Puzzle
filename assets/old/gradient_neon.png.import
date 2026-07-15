@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dj6wu3ib7krvc"
-path="res://.godot/imported/portrait_aurora_grid.png-311c451c848dc3feeb333534866ff0bf.ctex"
+uid="uid://cbtm3culyt0vl"
+path="res://.godot/imported/gradient_neon.png-210b27676817a56e17d4b62398e47c39.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/portrait_aurora_grid.png"
-dest_files=["res://.godot/imported/portrait_aurora_grid.png-311c451c848dc3feeb333534866ff0bf.ctex"]
+source_file="res://assets/old/gradient_neon.png"
+dest_files=["res://.godot/imported/gradient_neon.png-210b27676817a56e17d4b62398e47c39.ctex"]
 
 [params]
 

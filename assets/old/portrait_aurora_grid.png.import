@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://07apeypwgl87"
-path="res://.godot/imported/portrait_fire_squares.png-80b883a4a0491b0638930b578b15e9b2.ctex"
+uid="uid://cype1oylsgig"
+path="res://.godot/imported/portrait_aurora_grid.png-c77c0d623539a797d4a503d4b4f6f2b1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/portrait_fire_squares.png"
-dest_files=["res://.godot/imported/portrait_fire_squares.png-80b883a4a0491b0638930b578b15e9b2.ctex"]
+source_file="res://assets/old/portrait_aurora_grid.png"
+dest_files=["res://.godot/imported/portrait_aurora_grid.png-c77c0d623539a797d4a503d4b4f6f2b1.ctex"]
 
 [params]
 

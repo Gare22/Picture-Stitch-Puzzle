@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cgvpcfn0efsyd"
-path="res://.godot/imported/gradient_fire.png-ef4c617988d28743c4da53b18dc99953.ctex"
+uid="uid://bb71ukl3fmt6k"
+path="res://.godot/imported/aurora_diamond_grid.png-dc22626fae00a97ecec0bd2bdea26bb3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gradient_fire.png"
-dest_files=["res://.godot/imported/gradient_fire.png-ef4c617988d28743c4da53b18dc99953.ctex"]
+source_file="res://assets/aurora_diamond_grid.png"
+dest_files=["res://.godot/imported/aurora_diamond_grid.png-dc22626fae00a97ecec0bd2bdea26bb3.ctex"]
 
 [params]
 

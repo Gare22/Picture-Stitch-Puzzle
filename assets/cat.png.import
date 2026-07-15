@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bsnt0diomdlwo"
-path="res://.godot/imported/gradient_rainbow.png-8d1f2c628d29f84d132834f6fd88d60d.ctex"
+uid="uid://b3nleotd5j2q1"
+path="res://.godot/imported/cat.png-74418c656f64bad1813a4e0137c5108d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gradient_rainbow.png"
-dest_files=["res://.godot/imported/gradient_rainbow.png-8d1f2c628d29f84d132834f6fd88d60d.ctex"]
+source_file="res://assets/cat.png"
+dest_files=["res://.godot/imported/cat.png-74418c656f64bad1813a4e0137c5108d.ctex"]
 
 [params]
 

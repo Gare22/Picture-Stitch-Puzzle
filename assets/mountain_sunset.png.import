@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4an2mjsarr38"
-path="res://.godot/imported/portrait_ocean_waves.png-9051f14efe6dbea9d99cdc77c1fee605.ctex"
+uid="uid://m548o1bly687"
+path="res://.godot/imported/mountain_sunset.png-f63e5e9c7e1fabf5f74741b301d68856.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/portrait_ocean_waves.png"
-dest_files=["res://.godot/imported/portrait_ocean_waves.png-9051f14efe6dbea9d99cdc77c1fee605.ctex"]
+source_file="res://assets/mountain_sunset.png"
+dest_files=["res://.godot/imported/mountain_sunset.png-f63e5e9c7e1fabf5f74741b301d68856.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://p72niimuwyr2"
-path="res://.godot/imported/portrait_lava_diamonds.png-fa15a19eaba7fdbd065859c843681008.ctex"
+uid="uid://d14tehe6bnvvs"
+path="res://.godot/imported/conic_teal_triangles.png-1cadaf81e7661aabda6075c0187290e1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/portrait_lava_diamonds.png"
-dest_files=["res://.godot/imported/portrait_lava_diamonds.png-fa15a19eaba7fdbd065859c843681008.ctex"]
+source_file="res://assets/conic_teal_triangles.png"
+dest_files=["res://.godot/imported/conic_teal_triangles.png-1cadaf81e7661aabda6075c0187290e1.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlv20uramjxf6"
-path="res://.godot/imported/landscape_teal_spiral.png-72d3dbbad7402fb3c90bfc4efae1f244.ctex"
+uid="uid://t3qfg2mfxx5l"
+path="res://.godot/imported/ocean_waves.png-e5681bf0ddaeaf86a11be6559c0d0246.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/landscape_teal_spiral.png"
-dest_files=["res://.godot/imported/landscape_teal_spiral.png-72d3dbbad7402fb3c90bfc4efae1f244.ctex"]
+source_file="res://assets/ocean_waves.png"
+dest_files=["res://.godot/imported/ocean_waves.png-e5681bf0ddaeaf86a11be6559c0d0246.ctex"]
 
 [params]
 

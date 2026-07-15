@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://big04geo8ltiq"
-path="res://.godot/imported/square_cherry_blossom.png-c262aecb390b39448a5fc504ce5eea28.ctex"
+uid="uid://bu024gi3cxw5f"
+path="res://.godot/imported/dog.png-22fd8e54b7fcf6dc6f7801548af10917.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/square_cherry_blossom.png"
-dest_files=["res://.godot/imported/square_cherry_blossom.png-c262aecb390b39448a5fc504ce5eea28.ctex"]
+source_file="res://assets/dog.png"
+dest_files=["res://.godot/imported/dog.png-22fd8e54b7fcf6dc6f7801548af10917.ctex"]
 
 [params]
 
