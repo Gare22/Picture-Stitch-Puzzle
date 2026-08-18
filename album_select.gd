@@ -3,7 +3,7 @@ extends Control
 ## Album-selection screen. Shows a scrollable grid of album thumbnails
 ## that the player can tap to load that album's puzzles into level select.
 
-@onready var grid: GridContainer = $ScrollContainer/GridContainer
+@onready var grid: GridContainer = $ScrollContainer/VBox/GridContainer
 @onready var back_button: Button = $BackButton
 
 const THUMB_SIZE := Vector2(160, 160)

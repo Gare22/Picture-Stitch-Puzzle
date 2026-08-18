@@ -3,7 +3,7 @@ extends Control
 ## Level-selection screen. Shows a scrollable grid of puzzle thumbnails
 ## that the player can tap to start.
 
-@onready var grid: GridContainer = $ScrollContainer/GridContainer
+@onready var grid: GridContainer = $ScrollContainer/VBox/GridContainer
 @onready var back_button: Button = $BackButton
 @onready var difficulty_overlay: Control = $DifficultyOverlay
 @onready var easy_button: Button = $DifficultyOverlay/Panel/VBox/EasyButton
@@ -20,7 +20,7 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	easy_button.pressed.connect(func() -> void: _on_difficulty_pressed(4))
 	medium_button.pressed.connect(func() -> void: _on_difficulty_pressed(5))
-	hard_button.pressed.connect(func() -> void: _on_difficulty_pressed(7))
+	hard_button.pressed.connect(func() -> void: _on_difficulty_pressed(6))
 	_build_grid()
 
 
