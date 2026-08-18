@@ -10,6 +10,9 @@ var levels: Array[Dictionary] = []
 ## Index of the currently-selected level (set by LevelSelect).
 var current_index: int = 0
 
+## Grid size (columns = rows) for the currently-selected difficulty. Defaults to Easy (4x4).
+var current_grid_size: int = 4
+
 
 func _ready() -> void:
 	_build_levels()
@@ -97,3 +100,8 @@ func advance_level() -> bool:
 ## Jump to a specific level index.
 func set_level(index: int) -> void:
 	current_index = clampi(index, 0, levels.size() - 1)
+
+
+## Sets the grid size for the next puzzle (difficulty).
+func set_grid_size(size: int) -> void:
+	current_grid_size = size
