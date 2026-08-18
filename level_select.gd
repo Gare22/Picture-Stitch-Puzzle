@@ -33,7 +33,6 @@ func _build_grid() -> void:
 	for i in range(count):
 		var level: Dictionary = LevelManager.levels[i]
 		var btn := Button.new()
-		btn.custom_minimum_size = THUMB_SIZE
 		btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		btn.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -46,6 +45,17 @@ func _build_grid() -> void:
 			btn.expand_icon = true
 			btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+
+			# Size the button to the image's aspect ratio so the whole
+			# picture fits inside the THUMB_SIZE bounding box.
+			var tex_size := tex.get_size()
+			if tex_size.x > 0.0 and tex_size.y > 0.0:
+				var fit_scale := minf(THUMB_SIZE.x / tex_size.x, THUMB_SIZE.y / tex_size.y)
+				btn.custom_minimum_size = Vector2(tex_size.x * fit_scale, tex_size.y * fit_scale)
+			else:
+				btn.custom_minimum_size = THUMB_SIZE
+		else:
+			btn.custom_minimum_size = THUMB_SIZE
 
 		btn.text = level["name"]
 

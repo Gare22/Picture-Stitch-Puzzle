@@ -42,7 +42,7 @@ func _build_cover_cell(album: Dictionary, index: int) -> Control:
 	var cover_old := TextureRect.new()
 	cover_old.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cover_old.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	cover_old.stretch_mode = TextureRect.STRETCH_SCALE
+	cover_old.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	cover_old.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	cover_old.texture = load(album["thumbnail_path"]) as Texture2D
 	cell.add_child(cover_old)
@@ -50,7 +50,7 @@ func _build_cover_cell(album: Dictionary, index: int) -> Control:
 	var cover_new := TextureRect.new()
 	cover_new.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cover_new.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	cover_new.stretch_mode = TextureRect.STRETCH_SCALE
+	cover_new.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	cover_new.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	cover_new.modulate.a = 0.0
 	cell.add_child(cover_new)
