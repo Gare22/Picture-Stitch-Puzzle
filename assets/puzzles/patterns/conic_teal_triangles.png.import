@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://t3qfg2mfxx5l"
-path="res://.godot/imported/ocean_waves.png-e5681bf0ddaeaf86a11be6559c0d0246.ctex"
+uid="uid://nsojkbepg5e2"
+path="res://.godot/imported/conic_teal_triangles.png-96264e7b4cdbe08299bda249c3102776.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ocean_waves.png"
-dest_files=["res://.godot/imported/ocean_waves.png-e5681bf0ddaeaf86a11be6559c0d0246.ctex"]
+source_file="res://assets/puzzles/patterns/conic_teal_triangles.png"
+dest_files=["res://.godot/imported/conic_teal_triangles.png-96264e7b4cdbe08299bda249c3102776.ctex"]
 
 [params]
 

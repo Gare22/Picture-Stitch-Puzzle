@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d14tehe6bnvvs"
-path="res://.godot/imported/conic_teal_triangles.png-1cadaf81e7661aabda6075c0187290e1.ctex"
+uid="uid://cjj2l7k60g3l0"
+path="res://.godot/imported/radial_sunset_rings.png-ecd89c81f8ad7697232d2936c7cfe17c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/conic_teal_triangles.png"
-dest_files=["res://.godot/imported/conic_teal_triangles.png-1cadaf81e7661aabda6075c0187290e1.ctex"]
+source_file="res://assets/puzzles/patterns/radial_sunset_rings.png"
+dest_files=["res://.godot/imported/radial_sunset_rings.png-ecd89c81f8ad7697232d2936c7cfe17c.ctex"]
 
 [params]
 

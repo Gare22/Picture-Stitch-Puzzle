@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dk75ohewib1jh"
-path="res://.godot/imported/warm_mosaic_hexagons.png-43a73ec00fe89edd790803644cced9f0.ctex"
+uid="uid://bjanlph43oi68"
+path="res://.godot/imported/mountain_sunset.png-0d39b26bbb2b79b5a0dc1aba1daf3ae5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/warm_mosaic_hexagons.png"
-dest_files=["res://.godot/imported/warm_mosaic_hexagons.png-43a73ec00fe89edd790803644cced9f0.ctex"]
+source_file="res://assets/puzzles/scenic/mountain_sunset.png"
+dest_files=["res://.godot/imported/mountain_sunset.png-0d39b26bbb2b79b5a0dc1aba1daf3ae5.ctex"]
 
 [params]
 

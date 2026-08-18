@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgs0r2smsjo85"
-path="res://.godot/imported/diagonal_gradient_circles.png-8cb5b25adf78a6c0221b131f5097433e.ctex"
+uid="uid://bhqigpjavhq5w"
+path="res://.godot/imported/starry_night.png-d837db4698f7bf985e829962566fb465.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/diagonal_gradient_circles.png"
-dest_files=["res://.godot/imported/diagonal_gradient_circles.png-8cb5b25adf78a6c0221b131f5097433e.ctex"]
+source_file="res://assets/puzzles/scenic/starry_night.png"
+dest_files=["res://.godot/imported/starry_night.png-d837db4698f7bf985e829962566fb465.ctex"]
 
 [params]
 

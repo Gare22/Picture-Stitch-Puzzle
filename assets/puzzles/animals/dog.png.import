@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://m548o1bly687"
-path="res://.godot/imported/mountain_sunset.png-f63e5e9c7e1fabf5f74741b301d68856.ctex"
+uid="uid://dkom6chtm1osr"
+path="res://.godot/imported/dog.png-ae360564a714f246baaf7eba1e82a908.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/mountain_sunset.png"
-dest_files=["res://.godot/imported/mountain_sunset.png-f63e5e9c7e1fabf5f74741b301d68856.ctex"]
+source_file="res://assets/puzzles/animals/dog.png"
+dest_files=["res://.godot/imported/dog.png-ae360564a714f246baaf7eba1e82a908.ctex"]
 
 [params]
 

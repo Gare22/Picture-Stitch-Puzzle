@@ -66,5 +66,4 @@ func _on_difficulty_pressed(grid_size: int) -> void:
 
 
 func _on_back_pressed() -> void:
-	# If there's nowhere to go "back" to, just restart the selection
-	get_tree().reload_current_scene()
+	get_tree().change_scene_to_file("res://album_select.tscn")
