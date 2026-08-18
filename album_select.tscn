@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://lbumselect01"]
 
 [ext_resource type="Script" path="res://album_select.gd" id="1_as"]
+[ext_resource type="Script" path="res://debug/multi_instance_window.gd" id="2_dbg"]
 
 [node name="AlbumSelect" type="Control"]
 layout_mode = 3
@@ -60,3 +61,6 @@ offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "Back"
+
+[node name="DebugWindow" type="Node" parent="."]
+script = ExtResource("2_dbg")
