@@ -5,12 +5,22 @@ extends Control
 
 @onready var grid: GridContainer = $ScrollContainer/GridContainer
 @onready var back_button: Button = $BackButton
+@onready var difficulty_overlay: Control = $DifficultyOverlay
+@onready var easy_button: Button = $DifficultyOverlay/Panel/VBox/EasyButton
+@onready var medium_button: Button = $DifficultyOverlay/Panel/VBox/MediumButton
+@onready var hard_button: Button = $DifficultyOverlay/Panel/VBox/HardButton
 
 const THUMB_SIZE := Vector2(160, 160)
+
+## Index of the level the player tapped, held until a difficulty is chosen.
+var _pending_level_index: int = -1
 
 
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
+	easy_button.pressed.connect(func() -> void: _on_difficulty_pressed(4))
+	medium_button.pressed.connect(func() -> void: _on_difficulty_pressed(5))
+	hard_button.pressed.connect(func() -> void: _on_difficulty_pressed(7))
 	_build_grid()
 
 
@@ -45,7 +55,13 @@ func _build_grid() -> void:
 
 
 func _on_level_pressed(index: int) -> void:
-	LevelManager.set_level(index)
+	_pending_level_index = index
+	difficulty_overlay.visible = true
+
+
+func _on_difficulty_pressed(grid_size: int) -> void:
+	LevelManager.set_level(_pending_level_index)
+	LevelManager.set_grid_size(grid_size)
 	get_tree().change_scene_to_file("res://puzzle_game.tscn")
 
 

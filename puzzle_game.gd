@@ -31,8 +31,8 @@ func _ready() -> void:
 		puzzle_columns = _test_cols
 		puzzle_rows = _test_rows
 	else:
-		puzzle_columns = randi_range(3, 6)
-		puzzle_rows = randi_range(3, 6)
+		puzzle_columns = LevelManager.current_grid_size
+		puzzle_rows = LevelManager.current_grid_size
 
 	var level: Dictionary = LevelManager.get_current_level()
 	if level.is_empty():
