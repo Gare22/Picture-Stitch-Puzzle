@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bb71ukl3fmt6k"
-path="res://.godot/imported/aurora_diamond_grid.png-dc22626fae00a97ecec0bd2bdea26bb3.ctex"
+uid="uid://d05qhvureu2qb"
+path="res://.godot/imported/flower_field.png-e7f53e1566f5ddf58dad142f6cfc37f5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/aurora_diamond_grid.png"
-dest_files=["res://.godot/imported/aurora_diamond_grid.png-dc22626fae00a97ecec0bd2bdea26bb3.ctex"]
+source_file="res://assets/puzzles/scenic/flower_field.png"
+dest_files=["res://.godot/imported/flower_field.png-e7f53e1566f5ddf58dad142f6cfc37f5.ctex"]
 
 [params]
 

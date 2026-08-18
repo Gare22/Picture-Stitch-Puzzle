@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3nleotd5j2q1"
-path="res://.godot/imported/cat.png-74418c656f64bad1813a4e0137c5108d.ctex"
+uid="uid://8ldgljljces"
+path="res://.godot/imported/owl.png-ea8425fdac35c0f5983ce6f314dfed89.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cat.png"
-dest_files=["res://.godot/imported/cat.png-74418c656f64bad1813a4e0137c5108d.ctex"]
+source_file="res://assets/puzzles/animals/owl.png"
+dest_files=["res://.godot/imported/owl.png-ea8425fdac35c0f5983ce6f314dfed89.ctex"]
 
 [params]
 

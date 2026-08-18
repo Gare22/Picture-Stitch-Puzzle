@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmxpg3aquw1l3"
-path="res://.godot/imported/starry_night.png-24a388e05efbe519de450965c7db3d72.ctex"
+uid="uid://yrm33pahhpkr"
+path="res://.godot/imported/aurora_diamond_grid.png-824cf6890e847b191e781ddcbfa4b181.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/starry_night.png"
-dest_files=["res://.godot/imported/starry_night.png-24a388e05efbe519de450965c7db3d72.ctex"]
+source_file="res://assets/puzzles/patterns/aurora_diamond_grid.png"
+dest_files=["res://.godot/imported/aurora_diamond_grid.png-824cf6890e847b191e781ddcbfa4b181.ctex"]
 
 [params]
 

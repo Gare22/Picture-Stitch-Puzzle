@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://sy4edqb4relr"
-path="res://.godot/imported/owl.png-27a7997005d01f8e13cda16c60843baa.ctex"
+uid="uid://5vimhrm6vyxv"
+path="res://.godot/imported/diagonal_gradient_circles.png-aee0d1bc300b0a8930f8406da60c34e9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/owl.png"
-dest_files=["res://.godot/imported/owl.png-27a7997005d01f8e13cda16c60843baa.ctex"]
+source_file="res://assets/puzzles/patterns/diagonal_gradient_circles.png"
+dest_files=["res://.godot/imported/diagonal_gradient_circles.png-aee0d1bc300b0a8930f8406da60c34e9.ctex"]
 
 [params]
 

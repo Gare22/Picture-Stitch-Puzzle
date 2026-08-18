@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4sandqyukif8"
-path="res://.godot/imported/forest_path.png-8aae4017b0417a43de72bb3a545ec272.ctex"
+uid="uid://dw5hujtsxr7on"
+path="res://.godot/imported/bear.png-361896a2f26b1012b8a3b18b57ad6db7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/forest_path.png"
-dest_files=["res://.godot/imported/forest_path.png-8aae4017b0417a43de72bb3a545ec272.ctex"]
+source_file="res://assets/puzzles/animals/bear.png"
+dest_files=["res://.godot/imported/bear.png-361896a2f26b1012b8a3b18b57ad6db7.ctex"]
 
 [params]
 

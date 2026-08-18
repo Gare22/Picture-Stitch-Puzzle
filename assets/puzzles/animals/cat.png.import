@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bx7nu7qowseuf"
-path="res://.godot/imported/flower_field.png-057703b2830c724aef044dc887713810.ctex"
+uid="uid://b81bcwwxkv0k3"
+path="res://.godot/imported/cat.png-8308fe0b6600e375ff3ad45692cb0160.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/flower_field.png"
-dest_files=["res://.godot/imported/flower_field.png-057703b2830c724aef044dc887713810.ctex"]
+source_file="res://assets/puzzles/animals/cat.png"
+dest_files=["res://.godot/imported/cat.png-8308fe0b6600e375ff3ad45692cb0160.ctex"]
 
 [params]
 

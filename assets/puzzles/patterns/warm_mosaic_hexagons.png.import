@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dopxlqny8dktg"
-path="res://.godot/imported/radial_sunset_rings.png-8ecbdfda6afe30f9a06bb78fb450e8b7.ctex"
+uid="uid://2b6x4drhpygj"
+path="res://.godot/imported/warm_mosaic_hexagons.png-f9fae8c22b969f6ccd0beffd2495078e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/radial_sunset_rings.png"
-dest_files=["res://.godot/imported/radial_sunset_rings.png-8ecbdfda6afe30f9a06bb78fb450e8b7.ctex"]
+source_file="res://assets/puzzles/patterns/warm_mosaic_hexagons.png"
+dest_files=["res://.godot/imported/warm_mosaic_hexagons.png-f9fae8c22b969f6ccd0beffd2495078e.ctex"]
 
 [params]
 

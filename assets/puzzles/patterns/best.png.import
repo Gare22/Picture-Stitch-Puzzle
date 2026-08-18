@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://x251e7dpqyka"
-path="res://.godot/imported/bunny.png-2cf54184212d7be0a9472f6149f75c0d.ctex"
+uid="uid://c0qhoxi6ts8j8"
+path="res://.godot/imported/best.png-01281b6fa1d98beef14fef64bcbc090f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bunny.png"
-dest_files=["res://.godot/imported/bunny.png-2cf54184212d7be0a9472f6149f75c0d.ctex"]
+source_file="res://assets/puzzles/patterns/best.png"
+dest_files=["res://.godot/imported/best.png-01281b6fa1d98beef14fef64bcbc090f.ctex"]
 
 [params]
 
