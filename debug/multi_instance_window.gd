@@ -19,10 +19,15 @@ func _ready() -> void:
 
 func _adjust_window_size_for_debug_instance() -> void:
 	# Godot passes --multirun-index starting from 0; +1 maps to MOBILE_PROFILES.
-	var instance_index: int = 1  # Default to 1 if run normally
+	var instance_index: int = -1  # -1 = not a multi-instance run; keep the project's default resolution
 
-	for arg: String in OS.get_cmdline_args():
-		if arg.begins_with("--multirun-index="):
+	var args := OS.get_cmdline_args()
+	for i in range(args.size()):
+		var arg: String = args[i]
+		if arg == "--multirun-index" and i + 1 < args.size():
+			instance_index = args[i + 1].to_int() + 1
+			break
+		elif arg.begins_with("--multirun-index="):
 			instance_index = arg.get_slice("=", 1).to_int() + 1
 			break
 
