@@ -10,10 +10,17 @@ extends Control
 @onready var medium_button: Button = $DifficultyOverlay/Panel/VBox/MediumButton
 @onready var hard_button: Button = $DifficultyOverlay/Panel/VBox/HardButton
 
-const THUMB_SIZE := Vector2(160, 160)
+const EDGE_GAP := 8.0
+const COL_SEP := 5.0
+const COLUMNS := 2
 
 ## Index of the level the player tapped, held until a difficulty is chosen.
 var _pending_level_index: int = -1
+
+
+func _column_width() -> float:
+	var vp_w: float = get_viewport_rect().size.x
+	return (vp_w - EDGE_GAP * 2.0 - COL_SEP * (COLUMNS - 1)) / COLUMNS
 
 
 func _ready() -> void:
@@ -33,12 +40,13 @@ func _build_grid() -> void:
 	for i in range(count):
 		var level: Dictionary = LevelManager.levels[i]
 		var btn := Button.new()
-		btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		btn.mouse_filter = Control.MOUSE_FILTER_PASS
 		btn.mouse_force_pass_scroll_events = true
 
 		# Load thumbnail texture
+		var col_w := _column_width()
 		var tex = load(level["path"]) as Texture2D
 		if tex != null:
 			btn.icon = tex
@@ -46,18 +54,16 @@ func _build_grid() -> void:
 			btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
 
-			# Size the button to the image's aspect ratio so the whole
-			# picture fits inside the THUMB_SIZE bounding box.
+			# Size the button to fill the column width while preserving
+			# the image's aspect ratio.
 			var tex_size := tex.get_size()
 			if tex_size.x > 0.0 and tex_size.y > 0.0:
-				var fit_scale := minf(THUMB_SIZE.x / tex_size.x, THUMB_SIZE.y / tex_size.y)
-				btn.custom_minimum_size = Vector2(tex_size.x * fit_scale, tex_size.y * fit_scale)
+				var fit_scale := col_w / tex_size.x
+				btn.custom_minimum_size = Vector2(col_w, tex_size.y * fit_scale)
 			else:
-				btn.custom_minimum_size = THUMB_SIZE
+				btn.custom_minimum_size = Vector2(col_w, col_w)
 		else:
-			btn.custom_minimum_size = THUMB_SIZE
-
-		btn.text = level["name"]
+			btn.custom_minimum_size = Vector2(col_w, col_w)
 
 		var idx := i
 		btn.pressed.connect(func() -> void: _on_level_pressed(idx))

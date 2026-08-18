@@ -6,7 +6,9 @@ extends Control
 @onready var grid: GridContainer = $ScrollContainer/VBox/GridContainer
 @onready var back_button: Button = $BackButton
 
-const THUMB_SIZE := Vector2(160, 160)
+const EDGE_GAP := 8.0
+const COL_SEP := 8.0
+const COLUMNS := 2
 
 ## Seconds between cover changes per album.
 const COVER_INTERVAL := 15.0
@@ -14,6 +16,12 @@ const COVER_INTERVAL := 15.0
 const COVER_STAGGER := 5.0
 ## Crossfade duration in seconds (old cover fades out as new fades in).
 const COVER_FADE_TIME := 1.0
+
+
+func _cell_size() -> Vector2:
+	var vp_w: float = get_viewport_rect().size.x
+	var col_w := (vp_w - EDGE_GAP * 2.0 - COL_SEP * (COLUMNS - 1)) / COLUMNS
+	return Vector2(col_w, col_w)
 
 
 func _ready() -> void:
@@ -35,9 +43,15 @@ func _build_grid() -> void:
 
 func _build_cover_cell(album: Dictionary, index: int) -> Control:
 	var cell := Control.new()
-	cell.custom_minimum_size = THUMB_SIZE
-	cell.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.custom_minimum_size = _cell_size()
+	cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cell.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0, 0, 0, 0)
+	style.set_corner_radius_all(12)
+	cell.add_theme_stylebox_override("panel", style)
+	cell.clip_contents = true
 
 	var cover_old := TextureRect.new()
 	cover_old.set_anchors_preset(Control.PRESET_FULL_RECT)
