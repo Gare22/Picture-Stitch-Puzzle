@@ -36,7 +36,7 @@ offset_bottom = -55.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="ScrollContainer"]
+[node name="VBox" type="VBoxContainer" parent="ScrollContainer" unique_id=905699353]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -61,7 +61,7 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Back"
 
-[node name="DifficultyOverlay" type="Control" parent="."]
+[node name="DifficultyOverlay" type="Control" parent="." unique_id=362332476]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -69,9 +69,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Dim" type="ColorRect" parent="DifficultyOverlay"]
+[node name="Dim" type="ColorRect" parent="DifficultyOverlay" unique_id=1564421983]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -80,7 +79,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
-[node name="Panel" type="PanelContainer" parent="DifficultyOverlay"]
+[node name="Panel" type="PanelContainer" parent="DifficultyOverlay" unique_id=1428969310]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -94,26 +93,26 @@ offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="DifficultyOverlay/Panel"]
+[node name="VBox" type="VBoxContainer" parent="DifficultyOverlay/Panel" unique_id=155513015]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="DifficultyOverlay/Panel/VBox"]
+[node name="Title" type="Label" parent="DifficultyOverlay/Panel/VBox" unique_id=39026090]
 layout_mode = 2
 text = "Choose Difficulty"
 horizontal_alignment = 1
 
-[node name="EasyButton" type="Button" parent="DifficultyOverlay/Panel/VBox"]
+[node name="EasyButton" type="Button" parent="DifficultyOverlay/Panel/VBox" unique_id=46463876]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 text = "Easy 4x4"
 
-[node name="MediumButton" type="Button" parent="DifficultyOverlay/Panel/VBox"]
+[node name="MediumButton" type="Button" parent="DifficultyOverlay/Panel/VBox" unique_id=1827366194]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 text = "Medium 5x5"
 
-[node name="HardButton" type="Button" parent="DifficultyOverlay/Panel/VBox"]
+[node name="HardButton" type="Button" parent="DifficultyOverlay/Panel/VBox" unique_id=692369084]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 text = "Hard 6x6"
