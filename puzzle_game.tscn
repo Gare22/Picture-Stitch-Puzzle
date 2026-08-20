@@ -1,28 +1,48 @@
 [gd_scene format=3 uid="uid://bw63grendnsql"]
 
 [ext_resource type="Script" uid="uid://dyqsfrnxmwjsu" path="res://puzzle_game.gd" id="1_fbgxn"]
-[ext_resource type="PackedScene" path="res://board/puzzle_board.tscn" id="2_i3a0x"]
-[ext_resource type="Texture2D" path="res://assets/background_gradient.tres" id="3_bg"]
+[ext_resource type="PackedScene" uid="uid://b3kg23vxtacch" path="res://board/puzzle_board.tscn" id="2_i3a0x"]
+[ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="3_bg"]
+[ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
+[ext_resource type="PackedScene" uid="uid://c8dm16j6t6v83" path="res://win_panel.tscn" id="5_wp"]
 
 [node name="PuzzleGame" type="Node" unique_id=1092117998]
 script = ExtResource("1_fbgxn")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=499967374]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="GameLayout" type="VBoxContainer" parent="." unique_id=532230944]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="BoardCenter" type="CenterContainer" parent="GameLayout"]
+layout_mode = 2
+size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="PuzzleBoard" parent="." unique_id=1425944829 instance=ExtResource("2_i3a0x")]
-size_flags_horizontal = 4
-size_flags_vertical = 4
+[node name="PuzzleBoard" parent="GameLayout/BoardCenter" unique_id=1425944829 instance=ExtResource("2_i3a0x")]
+layout_mode = 2
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
+
+[node name="WinPanel" parent="GameLayout" unique_id=960259601 instance=ExtResource("5_wp")]
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(0, 200)
 
 [node name="TimerLabel" type="Label" parent="." unique_id=422968927]
 visible = false
@@ -33,61 +53,18 @@ offset_bottom = 40.0
 text = "00"
 horizontal_alignment = 1
 
-[node name="MenuButton" type="Button" parent="." unique_id=1874506301]
-custom_minimum_size = Vector2(80, 30)
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -40.0
-offset_right = 90.0
-offset_bottom = -10.0
-grow_vertical = 0
-size_flags_vertical = 8
-text = "New Puzzle"
-metadata/_edit_use_anchors_ = true
-
 [node name="RestartButton" type="Button" parent="." unique_id=1069824365]
-custom_minimum_size = Vector2(80, 30)
-anchors_preset = -1
+custom_minimum_size = Vector2(30, 30)
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -90.0
-offset_top = -41.0
-offset_right = -10.0
-offset_bottom = -10.0
+offset_left = -33.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 34.0
 grow_horizontal = 0
-grow_vertical = 0
 size_flags_vertical = 8
-text = "Restart"
-metadata/_edit_use_anchors_ = true
+text = "R"
 
-[node name="WinMessage" type="Label" parent="." unique_id=337760106]
+[node name="CurrencyHUD" parent="." unique_id=1369080865 instance=ExtResource("4_ch")]
 visible = false
-custom_minimum_size = Vector2(400, 40)
-offset_top = 280.0
-offset_right = 400.0
-offset_bottom = 320.0
-text = "Puzzle Complete!"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="WinButton" type="Button" parent="." unique_id=1127578031]
-visible = false
-custom_minimum_size = Vector2(200, 50)
-offset_left = 100.0
-offset_top = 330.0
-offset_right = 300.0
-offset_bottom = 380.0
-text = "Next Puzzle"
-
-[node name="LevelSelectButton" type="Button" parent="." unique_id=1059629034]
-visible = false
-custom_minimum_size = Vector2(200, 40)
-offset_left = 100.0
-offset_top = 390.0
-offset_right = 300.0
-offset_bottom = 430.0
-text = "Level Select"

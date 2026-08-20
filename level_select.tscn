@@ -1,41 +1,10 @@
 [gd_scene format=3 uid="uid://do4e6jms0sph3"]
 
 [ext_resource type="Script" uid="uid://cxauuqo6g17tu" path="res://level_select.gd" id="1_ls"]
-[ext_resource type="Texture2D" path="res://assets/background_gradient.tres" id="2_bg"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_track"]
-bg_color = Color(0.85, 0.85, 0.85, 0.5)
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_grabber"]
-bg_color = Color(0.45, 0.45, 0.45, 1)
-content_margin_left = 4.0
-content_margin_right = 4.0
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_grabber_hl"]
-bg_color = Color(0.35, 0.35, 0.35, 1)
-content_margin_left = 4.0
-content_margin_right = 4.0
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_grabber_pressed"]
-bg_color = Color(0.3, 0.3, 0.3, 1)
-content_margin_left = 4.0
-content_margin_right = 4.0
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
+[ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="2_bg"]
+[ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_apu6u"]
+[ext_resource type="PackedScene" uid="uid://608v5vdgkk01" path="res://difficulty_menu.tscn" id="3_dm"]
+[ext_resource type="PackedScene" path="res://currency_hud.tscn" id="4_ch"]
 
 [node name="LevelSelect" type="Control" unique_id=156040848]
 layout_mode = 3
@@ -46,30 +15,17 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ls")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=1554686343]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("2_bg")
 expand_mode = 1
 stretch_mode = 6
-mouse_filter = 2
-
-[node name="Title" type="Label" parent="." unique_id=1848227941]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 20.0
-offset_top = 15.0
-offset_right = -20.0
-offset_bottom = 55.0
-grow_horizontal = 2
-text = "Select a Puzzle"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=24152581]
 layout_mode = 1
@@ -77,21 +33,24 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = 65.0
-offset_right = 0.0
+offset_top = 1.0
 offset_bottom = -55.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/scroll = SubResource("StyleBoxFlat_scroll_track")
-theme_override_styles/grabber = SubResource("StyleBoxFlat_scroll_grabber")
-theme_override_styles/grabber_highlight = SubResource("StyleBoxFlat_scroll_grabber_hl")
-theme_override_styles/grabber_pressed = SubResource("StyleBoxFlat_scroll_grabber_pressed")
+theme = ExtResource("3_apu6u")
 
-[node name="VBox" type="VBoxContainer" parent="ScrollContainer" unique_id=905699353]
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=867812674]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=905699353]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GridContainer" type="GridContainer" parent="ScrollContainer/VBox" unique_id=186500959]
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=186500959]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/h_separation = 5
@@ -112,58 +71,8 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Back"
 
-[node name="DifficultyOverlay" type="Control" parent="." unique_id=362332476]
+[node name="DifficultyOverlay" parent="." unique_id=188283379 instance=ExtResource("3_dm")]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
-[node name="Dim" type="ColorRect" parent="DifficultyOverlay" unique_id=1564421983]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
-
-[node name="Panel" type="PanelContainer" parent="DifficultyOverlay" unique_id=1428969310]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = -110.0
-offset_right = 140.0
-offset_bottom = 110.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBox" type="VBoxContainer" parent="DifficultyOverlay/Panel" unique_id=155513015]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Title" type="Label" parent="DifficultyOverlay/Panel/VBox" unique_id=39026090]
-layout_mode = 2
-text = "Choose Difficulty"
-horizontal_alignment = 1
-
-[node name="EasyButton" type="Button" parent="DifficultyOverlay/Panel/VBox" unique_id=46463876]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-text = "Easy 4x4"
-
-[node name="MediumButton" type="Button" parent="DifficultyOverlay/Panel/VBox" unique_id=1827366194]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-text = "Medium 5x5"
-
-[node name="HardButton" type="Button" parent="DifficultyOverlay/Panel/VBox" unique_id=692369084]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-text = "Hard 6x6"
+[node name="CurrencyHUD" parent="." instance=ExtResource("4_ch")]

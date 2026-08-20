@@ -3,11 +3,9 @@ extends Node
 ## Orchestrates the puzzle game: timer, board setup, win detection, and menu navigation.
 
 @onready var timer_label: Label = $TimerLabel
-@onready var menu_button: Button = $MenuButton
 @onready var restart_button: Button = $RestartButton
-@onready var win_message: Label = $WinMessage
-@onready var win_button: Button = $WinButton
-@onready var level_select_button: Button = $LevelSelectButton
+@onready var currency_hud: HBoxContainer = $CurrencyHUD
+@onready var win_panel: Control = $GameLayout/WinPanel
 
 var elapsed_time: float = 0.0
 var is_complete: bool = false
@@ -21,9 +19,6 @@ static var _test_rows: int = 3
 
 var puzzle_columns: int
 var puzzle_rows: int
-
-## The "New Puzzle" button on the win overlay — reused as "Next Puzzle".
-@onready var next_button: Button = $WinButton
 
 
 func _ready() -> void:
@@ -44,11 +39,8 @@ func _ready() -> void:
 		push_error("Picture Puzzle: Could not load image at ", level["path"])
 		return
 
-	# Update the title / win message to show which puzzle this is
-	win_message.text = "Complete!  (%s)" % level["name"]
-
-	# Locate the PuzzleBoard — it's a direct child
-	var board = $PuzzleBoard
+	# Locate the PuzzleBoard — it's inside the CenterContainer in the GameLayout VBox
+	var board = $GameLayout/BoardCenter/PuzzleBoard
 	if board == null:
 		push_error("Picture Puzzle: PuzzleBoard node not found")
 		return
@@ -66,14 +58,7 @@ func _ready() -> void:
 			if _test_rows > 6:
 				_test_rows = 3
 
-	menu_button.pressed.connect(_on_menu_pressed)
 	restart_button.pressed.connect(_on_restart_pressed)
-	win_button.pressed.connect(_on_next_pressed)
-	level_select_button.pressed.connect(_on_level_select_pressed)
-
-	win_message.visible = false
-	win_button.visible = false
-	level_select_button.visible = false
 
 
 func _process(delta: float) -> void:
@@ -101,28 +86,41 @@ static func _format_time(total_seconds: float) -> String:
 		return "%02d" % [seconds]
 
 
-func _on_menu_pressed() -> void:
-	get_tree().change_scene_to_file("res://level_select.tscn")
-
-
 func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
-
-
-## Advance to the next puzzle image.
-func _on_next_pressed() -> void:
-	LevelManager.advance_level()
-	get_tree().reload_current_scene()
-
-
-## Return to the level selection screen.
-func _on_level_select_pressed() -> void:
-	get_tree().change_scene_to_file("res://level_select.tscn")
 
 
 ## Called by PuzzleBoard when all pieces are in their correct positions.
 func on_puzzle_complete() -> void:
 	is_complete = true
-	win_message.visible = true
-	win_button.visible = true
-	level_select_button.visible = true
+	var diff_idx := LevelManager.grid_size_to_difficulty_index(LevelManager.current_grid_size)
+	LevelManager.mark_star_earned(LevelManager.current_album_index, LevelManager.current_index, diff_idx)
+	var coins_earned := LevelManager.earn_currency(diff_idx)
+
+	# Show the currency HUD
+	currency_hud.visible = true
+
+	# Configure and show the win panel (VBox layout handles the shift automatically)
+	var is_max := LevelManager.current_grid_size >= 6
+	win_panel.setup(coins_earned, is_max)
+	win_panel.visible = true
+	win_panel.next_difficulty_pressed.connect(_on_next_difficulty)
+	win_panel.play_again_pressed.connect(_on_restart_pressed)
+	win_panel.back_to_album_pressed.connect(_on_back_to_album)
+	win_panel.ad_button_pressed.connect(_on_ad_button)
+
+
+func _on_next_difficulty() -> void:
+	# Advance to the next difficulty level
+	LevelManager.current_grid_size = mini(LevelManager.current_grid_size + 1, 6)
+	get_tree().reload_current_scene()
+
+
+func _on_back_to_album() -> void:
+	get_tree().change_scene_to_file("res://album_select.tscn")
+
+
+func _on_ad_button() -> void:
+	# Placeholder for ad integration — doubles the coins earned this completion.
+	var diff_idx := LevelManager.grid_size_to_difficulty_index(LevelManager.current_grid_size)
+	LevelManager.earn_currency(diff_idx)

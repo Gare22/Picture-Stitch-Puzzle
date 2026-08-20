@@ -121,18 +121,11 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 		var piece = pieces[grid_indices[i]]
 		add_child(piece)
 
-	# Set size explicitly from calculated dimensions (don't rely on
-	# get_minimum_size() which can differ due to GridContainer internals).
+	# Set minimum size so the VBox knows our dimensions — don't set `size`
+	# directly, let the VBox handle positioning and centering.
 	var total_board_w = cell_display_w * columns_count
 	var total_board_h = cell_display_h * rows_count
 	custom_minimum_size = Vector2(total_board_w, total_board_h)
-	size = custom_minimum_size
-
-	# Center the board in the available area
-	position = Vector2(
-		(viewport_size.x - total_board_w) * 0.5,
-		TOP_PADDING + (avail_h - total_board_h) * 0.5
-	)
 
 	update_borders()
 
@@ -414,6 +407,6 @@ func check_win() -> void:
 			return
 
 	# All pieces match — puzzle complete
-	var game_manager = get_parent()
+	var game_manager = get_owner()
 	if game_manager != null and game_manager.has_method(&"on_puzzle_complete"):
 		game_manager.on_puzzle_complete()
