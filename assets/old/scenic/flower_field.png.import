@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://be2qfgkq412so"
-path="res://.godot/imported/starry_night.png-b2376eaff4a61e8e48ef5d26f40337a0.ctex"
+uid="uid://d05qhvureu2qb"
+path="res://.godot/imported/flower_field.png-cbe18b738b72f45087c8f7fc558b65c9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/puzzles/scenic5/starry_night.png"
-dest_files=["res://.godot/imported/starry_night.png-b2376eaff4a61e8e48ef5d26f40337a0.ctex"]
+source_file="res://assets/old/scenic/flower_field.png"
+dest_files=["res://.godot/imported/flower_field.png-cbe18b738b72f45087c8f7fc558b65c9.ctex"]
 
 [params]
 

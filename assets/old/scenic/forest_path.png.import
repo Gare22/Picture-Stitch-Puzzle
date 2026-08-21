@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ycqkb6fi6qqt"
-path="res://.godot/imported/starry_night.png-c2194487e2a85dc55baa6c05617e0cdb.ctex"
+uid="uid://nwfjdl0lffe1"
+path="res://.godot/imported/forest_path.png-b33b806d9172f27f9cc6740d5fe10fc1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/puzzles/scenic3/starry_night.png"
-dest_files=["res://.godot/imported/starry_night.png-c2194487e2a85dc55baa6c05617e0cdb.ctex"]
+source_file="res://assets/old/scenic/forest_path.png"
+dest_files=["res://.godot/imported/forest_path.png-b33b806d9172f27f9cc6740d5fe10fc1.ctex"]
 
 [params]
 

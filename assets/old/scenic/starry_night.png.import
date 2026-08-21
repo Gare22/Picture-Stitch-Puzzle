@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7e27kba64v8d"
-path="res://.godot/imported/bear.png-67be99928011a81a433545b11a129e5d.ctex"
+uid="uid://bhqigpjavhq5w"
+path="res://.godot/imported/starry_night.png-aec7e23543d6bcfae6088b4fae9b78c1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/puzzles/animals2/bear.png"
-dest_files=["res://.godot/imported/bear.png-67be99928011a81a433545b11a129e5d.ctex"]
+source_file="res://assets/old/scenic/starry_night.png"
+dest_files=["res://.godot/imported/starry_night.png-aec7e23543d6bcfae6088b4fae9b78c1.ctex"]
 
 [params]
 

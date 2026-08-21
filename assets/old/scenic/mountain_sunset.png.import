@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1beyo622qgh0"
-path="res://.godot/imported/forest_path.png-f8ede337eb6542d3d55f78789e67b169.ctex"
+uid="uid://bjanlph43oi68"
+path="res://.godot/imported/mountain_sunset.png-6a17eb91950105f19c05f3c1d8827f76.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/puzzles/scenic4/forest_path.png"
-dest_files=["res://.godot/imported/forest_path.png-f8ede337eb6542d3d55f78789e67b169.ctex"]
+source_file="res://assets/old/scenic/mountain_sunset.png"
+dest_files=["res://.godot/imported/mountain_sunset.png-6a17eb91950105f19c05f3c1d8827f76.ctex"]
 
 [params]
 

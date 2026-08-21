@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvbn4qjc5vkqe"
-path="res://.godot/imported/forest_path.png-95676fc80330fa128c871e5907a80649.ctex"
+uid="uid://q13gixk5vctg"
+path="res://.godot/imported/ocean_waves.png-77f6209a6fcecb6b5022329e7b31307b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/puzzles/scenic2/forest_path.png"
-dest_files=["res://.godot/imported/forest_path.png-95676fc80330fa128c871e5907a80649.ctex"]
+source_file="res://assets/old/scenic/ocean_waves.png"
+dest_files=["res://.godot/imported/ocean_waves.png-77f6209a6fcecb6b5022329e7b31307b.ctex"]
 
 [params]
 

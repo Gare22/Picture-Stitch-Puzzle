@@ -4,6 +4,9 @@ extends Node
 
 @onready var timer_label: Label = $TimerLabel
 @onready var restart_button: Button = $RestartButton
+@onready var back_button: Button = $BackButton
+@onready var back_dialog: ConfirmationDialog = $BackConfirmDialog
+@onready var restart_dialog: ConfirmationDialog = $RestartConfirmDialog
 @onready var currency_hud: HBoxContainer = $CurrencyHUD
 @onready var win_panel: Control = $GameLayout/WinPanel
 
@@ -21,6 +24,30 @@ var puzzle_columns: int
 var puzzle_rows: int
 
 
+## Loads a texture from a path, handling both res:// (imported) and user:// (runtime) paths.
+## Uses ResourceLoader for res:// paths because FileAccess.file_exists() fails
+## on exported builds (imported resources are remapped to .ctex and the raw
+## source file is not present).
+func _load_texture(path: String) -> Texture2D:
+	if path.is_empty():
+		return null
+	if path.begins_with("res://"):
+		if not ResourceLoader.exists(path):
+			return null
+		return load(path) as Texture2D
+	# user:// or absolute path — use Image API for runtime-downloaded images
+	if not FileAccess.file_exists(path):
+		return null
+	var img := Image.load_from_file(path)
+	if img == null or img.is_empty() or img.get_width() == 0:
+		return null
+	# Generate mipmaps so downscaled rendering (album covers, puzzle pieces)
+	# looks as smooth as imported res:// textures, which get mipmaps from the
+	# import pipeline automatically.
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
+
+
 func _ready() -> void:
 	if test_grid_cycle:
 		puzzle_columns = _test_cols
@@ -34,7 +61,7 @@ func _ready() -> void:
 		push_error("Picture Puzzle: No level selected")
 		return
 
-	var image = load(level["path"]) as Texture2D
+	var image = _load_texture(level["path"])
 	if image == null:
 		push_error("Picture Puzzle: Could not load image at ", level["path"])
 		return
@@ -58,7 +85,15 @@ func _ready() -> void:
 			if _test_rows > 6:
 				_test_rows = 3
 
-	restart_button.pressed.connect(_on_restart_pressed)
+	restart_button.pressed.connect(_on_restart_button_pressed)
+	restart_dialog.get_ok_button().text = "Restart puzzle"
+	restart_dialog.get_cancel_button().text = "Keep working on it"
+	restart_dialog.confirmed.connect(_on_restart_pressed)
+
+	back_button.pressed.connect(_on_back_pressed)
+	back_dialog.get_ok_button().text = "Go back to menu"
+	back_dialog.get_cancel_button().text = "Continue puzzle"
+	back_dialog.confirmed.connect(_on_back_to_album)
 
 
 func _process(delta: float) -> void:
@@ -86,6 +121,10 @@ static func _format_time(total_seconds: float) -> String:
 		return "%02d" % [seconds]
 
 
+func _on_restart_button_pressed() -> void:
+	restart_dialog.popup_centered()
+
+
 func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
 
@@ -95,7 +134,7 @@ func on_puzzle_complete() -> void:
 	is_complete = true
 	var diff_idx := LevelManager.grid_size_to_difficulty_index(LevelManager.current_grid_size)
 	LevelManager.mark_star_earned(LevelManager.current_album_index, LevelManager.current_index, diff_idx)
-	var coins_earned := LevelManager.earn_currency(diff_idx)
+	var coins_earned := LevelManager.reward_for_difficulty(diff_idx)
 
 	# Show the currency HUD
 	currency_hud.visible = true
@@ -107,7 +146,7 @@ func on_puzzle_complete() -> void:
 	win_panel.next_difficulty_pressed.connect(_on_next_difficulty)
 	win_panel.play_again_pressed.connect(_on_restart_pressed)
 	win_panel.back_to_album_pressed.connect(_on_back_to_album)
-	win_panel.ad_button_pressed.connect(_on_ad_button)
+	win_panel.coins_claimed.connect(_on_coins_claimed)
 
 
 func _on_next_difficulty() -> void:
@@ -116,11 +155,13 @@ func _on_next_difficulty() -> void:
 	get_tree().reload_current_scene()
 
 
+func _on_back_pressed() -> void:
+	back_dialog.popup_centered()
+
+
 func _on_back_to_album() -> void:
 	get_tree().change_scene_to_file("res://album_select.tscn")
 
 
-func _on_ad_button() -> void:
-	# Placeholder for ad integration — doubles the coins earned this completion.
-	var diff_idx := LevelManager.grid_size_to_difficulty_index(LevelManager.current_grid_size)
-	LevelManager.earn_currency(diff_idx)
+func _on_coins_claimed(amount: int) -> void:
+	LevelManager.add_currency(amount)

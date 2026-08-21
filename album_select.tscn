@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://ov0c85ywi23v" path="res://debug/multi_instance_window.gd" id="2_dbg"]
 [ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="3_bg"]
 [ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_t1w0i"]
-[ext_resource type="PackedScene" path="res://currency_hud.tscn" id="4_ch"]
+[ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
 
 [node name="AlbumSelect" type="Control" unique_id=1836148606]
 layout_mode = 3
@@ -86,28 +86,27 @@ text = "Back"
 [node name="DebugWindow" type="Node" parent="." unique_id=251302199]
 script = ExtResource("2_dbg")
 
-[node name="CurrencyHUD" parent="." instance=ExtResource("4_ch")]
+[node name="CurrencyHUD" parent="." unique_id=1256850830 instance=ExtResource("4_ch")]
+layout_mode = 0
 
 [node name="PurchaseOverlay" type="Control" parent="." unique_id=2102000001]
-anchors_preset = 15
+visible = false
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
-visible = false
 
 [node name="Backdrop" type="ColorRect" parent="PurchaseOverlay" unique_id=2102000002]
-anchors_preset = 15
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 color = Color(0, 0, 0, 0.6)
 
 [node name="Panel" type="Panel" parent="PurchaseOverlay" unique_id=2102000003]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -116,24 +115,22 @@ offset_left = -150.0
 offset_top = -110.0
 offset_right = 150.0
 offset_bottom = 110.0
-mouse_filter = 0
 
 [node name="VBox" type="VBoxContainer" parent="PurchaseOverlay/Panel" unique_id=2102000004]
-anchors_preset = 15
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-theme_override_constants/separation = 12
 offset_left = 16.0
 offset_top = 16.0
 offset_right = -16.0
 offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
 
 [node name="InfoLabel" type="Label" parent="PurchaseOverlay/Panel/VBox" unique_id=2102000005]
 layout_mode = 2
-text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -146,8 +143,105 @@ layout_mode = 2
 text = "Cancel"
 
 [node name="MessageLabel" type="Label" parent="PurchaseOverlay/Panel/VBox" unique_id=2102000008]
-layout_mode = 2
-text = ""
-horizontal_alignment = 1
 visible = false
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+horizontal_alignment = 1
+
+[node name="DownloadLabel" type="Label" parent="." unique_id=2102000009]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.02
+anchor_right = 0.5
+anchor_bottom = 0.02
+offset_left = -130.0
+offset_right = 130.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "Downloading more albums..."
+horizontal_alignment = 1
+
+[node name="OptionsButton" type="Button" parent="." unique_id=2102000010]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -45.0
+offset_right = 120.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Options"
+
+[node name="OptionsOverlay" type="Control" parent="." unique_id=2102000011]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="OptionsOverlay" unique_id=2102000012]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="OptionsOverlay" unique_id=2102000013]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -130.0
+offset_right = 160.0
+offset_bottom = 130.0
+
+[node name="VBox" type="VBoxContainer" parent="OptionsOverlay/Panel" unique_id=2102000014]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=2102000015]
+layout_mode = 2
+text = "Options"
+horizontal_alignment = 1
+
+[node name="ResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000016]
+layout_mode = 2
+text = "Reset All Progress"
+
+[node name="ConfirmLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=2102000017]
+visible = false
+layout_mode = 2
+text = "Erase ALL progress? This cannot be undone."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ConfirmResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000018]
+visible = false
+layout_mode = 2
+text = "Yes, Erase Everything"
+
+[node name="CancelResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000019]
+visible = false
+layout_mode = 2
+text = "Cancel"
+
+[node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
+layout_mode = 2
+text = "Close"

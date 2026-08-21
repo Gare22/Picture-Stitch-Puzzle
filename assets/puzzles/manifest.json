@@ -1,0 +1,5 @@
+{
+  "animals": ["bunny.png", "bear.png", "dog.png", "cat.png", "owl.png"],
+  "patterns": ["warm_mosaic_hexagons.png", "radial_sunset_rings.png", "diagonal_gradient_circles.png", "conic_teal_triangles.png", "best.png", "aurora_diamond_grid.png"],
+  "scenic": ["starry_night.png", "ocean_waves.png", "mountain_sunset.png", "forest_path.png", "flower_field.png"]
+}

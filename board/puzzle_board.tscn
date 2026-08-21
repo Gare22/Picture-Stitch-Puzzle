@@ -4,3 +4,4 @@
 
 [node name="PuzzleBoard" type="GridContainer" unique_id=249074780]
 script = ExtResource("1_c7uit")
+test_mode = true

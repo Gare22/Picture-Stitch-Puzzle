@@ -8,6 +8,11 @@ content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 16.0
 bg_color = Color(0.120000005, 0.120000005, 0.15, 0.43137255)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.12, 0.12, 0.12, 0.7411765)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
 content_margin_left = 12.0
@@ -21,7 +26,7 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [node name="WinPanel" type="Control" unique_id=1157234777]
-custom_minimum_size = Vector2(0, 200)
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,8 +40,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 13.0
-offset_right = -13.0
+offset_left = 16.0
+offset_right = -16.0
 offset_bottom = -18.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -46,18 +51,22 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="RewardRow" type="HBoxContainer" parent="Panel/VBox" unique_id=1548494260]
+[node name="RewardPhase" type="VBoxContainer" parent="Panel/VBox" unique_id=2000000001]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="CoinLabel" type="Label" parent="Panel/VBox/RewardRow" unique_id=1506685922]
+[node name="RewardRow" type="HBoxContainer" parent="Panel/VBox/RewardPhase" unique_id=1548494260]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CoinLabel" type="Label" parent="Panel/VBox/RewardPhase/RewardRow" unique_id=1506685922]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_font_sizes/font_size = 22
 text = "You earned 0 coins"
 
-[node name="AdButton" type="Button" parent="Panel/VBox/RewardRow" unique_id=1231019556]
+[node name="AdButton" type="Button" parent="Panel/VBox/RewardPhase/RewardRow" unique_id=1231019556]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_vertical = 4
@@ -65,13 +74,24 @@ theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 text = "2X"
 
-[node name="NextButton" type="Button" parent="Panel/VBox" unique_id=1660284251]
+[node name="ClaimButton" type="Button" parent="Panel/VBox/RewardPhase" unique_id=2000000002]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Claim Coins"
+
+[node name="NavPhase" type="VBoxContainer" parent="Panel/VBox" unique_id=2000000003]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NextButton" type="Button" parent="Panel/VBox/NavPhase" unique_id=1660284251]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Next Difficulty?"
 
-[node name="BackButton" type="Button" parent="Panel/VBox" unique_id=1205787972]
+[node name="BackButton" type="Button" parent="Panel/VBox/NavPhase" unique_id=1205787972]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20

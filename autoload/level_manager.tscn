@@ -4,3 +4,4 @@
 
 [node name="LevelManager" type="Node" unique_id=948858568]
 script = ExtResource("1_lm")
+album_catalog_url = "https://garretttallent.com/puzzles/catalog.json"

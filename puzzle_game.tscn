@@ -29,7 +29,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="BoardCenter" type="CenterContainer" parent="GameLayout"]
+[node name="BoardCenter" type="CenterContainer" parent="GameLayout" unique_id=1320003582]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
@@ -41,8 +41,8 @@ theme_override_constants/v_separation = 0
 
 [node name="WinPanel" parent="GameLayout" unique_id=960259601 instance=ExtResource("5_wp")]
 visible = false
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
-custom_minimum_size = Vector2(0, 200)
 
 [node name="TimerLabel" type="Label" parent="." unique_id=422968927]
 visible = false
@@ -66,5 +66,22 @@ grow_horizontal = 0
 size_flags_vertical = 8
 text = "R"
 
+[node name="BackButton" type="Button" parent="." unique_id=1770697438]
+custom_minimum_size = Vector2(30, 30)
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 33.0
+offset_bottom = 34.0
+size_flags_vertical = 8
+text = "←"
+
 [node name="CurrencyHUD" parent="." unique_id=1369080865 instance=ExtResource("4_ch")]
 visible = false
+
+[node name="BackConfirmDialog" type="ConfirmationDialog" parent="." unique_id=1318771732]
+title = "Leave Puzzle"
+dialog_text = "Leave this puzzle and return to the album?"
+
+[node name="RestartConfirmDialog" type="ConfirmationDialog" parent="." unique_id=416220583]
+title = "Restart Puzzle"
+dialog_text = "Do you want to restart the puzzle?"
