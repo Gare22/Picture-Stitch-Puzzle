@@ -1,9 +1,10 @@
-extends HBoxContainer
+extends Control
 
 ## Screen-space coin display. Stays in the top-right corner across scenes.
 ## Connects to LevelManager.currency_changed to auto-refresh.
 
-@onready var coin_label: Label = $CoinLabel
+@onready var coin_label: Label = $MarginContainer/HBoxContainer/CoinLabel
+
 
 
 func _ready() -> void:

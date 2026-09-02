@@ -27,25 +27,11 @@ texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Title" type="Label" parent="." unique_id=1759766374]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 20.0
-offset_top = 15.0
-offset_right = -20.0
-offset_bottom = 55.0
-grow_horizontal = 2
-text = "Select an Album"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1865265365]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
 offset_top = 65.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -64,6 +50,7 @@ size_flags_horizontal = 3
 [node name="GridContainer" type="GridContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=1538581140]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 6
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
@@ -87,7 +74,18 @@ text = "Back"
 script = ExtResource("2_dbg")
 
 [node name="CurrencyHUD" parent="." unique_id=1256850830 instance=ExtResource("4_ch")]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -132.0
+offset_top = -45.0
+offset_right = -20.0
+offset_bottom = -9.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [node name="PurchaseOverlay" type="Control" parent="." unique_id=2102000001]
 visible = false
@@ -172,7 +170,6 @@ offset_left = 20.0
 offset_top = -45.0
 offset_right = 120.0
 offset_bottom = -10.0
-grow_horizontal = 0
 grow_vertical = 0
 text = "Options"
 

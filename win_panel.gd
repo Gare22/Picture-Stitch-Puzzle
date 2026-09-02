@@ -14,8 +14,23 @@ signal coins_claimed(coins: int)
 @onready var claim_button: Button = $Panel/VBox/RewardPhase/ClaimButton
 @onready var next_button: Button = $Panel/VBox/NavPhase/NextButton
 @onready var back_button: Button = $Panel/VBox/NavPhase/BackButton
+var reward_wheel: Control = null
 
 var _coins_earned: int = 0
+
+
+func _ready() -> void:
+	AdMobManager.rewarded_earned.connect(_on_rewarded_earned)
+	AdMobManager.ad_failed.connect(_on_ad_failed)
+
+
+## Wires the reward-wheel overlay (owned by puzzle_game.tscn) into this panel.
+## Called by puzzle_game.gd after setup(); unique names don't cross scene
+## instance boundaries, so the parent passes the reference explicitly.
+func set_reward_wheel(wheel: Control) -> void:
+	reward_wheel = wheel
+	if reward_wheel and not reward_wheel.reward_ready.is_connected(_on_wheel_reward_ready):
+		reward_wheel.reward_ready.connect(_on_wheel_reward_ready)
 
 
 func setup(coins_earned: int, is_max_difficulty: bool) -> void:
@@ -45,14 +60,30 @@ func setup(coins_earned: int, is_max_difficulty: bool) -> void:
 func _on_ad_pressed() -> void:
 	ad_button.disabled = true
 	ad_button.text = "Loading ad..."
+	AdMobManager.show_rewarded()
 
-	await get_tree().create_timer(1.5).timeout
-	ad_button.text = "Playing ad..."
 
-	await get_tree().create_timer(2.0).timeout
-	_coins_earned *= 2
+func _on_rewarded_earned() -> void:
+	ad_button.text = "Loading reward..."
+	# Button stays disabled.
+	if reward_wheel:
+		reward_wheel.spin(_coins_earned)
+	else:
+		# Wheel not wired (shouldn't happen) — let the player retry.
+		ad_button.disabled = false
+		ad_button.text = "2x?"
+
+
+func _on_wheel_reward_ready(final_coins: int) -> void:
+	_coins_earned = final_coins
 	coin_label.text = "You earned %d coins" % _coins_earned
 	ad_button.text = "Claimed"
+	# Button stays disabled — the player claims via ClaimButton.
+
+
+func _on_ad_failed() -> void:
+	ad_button.disabled = false
+	ad_button.text = "2x?"
 
 
 func _on_claim_pressed() -> void:

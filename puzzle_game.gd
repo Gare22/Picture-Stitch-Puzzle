@@ -3,11 +3,11 @@ extends Node
 ## Orchestrates the puzzle game: timer, board setup, win detection, and menu navigation.
 
 @onready var timer_label: Label = $TimerLabel
-@onready var restart_button: Button = $RestartButton
-@onready var back_button: Button = $BackButton
+@onready var restart_button: Button = $MarginContainer/HBoxContainer/RestartButton
+@onready var back_button: Button = $MarginContainer/HBoxContainer/BackButton
 @onready var back_dialog: ConfirmationDialog = $BackConfirmDialog
 @onready var restart_dialog: ConfirmationDialog = $RestartConfirmDialog
-@onready var currency_hud: HBoxContainer = $CurrencyHUD
+@onready var currency_hud: PanelContainer = $MarginContainer/HBoxContainer/CurrencyHUD
 @onready var win_panel: Control = $GameLayout/WinPanel
 
 var elapsed_time: float = 0.0
@@ -142,6 +142,7 @@ func on_puzzle_complete() -> void:
 	# Configure and show the win panel (VBox layout handles the shift automatically)
 	var is_max := LevelManager.current_grid_size >= 6
 	win_panel.setup(coins_earned, is_max)
+	win_panel.set_reward_wheel($RewardWheel)
 	win_panel.visible = true
 	win_panel.next_difficulty_pressed.connect(_on_next_difficulty)
 	win_panel.play_again_pressed.connect(_on_restart_pressed)

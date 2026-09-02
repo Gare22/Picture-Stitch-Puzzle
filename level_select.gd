@@ -38,9 +38,43 @@ func _load_texture(path: String) -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 
-func _column_width() -> float:
-	var vp_w: float = get_viewport_rect().size.x
-	return (vp_w - STYLE.grid_edge_gap * 2.0 - STYLE.level_grid_separation * (STYLE.grid_columns - 1)) / STYLE.grid_columns
+## Computes the level-card column width from a width budget and a height budget.
+## The width budget fills the viewport; the height budget shrinks cards on wide
+## viewports (stretch mode "expand" grows width while logical height stays fixed)
+## so every grid row, sized by its tallest image, stays fully visible.
+func _column_width(textures: Array[Texture2D]) -> float:
+	var vp := get_viewport_rect().size
+	var width_col := (vp.x - STYLE.grid_edge_gap * 2.0 - STYLE.level_grid_separation * (float(STYLE.grid_columns) - 1.0)) / float(STYLE.grid_columns)
+	var rows := ceili(float(textures.size()) / float(STYLE.grid_columns))
+	if rows <= 0:
+		return width_col
+	# Sum of per-row tallest-card aspects (image height / width) at column width 1.
+	var aspect_sum := 0.0
+	for row in range(rows):
+		var row_aspect := 0.0
+		for col in range(STYLE.grid_columns):
+			var idx := row * STYLE.grid_columns + col
+			if idx >= textures.size():
+				break
+			var tex := textures[idx]
+			if tex != null and tex.get_size().x > 0.0:
+				row_aspect = maxf(row_aspect, tex.get_size().y / tex.get_size().x)
+		aspect_sum += row_aspect
+	if aspect_sum <= 0.0:
+		return width_col
+	var avail_h := _grid_available_height() - float(rows - 1) * STYLE.level_grid_separation
+	var height_col := avail_h / aspect_sum
+	return maxf(minf(width_col, height_col), 1.0)
+
+
+## Height available to the grid inside the scroll area: viewport height minus the
+## ScrollContainer's vertical offsets and the MarginContainer's top/bottom margins.
+func _grid_available_height() -> float:
+	var scroll: ScrollContainer = $ScrollContainer
+	var margins: MarginContainer = $ScrollContainer/MarginContainer
+	var vp_h := get_viewport_rect().size.y
+	var scroll_h := vp_h + scroll.offset_bottom - scroll.offset_top
+	return scroll_h - float(margins.get_theme_constant("margin_top")) - float(margins.get_theme_constant("margin_bottom"))
 
 
 func _ready() -> void:
@@ -56,14 +90,19 @@ func _build_grid() -> void:
 		child.queue_free()
 
 	var count := LevelManager.get_level_count()
+	var textures: Array[Texture2D] = []
+	for i in range(count):
+		textures.append(_load_texture(LevelManager.levels[i]["path"]))
+
+	var target_width := _column_width(textures)
 	for i in range(count):
 		var level: Dictionary = LevelManager.levels[i]
-		var tex = _load_texture(level["path"])
+		var tex := textures[i]
 		var earned := LevelManager.get_level_stars(LevelManager.current_album_index, i)
 		var btn := LEVEL_BUTTON_SCENE.instantiate() as LevelButton
 		btn.level_selected.connect(_on_level_pressed)
 		grid.add_child(btn)
-		btn.setup(tex, earned, i, _column_width())
+		btn.setup(tex, earned, i, target_width)
 
 
 func _on_level_pressed(index: int) -> void:

@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [autoload]
 
 LevelManager="*res://autoload/level_manager.tscn"
+AdMobManager="*res://autoload/admob_manager.tscn"
 
 [display]
 
@@ -25,6 +26,14 @@ window/size/viewport_height=800
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg")
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://addons/admob/gdscript/sample/translations/admob_sample.en.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.pt_BR.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.es.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.zh_CN.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.ja.translation")
 
 [rendering]
 
