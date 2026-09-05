@@ -7,6 +7,19 @@
       "environment": { "GODOT_FORGE_PROJECT": "C:\\Users\\Garrett Tallent\\Desktop\\Projects\\Godot\\Picture Puzzle" },
       "timeout": 30000,
       "enabled": true
+    },
+    "godot-docs": {
+      "type": "local",
+      "command": ["C:\\Users\\Garrett Tallent\\.config\\opencode\\third_party\\godot-mcp-docs\\.venv\\Scripts\\python.exe", "main.py"],
+      "cwd": "C:\\Users\\Garrett Tallent\\.config\\opencode\\third_party\\godot-mcp-docs",
+      "timeout": 60000,
+      "enabled": true
+    },
+    "godot-control": {
+      "type": "local",
+      "command": ["node", "C:\\Users\\Garrett Tallent\\.config\\opencode\\third_party\\godot-mcp-server\\mcp-server\\build\\index.js"],
+      "environment": { "GODOT_WS_HOST": "localhost", "GODOT_WS_PORT": "9080" },
+      "enabled": true
     }
   }
 }

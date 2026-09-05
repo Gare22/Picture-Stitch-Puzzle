@@ -18,6 +18,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 
 LevelManager="*res://autoload/level_manager.tscn"
 AdMobManager="*res://autoload/admob_manager.tscn"
+IapManager="*res://autoload/iap_manager.tscn"
 
 [display]
 
@@ -29,7 +30,7 @@ window/handheld/orientation=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/admob/plugin.cfg")
+enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/GodotGooglePlayBilling/plugin.cfg")
 
 [internationalization]
 

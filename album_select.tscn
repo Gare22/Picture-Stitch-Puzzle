@@ -161,6 +161,21 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Downloading more albums..."
 horizontal_alignment = 1
 
+[node name="IapBanner" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 6.0
+offset_right = -16.0
+offset_bottom = 58.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 13
+text = "Enjoy the game?
+Unlock all puzzles for $1.99"
+autowrap_mode = 3
+
 [node name="OptionsButton" type="Button" parent="." unique_id=2102000010]
 layout_mode = 1
 anchors_preset = 2
@@ -238,6 +253,21 @@ text = "Yes, Erase Everything"
 visible = false
 layout_mode = 2
 text = "Cancel"
+
+[node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Restore Purchases"
+
+[node name="RemoveIapButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Remove IAP (dev only)"
+
+[node name="IapMessageLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
 layout_mode = 2

@@ -30,6 +30,10 @@ const HARD_REWARD: int = 50
 ## Total coins the player owns (persisted across sessions).
 var currency: int = 0
 
+## True once the player has purchased (or had restored) the real-money
+## "Unlock All Puzzles" Google Play IAP. Persisted across sessions.
+var all_puzzles_unlocked: bool = false
+
 ## Emitted whenever currency changes. HUDs connect to this.
 signal currency_changed(new_amount: int)
 
@@ -249,8 +253,11 @@ func is_album_free(index: int) -> bool:
 	return a.get("price", 0) <= 0 or a.get("unlocked_by_default", false)
 
 
-## Returns true if the album at index is unlocked (free or purchased).
+## Returns true if the album at index is unlocked (free, purchased, or the
+## player owns the "Unlock All Puzzles" IAP).
 func is_album_unlocked(index: int) -> bool:
+	if all_puzzles_unlocked:
+		return true
 	if is_album_free(index):
 		return true
 	return purchased_albums.has(_album_key(index))
@@ -306,6 +313,37 @@ func purchase_album(index: int) -> bool:
 	if albums[index].get("source") == "remote" and not albums[index].get("downloaded", false):
 		_start_full_download(index)
 	return true
+
+
+## Grants the "Unlock All Puzzles" entitlement (every current AND future
+## album becomes unlocked, since is_album_unlocked() checks the flag first).
+## Emits albums_changed so open menus rebuild with the unlocked state.
+## Idempotent: repeated calls (e.g. purchase restores) do nothing.
+func unlock_all_albums() -> void:
+	if all_puzzles_unlocked:
+		return
+	all_puzzles_unlocked = true
+	save_progress()
+	# Start fetching the full images of any remote albums that were previously
+	# locked (mirrors what purchase_album() does for coin purchases).
+	for i in range(albums.size()):
+		var a: Dictionary = albums[i]
+		if a.get("source") == "remote" and not a.get("downloaded", false):
+			_start_full_download(i)
+	# Emit last, after all state changes, so rebuilt UI sees the final state.
+	albums_changed.emit()
+
+
+## DEV/TEST-ONLY: clears the local "Unlock All Puzzles" entitlement flag so the
+## purchase flow can be tested again. The real Google Play purchase is NOT
+## affected — the next query_purchases (app start or manual restore) re-grants
+## it automatically. Emits albums_changed so open menus re-lock the albums.
+func remove_unlock_all() -> void:
+	if not all_puzzles_unlocked:
+		return
+	all_puzzles_unlocked = false
+	save_progress()
+	albums_changed.emit()
 
 
 ## Returns the currently-selected album Dictionary, or {} if none.
@@ -409,6 +447,7 @@ func load_progress() -> void:
 	stars = cfg.get_value("progress", "stars", {})
 	currency = cfg.get_value("progress", "currency", 0)
 	purchased_albums = cfg.get_value("progress", "purchased_albums", {})
+	all_puzzles_unlocked = cfg.get_value("progress", "all_puzzles_unlocked", false)
 
 
 ## Saves star + currency progress to disk.
@@ -417,11 +456,15 @@ func save_progress() -> void:
 	cfg.set_value("progress", "stars", stars)
 	cfg.set_value("progress", "currency", currency)
 	cfg.set_value("progress", "purchased_albums", purchased_albums)
+	cfg.set_value("progress", "all_puzzles_unlocked", all_puzzles_unlocked)
 	cfg.save(SAVE_PATH)
 
 
 ## Resets ALL player progress: stars, currency, purchases, and downloaded albums.
 ## Rebuilds the local album list and re-fetches the remote catalog from scratch.
+## NOTE: the real-money "Unlock All Puzzles" IAP entitlement is deliberately
+## preserved — a paid Google Play entitlement is tied to the player's account
+## and must not be revoked by an in-game reset.
 func reset_all_progress() -> void:
 	stars = {}
 	currency = 0
@@ -466,9 +509,6 @@ func is_album_downloaded(index: int) -> bool:
 		return true
 	return albums[index].get("downloaded", true)
 
-func _is_purchased(index: int) -> bool:
-	return purchased_albums.has(_album_key(index))
-
 func _update_downloading() -> void:
 	var busy := _new_album_queue.size() > 0 or _full_album_index != -1 or _full_queue.size() > 0 or _preview_album_index != -1 or _preview_queue.size() > 0
 	if _downloading != busy:
@@ -488,7 +528,7 @@ func _load_cache() -> void:
 		if a.get("source") != "remote":
 			continue
 		if not a.get("downloaded", false):
-			if is_album_free(i) or _is_purchased(i):
+			if is_album_unlocked(i):
 				_start_full_download(i)
 			elif not a.get("preview_downloaded", false):
 				_start_preview_download(i)
@@ -565,7 +605,7 @@ func _sync_existing_album(id: String, catalog_entry: Dictionary) -> void:
 	
 	if not a.get("downloaded", false):
 		# Full images not downloaded yet.
-		if is_album_free(album_idx) or _is_purchased(album_idx):
+		if is_album_unlocked(album_idx):
 			print("LevelManager: resuming download for '%s' (%d/%d images)" % [id, cached_level_count, puzzle_count])
 			_start_full_download(album_idx)
 		elif not a.get("preview_downloaded", false):
