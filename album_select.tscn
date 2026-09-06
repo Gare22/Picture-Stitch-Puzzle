@@ -447,26 +447,13 @@ theme_override_constants/separation = 12
 [node name="InfoLabel" type="Label" parent="OAuthTokenOverlay/Panel/VBox"]
 layout_mode = 2
 text = "Sign in to itch.io in the new tab.
-You'll be signed in automatically; if not, copy your API key and paste it below."
+You'll be signed in automatically. If the tab didn't open, tap the button below."
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="OpenLoginButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
 layout_mode = 2
 text = "Open itch.io login page"
-
-[node name="LoginUrlEdit" type="LineEdit" parent="OAuthTokenOverlay/Panel/VBox"]
-layout_mode = 2
-editable = false
-placeholder_text = "Login URL (shown if the tab didn't open)"
-
-[node name="TokenEdit" type="LineEdit" parent="OAuthTokenOverlay/Panel/VBox"]
-layout_mode = 2
-placeholder_text = "Paste your itch.io API key here"
-
-[node name="ConfirmButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
-layout_mode = 2
-text = "Sign in"
 
 [node name="CancelButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
 layout_mode = 2
