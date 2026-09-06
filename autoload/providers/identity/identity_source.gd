@@ -18,7 +18,8 @@ signal sign_in_failed(reason: String)
 ## Emitted when the source needs the player to copy a token from a page it
 ## opened in a new tab and paste it back into the game (out-of-band / oob flow
 ## — used on web embeds like itch.io, where in-frame redirects are blocked).
-signal manual_token_required
+## url is the authorize page to open.
+signal manual_token_required(url: String)
 
 ## True when this source is configured and can be used on this platform.
 func is_supported() -> bool:
@@ -52,4 +53,10 @@ func sign_out() -> void:
 ## Feeds a manually pasted token back to the source (oob flow). No-op for
 ## sources that never require it.
 func submit_manual_token(_token: String) -> void:
+	pass
+
+## Re-opens the manual-token login page (oob flow). No-op for sources that
+## never require it. Intended to be called from a direct button click so the
+## browser treats it as a user gesture.
+func request_oob_login_page() -> void:
 	pass

@@ -29,6 +29,8 @@ extends Control
 @onready var account_prompt_cancel_button: Button = $AccountPromptOverlay/Panel/VBox/CancelButton
 @onready var oauth_token_overlay: Control = $OAuthTokenOverlay
 @onready var oauth_token_edit: LineEdit = $OAuthTokenOverlay/Panel/VBox/TokenEdit
+@onready var oauth_token_open_button: Button = $OAuthTokenOverlay/Panel/VBox/OpenLoginButton
+@onready var oauth_token_url_edit: LineEdit = $OAuthTokenOverlay/Panel/VBox/LoginUrlEdit
 @onready var oauth_token_confirm_button: Button = $OAuthTokenOverlay/Panel/VBox/ConfirmButton
 @onready var oauth_token_cancel_button: Button = $OAuthTokenOverlay/Panel/VBox/CancelButton
 @onready var payment_overlay: Control = $PaymentOverlay
@@ -95,6 +97,7 @@ func _ready() -> void:
 	account_prompt_cancel_button.pressed.connect(_on_account_prompt_cancel)
 	oauth_token_confirm_button.pressed.connect(_on_oauth_token_confirmed)
 	oauth_token_cancel_button.pressed.connect(_on_oauth_token_canceled)
+	oauth_token_open_button.pressed.connect(_on_oauth_token_open_pressed)
 	IdentityManager.signed_in.connect(_on_identity_signed_in)
 	IdentityManager.signed_out.connect(_on_identity_signed_out)
 	IdentityManager.sign_in_failed.connect(_on_identity_sign_in_failed)
@@ -261,12 +264,21 @@ func _on_identity_sign_in_failed(reason: String) -> void:
 	identity_status_label.text = "Sign-in failed: %s" % reason
 
 
-## The identity source opened an out-of-band authorize tab (web iframe embeds):
-## show the paste dialog so the player can drop the copied API key in.
-func _on_manual_token_required() -> void:
+## The identity source opened an out-of-band authorize page (web iframe
+## embeds): show the paste dialog. url is the login page (re-openable via the
+## button; shown in the read-only field as a copyable fallback).
+func _on_manual_token_required(url: String) -> void:
+	oauth_token_url_edit.text = url
 	oauth_token_edit.clear()
 	oauth_token_overlay.visible = true
 	oauth_token_edit.grab_focus()
+
+
+## Re-opens the itch.io login page in a new tab. Called from a direct button
+## click so the browser treats it as a real user gesture (the auto-open from
+## sign_in can be refused by popup blockers).
+func _on_oauth_token_open_pressed() -> void:
+	IdentityManager.request_oob_login_page()
 
 
 func _on_oauth_token_confirmed() -> void:
@@ -460,6 +472,8 @@ func _exit_tree() -> void:
 		oauth_token_confirm_button.pressed.disconnect(_on_oauth_token_confirmed)
 	if oauth_token_cancel_button.pressed.is_connected(_on_oauth_token_canceled):
 		oauth_token_cancel_button.pressed.disconnect(_on_oauth_token_canceled)
+	if oauth_token_open_button.pressed.is_connected(_on_oauth_token_open_pressed):
+		oauth_token_open_button.pressed.disconnect(_on_oauth_token_open_pressed)
 	if IapManager.price_loaded.is_connected(_on_iap_price_loaded):
 		IapManager.price_loaded.disconnect(_on_iap_price_loaded)
 	if IapManager.purchase_completed.is_connected(_on_iap_purchase_completed):

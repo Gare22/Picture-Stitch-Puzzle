@@ -49,6 +49,8 @@ var _pending_conn: StreamPeerTCP = null
 var _access_token: String = ""
 var _user_id: String = ""
 var _user_name: String = ""
+## The login URL for the currently-pending oob flow ("" when none).
+var _oob_login_url: String = ""
 
 @onready var _http: HTTPRequest = $HTTPRequest
 
@@ -164,9 +166,20 @@ func _build_authorize_url(p_redirect_uri := "", p_include_state := true) -> Stri
 ## popups from iframes are allowed, in-frame navigations are not. itch shows
 ## the API key; the player copies it and pastes it back via submit_manual_token.
 func _begin_oob_flow() -> void:
-	var url := _build_authorize_url(OOB_REDIRECT_URI, false)
-	JavaScriptBridge.eval("window.open('%s', '_blank')" % url)
-	manual_token_required.emit()
+	_oob_login_url = _build_authorize_url(OOB_REDIRECT_URI, false)
+	# This runs from the rAF game loop, not the DOM event call stack, so a
+	# browser popup blocker may refuse it; the paste dialog then offers a
+	# direct button (real user gesture) plus the URL itself as a fallback.
+	JavaScriptBridge.eval("window.open('%s', '_blank')" % _oob_login_url)
+	manual_token_required.emit(_oob_login_url)
+
+
+## Re-opens the oob login page — called from a direct button click, which is a
+## real user gesture that popup blockers allow even when the auto-open above
+## was refused.
+func request_oob_login_page() -> void:
+	if _is_web and not _oob_login_url.is_empty():
+		JavaScriptBridge.eval("window.open('%s', '_blank')" % _oob_login_url)
 
 
 ## Feeds a manually pasted oob token back and validates it with the profile
