@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c8dm16j6t6v83"]
 
 [ext_resource type="Script" uid="uid://c0027waajkkp1" path="res://win_panel.gd" id="1_wp"]
+[ext_resource type="Theme" path="res://assets/dialog_theme.tres" id="2_dt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 content_margin_left = 16.0
@@ -46,6 +47,7 @@ mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="Center" unique_id=1638055928]
 layout_mode = 2
+theme = ExtResource("2_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
 [node name="VBox" type="VBoxContainer" parent="Center/Panel" unique_id=1255620537]
@@ -71,6 +73,9 @@ text = "You earned 0 coins"
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 text = "2X"

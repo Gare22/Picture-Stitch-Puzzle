@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="3_bg"]
 [ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_t1w0i"]
 [ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
+[ext_resource type="Theme" path="res://assets/dialog_theme.tres" id="5_dt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_opaque_panel"]
 bg_color = Color(0.11, 0.11, 0.14, 1)
@@ -111,6 +112,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="PurchaseOverlay" unique_id=2102000003]
+theme = ExtResource("5_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
@@ -213,6 +215,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="OptionsOverlay" unique_id=2102000013]
+theme = ExtResource("5_dt")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -299,6 +302,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="ResetOverlay"]
+theme = ExtResource("5_dt")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -363,6 +367,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="PaymentOverlay" unique_id=720096057]
+theme = ExtResource("5_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
@@ -419,6 +424,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="AccountPromptOverlay"]
+theme = ExtResource("5_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
@@ -479,6 +485,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="OAuthTokenOverlay"]
+theme = ExtResource("5_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
