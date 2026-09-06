@@ -6,6 +6,13 @@
 [ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_t1w0i"]
 [ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_opaque_panel"]
+bg_color = Color(0.11, 0.11, 0.14, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
 [node name="AlbumSelect" type="Control" unique_id=1836148606]
 layout_mode = 3
 anchors_preset = 15
@@ -202,7 +209,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
+color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="OptionsOverlay" unique_id=2102000013]
 layout_mode = 0
@@ -214,6 +221,7 @@ offset_left = -160.0
 offset_top = -130.0
 offset_right = 160.0
 offset_bottom = 130.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
 [node name="VBox" type="VBoxContainer" parent="OptionsOverlay/Panel" unique_id=2102000014]
 layout_mode = 0
@@ -236,28 +244,6 @@ horizontal_alignment = 1
 [node name="ResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000016]
 layout_mode = 2
 text = "Reset All Progress"
-
-[node name="ConfirmLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=2102000017]
-visible = false
-layout_mode = 2
-text = "Erase ALL progress? This cannot be undone."
-horizontal_alignment = 1
-autowrap_mode = 2
-
-[node name="ConfirmResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000018]
-visible = false
-layout_mode = 2
-text = "Yes, Erase Everything"
-
-[node name="CancelResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000019]
-visible = false
-layout_mode = 2
-text = "Cancel"
-
-[node name="DeleteAllCheck" type="CheckBox" parent="OptionsOverlay/Panel/VBox"]
-visible = false
-layout_mode = 2
-text = "Also delete all data (purchases, sign-in)"
 
 [node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=494256681]
 layout_mode = 2
@@ -294,6 +280,70 @@ text = "Sign out"
 [node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
 layout_mode = 2
 text = "Close"
+
+[node name="ResetOverlay" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="ResetOverlay"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Panel" type="Panel" parent="ResetOverlay"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -110.0
+offset_right = 200.0
+offset_bottom = 110.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
+
+[node name="VBox" type="VBoxContainer" parent="ResetOverlay/Panel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="ResetOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Erase ALL progress?"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="ResetOverlay/Panel/VBox"]
+layout_mode = 2
+text = "This cannot be undone."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="DeleteAllCheck" type="CheckBox" parent="ResetOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Also delete all data (purchases, sign-in)"
+
+[node name="ConfirmButton" type="Button" parent="ResetOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Yes, Erase Everything"
+
+[node name="CancelButton" type="Button" parent="ResetOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Cancel"
 
 [node name="PaymentOverlay" type="Control" parent="." unique_id=1653564972]
 visible = false
