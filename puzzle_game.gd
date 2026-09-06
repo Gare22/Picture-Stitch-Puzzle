@@ -75,6 +75,8 @@ func _ready() -> void:
 	# Set to true to show numbered labels on each piece (for debugging)
 	board.test_mode = false
 	board.setup(image, puzzle_columns, puzzle_rows)
+	# The win/claim popup must never be wider than the puzzle image itself.
+	win_panel.set_width_cap(board.custom_minimum_size.x)
 	# Re-fit the board when the window/viewport resizes (web fullscreen toggles,
 	# desktop window drags) so pieces keep filling the available area.
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
@@ -108,6 +110,8 @@ func _on_viewport_size_changed() -> void:
 	var board: Node = $GameLayout/BoardCenter/PuzzleBoard
 	if board != null and board.has_method("refit"):
 		board.refit()
+		# Keep the win/claim popup sized to the (possibly re-fitted) puzzle.
+		win_panel.set_width_cap(board.custom_minimum_size.x)
 
 
 func _process(delta: float) -> void:
