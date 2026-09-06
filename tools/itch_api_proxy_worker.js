@@ -5,12 +5,19 @@
 // This worker is a minimal pass-through that adds the CORS header so the
 // game's web build can validate itch OAuth tokens via GET /profile.
 //
-// Deploy:
+// Deploy (recommended — same-domain, no workers.dev URL):
 //   1. Cloudflare dashboard -> Workers & Pages -> Create -> Worker
+//      (in the SAME account that owns the gares.games zone)
 //   2. Paste this file's contents, Deploy
-//   3. Set the game's Project Setting identity/itch_api_proxy_url to the
-//      worker URL (https://<worker-name>.<account>.workers.dev)
-//   4. Rebuild the web export
+//   3. Worker -> Settings -> Triggers -> Routes -> Add route:
+//        puzzle.gares.games/api/itch-profile   (zone: gares.games)
+//   4. Optionally delete the default workers.dev route
+//   5. Set the game's Project Setting identity/itch_api_proxy_url to
+//        https://puzzle.gares.games/api/itch-profile
+//   6. Rebuild the web export
+//
+// Fallback (no custom route possible): use the workers.dev URL as
+// identity/itch_api_proxy_url directly.
 //
 // Security: the worker only forwards the Authorization header and only
 // targets api.itch.io/profile — it does not read, store, or log tokens.
