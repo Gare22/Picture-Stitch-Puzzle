@@ -23,11 +23,14 @@ var _levels: Array = []
 var _grayed: bool = false
 
 @onready var name_label = $ClickButton/NameLabel
+@onready var star_hud = $StarHud
+@onready var star_count_label = $StarHud/StarCountLabel
 
 ## Initializer: sets the cover image, name, rounded material, and starts the cover timer.
 ## Locked albums show the lock overlay with the purchase price, and their covers
 ## are grayed out (the images are downloaded so the player can preview them).
-func setup(album: Dictionary, index: int, cell_size: Vector2, unlocked: bool, price: int, downloaded: bool) -> void:
+## stars_earned/stars_total feed the "earned/total" star badge shown top-right.
+func setup(album: Dictionary, index: int, cell_size: Vector2, unlocked: bool, price: int, downloaded: bool, stars_earned: int = 0, stars_total: int = 0) -> void:
 	album_index = index
 	custom_minimum_size = cell_size
 	_grayed = not unlocked
@@ -53,6 +56,9 @@ func setup(album: Dictionary, index: int, cell_size: Vector2, unlocked: bool, pr
 	cover_old.material = _make_rounded_material(cell_size)
 	cover_new.material = _make_rounded_material(cell_size)
 	name_label.text = album["name"]
+	# Star badge: only meaningful once the album is unlocked and has puzzles.
+	star_count_label.text = "%d/%d" % [stars_earned, stars_total]
+	star_hud.visible = unlocked and stars_total > 0
 	if not unlocked:
 		$LockOverlay.visible = true
 		$LockOverlay/LockLabel.text = "Locked"

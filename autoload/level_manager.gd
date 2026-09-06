@@ -439,6 +439,33 @@ func mark_star_earned(album_index: int, level_index: int, difficulty_index: int)
 	save_progress()
 
 
+## Number of puzzles an album holds: the remote catalog's puzzle_count when
+## present (levels fill in as downloads complete), otherwise the level list.
+func _album_level_count(album_index: int) -> int:
+	if albums.is_empty() or album_index < 0 or album_index >= albums.size():
+		return 0
+	var a: Dictionary = albums[album_index]
+	var count: int = int(a.get("puzzle_count", 0))
+	if count <= 0:
+		count = a.get("levels", []).size()
+	return count
+
+
+## Total stars possible for an album: 3 per puzzle.
+func get_album_star_total(album_index: int) -> int:
+	return _album_level_count(album_index) * 3
+
+
+## Stars earned across every puzzle of an album (all difficulties combined).
+func get_album_stars_earned(album_index: int) -> int:
+	var earned := 0
+	for level_index in range(_album_level_count(album_index)):
+		for lit: bool in get_level_stars(album_index, level_index):
+			if lit:
+				earned += 1
+	return earned
+
+
 ## Loads star + currency progress from disk.
 func load_progress() -> void:
 	var cfg := ConfigFile.new()

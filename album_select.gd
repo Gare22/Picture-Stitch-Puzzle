@@ -110,7 +110,7 @@ func _build_grid() -> void:
 		cell.cover_stagger = cover_stagger
 		cell.cover_fade_time = cover_fade_time
 		grid.add_child(cell)
-		cell.setup(album, i, _cell_size(), LevelManager.is_album_unlocked(i), LevelManager.get_album_price(i), LevelManager.is_album_downloaded(i))
+		cell.setup(album, i, _cell_size(), LevelManager.is_album_unlocked(i), LevelManager.get_album_price(i), LevelManager.is_album_downloaded(i), LevelManager.get_album_stars_earned(i), LevelManager.get_album_star_total(i))
 		cell.album_selected.connect(_on_album_pressed)
 
 
