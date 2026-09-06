@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c45et0h1kr2lr" path="res://reward_wheel.gd" id="1_rw"]
 [ext_resource type="Texture2D" uid="uid://c35w282xrg3vs" path="res://assets/wheel_placeholder.png" id="2_wheel"]
 [ext_resource type="Texture2D" uid="uid://c8oysp8tu0cx" path="res://assets/wheel_pointer.png" id="3_ptr"]
+[ext_resource type="Theme" path="res://assets/dialog_theme.tres" id="4_dt"]
 
 [node name="RewardWheel" type="Control" unique_id=1261048719]
 layout_mode = 3
@@ -11,6 +12,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("4_dt")
 script = ExtResource("1_rw")
 
 [node name="Dim" type="ColorRect" parent="." unique_id=227956134]

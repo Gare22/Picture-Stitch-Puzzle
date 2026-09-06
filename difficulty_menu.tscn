@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bemd7ljfyx4ww" path="res://difficulty_menu.gd" id="1_dm"]
 [ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="2_44gva"]
 [ext_resource type="Texture2D" uid="uid://dbuleg7024twm" path="res://assets/star.png" id="2_star"]
+[ext_resource type="Theme" path="res://assets/dialog_theme.tres" id="3_dt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_44gva"]
 content_margin_left = 5.0
@@ -24,6 +25,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_dt")
 script = ExtResource("1_dm")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1049815223]
