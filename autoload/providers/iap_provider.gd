@@ -58,3 +58,13 @@ func restore_purchases() -> void:
 ## No-op for every other provider.
 func confirm_payment() -> void:
 	pass
+
+## Returns the provider's customer / restore identifier, or "" when the
+## provider has no such concept. Used by the Options "restore code" UI.
+func get_app_user_id() -> String:
+	return ""
+
+## Sets the provider's customer / restore identifier (e.g. a user-entered
+## restore code). No-op for providers without identity.
+func set_app_user_id(_id: String) -> void:
+	pass

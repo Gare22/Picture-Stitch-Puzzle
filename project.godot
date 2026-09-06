@@ -42,6 +42,8 @@ enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/gdUnit4
 provider_id="auto"
 web_checkout_url=""
 web_price_label=""
+revenuecat_public_key=""
+revenuecat_entitlement_id="unlock_all"
 
 [internationalization]
 

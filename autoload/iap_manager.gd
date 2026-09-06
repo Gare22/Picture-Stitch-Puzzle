@@ -6,16 +6,20 @@ extends Node
 ## directly. Swap platforms by changing which provider gets injected.
 ##
 ## Provider selection (Project Settings -> iap/provider_id):
-##   "auto"        — Android -> google_play, Web -> web, anything else -> mock
+##   "auto"        — web everywhere (Google Play is not used in this project);
+##                   TEST_MODE falls back to the mock dev simulation
 ##   "google_play" — force Google Play Billing (GodotGooglePlayBilling plugin)
 ##   "web"         — force the web payment-link provider (no Google account)
+##   "revenuecat"  — force the RevenueCat provider (hosted web checkout +
+##                   server-backed entitlements; cross-device restore codes)
 ##   "mock"        — force the dev simulation
-## An explicit provider_id is always honored (e.g. --iap/provider_id=web on a
-## desktop build to test the web flow); "auto" falls back to mock in TEST_MODE.
+## An explicit provider_id is always honored; with "auto", TEST_MODE picks the
+## mock provider on dev machines, otherwise the web provider is used on every
+## platform.
 
 ## Simulates the whole flow on non-mobile dev machines via the mock provider.
 ## MUST be set to false for release builds.
-const TEST_MODE: bool = true
+@export var TEST_MODE: bool = true
 
 signal price_loaded(price: String)
 signal purchase_completed
@@ -30,6 +34,7 @@ var _unavailable: bool = false
 const PROVIDER_SCENES := {
 	"google_play": "res://autoload/providers/google_play_iap.tscn",
 	"web": "res://autoload/providers/web_iap.tscn",
+	"revenuecat": "res://autoload/providers/revenuecat_iap.tscn",
 	"mock": "res://autoload/providers/mock_iap.tscn",
 }
 
@@ -70,10 +75,9 @@ func _resolve_provider_id() -> String:
 		return id
 	if TEST_MODE:
 		return "mock"
-	match OS.get_name():
-		"Android": return "google_play"
-		"Web": return "web"
-		_: return "mock"
+	# Google Play isn't used in this project — route every platform through the
+	# web payment-link provider. "google_play" stays available via explicit config.
+	return "web"
 
 
 ## True when the purchase banner should be offered on this platform.
@@ -109,6 +113,19 @@ func restore_purchases() -> void:
 func confirm_payment() -> void:
 	if _provider != null:
 		_provider.confirm_payment()
+
+
+## Current restore code (provider-specific; "" for providers without identity).
+func get_app_user_id() -> String:
+	if _provider == null:
+		return ""
+	return _provider.get_app_user_id()
+
+
+## Sets a player-provided restore code (provider-specific; no-op otherwise).
+func set_app_user_id(id: String) -> void:
+	if _provider != null:
+		_provider.set_app_user_id(id)
 
 
 ## DEV-ONLY: clears the local unlock-all entitlement so the purchase flow can

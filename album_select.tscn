@@ -161,7 +161,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Downloading more albums..."
 horizontal_alignment = 1
 
-[node name="IapBanner" type="Button" parent="."]
+[node name="IapBanner" type="Button" parent="." unique_id=1410400558]
 visible = false
 layout_mode = 1
 anchors_preset = 10
@@ -254,26 +254,43 @@ visible = false
 layout_mode = 2
 text = "Cancel"
 
-[node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+[node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=494256681]
 layout_mode = 2
 text = "Restore Purchases"
 
-[node name="RemoveIapButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+[node name="RemoveIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=757655518]
 visible = false
 layout_mode = 2
 text = "Remove IAP (dev only)"
 
-[node name="IapMessageLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
+[node name="IapMessageLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=1210120735]
 visible = false
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 2
 
+[node name="RestoreCodeLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Restore code: -"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="RestoreCodeLineEdit" type="LineEdit" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+placeholder_text = "Restore code (from another device)"
+
+[node name="SetRestoreCodeButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Set Restore Code"
+
 [node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
 layout_mode = 2
 text = "Close"
 
-[node name="PaymentOverlay" type="Control" parent="."]
+[node name="PaymentOverlay" type="Control" parent="." unique_id=1653564972]
 visible = false
 anchors_preset = 0
 anchor_right = 1.0
@@ -281,7 +298,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Backdrop" type="ColorRect" parent="PaymentOverlay"]
+[node name="Backdrop" type="ColorRect" parent="PaymentOverlay" unique_id=234097290]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -289,7 +306,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
-[node name="Panel" type="Panel" parent="PaymentOverlay"]
+[node name="Panel" type="Panel" parent="PaymentOverlay" unique_id=720096057]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -300,7 +317,7 @@ offset_top = -80.0
 offset_right = 170.0
 offset_bottom = 80.0
 
-[node name="VBox" type="VBoxContainer" parent="PaymentOverlay/Panel"]
+[node name="VBox" type="VBoxContainer" parent="PaymentOverlay/Panel" unique_id=1296553243]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -313,16 +330,17 @@ grow_vertical = 2
 mouse_filter = 0
 theme_override_constants/separation = 12
 
-[node name="InfoLabel" type="Label" parent="PaymentOverlay/Panel/VBox"]
+[node name="InfoLabel" type="Label" parent="PaymentOverlay/Panel/VBox" unique_id=1153587783]
 layout_mode = 2
-text = "Complete your payment in the opened tab.\nTap Confirm once it's done."
+text = "Complete your payment in the opened tab.
+Tap Confirm once it's done."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="ConfirmButton" type="Button" parent="PaymentOverlay/Panel/VBox"]
+[node name="ConfirmButton" type="Button" parent="PaymentOverlay/Panel/VBox" unique_id=107979957]
 layout_mode = 2
 text = "I've completed payment"
 
-[node name="CancelButton" type="Button" parent="PaymentOverlay/Panel/VBox"]
+[node name="CancelButton" type="Button" parent="PaymentOverlay/Panel/VBox" unique_id=895744035]
 layout_mode = 2
 text = "Cancel"

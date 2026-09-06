@@ -20,6 +20,9 @@ extends Control
 @onready var restore_iap_button: Button = $OptionsOverlay/Panel/VBox/RestoreIapButton
 @onready var remove_iap_button: Button = $OptionsOverlay/Panel/VBox/RemoveIapButton
 @onready var iap_message_label: Label = $OptionsOverlay/Panel/VBox/IapMessageLabel
+@onready var restore_code_label: Label = $OptionsOverlay/Panel/VBox/RestoreCodeLabel
+@onready var restore_code_line_edit: LineEdit = $OptionsOverlay/Panel/VBox/RestoreCodeLineEdit
+@onready var set_restore_code_button: Button = $OptionsOverlay/Panel/VBox/SetRestoreCodeButton
 @onready var payment_overlay: Control = $PaymentOverlay
 @onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
 @onready var payment_cancel_button: Button = $PaymentOverlay/Panel/VBox/CancelButton
@@ -67,6 +70,7 @@ func _ready() -> void:
 	options_close_button.pressed.connect(_on_close_options_pressed)
 	restore_iap_button.pressed.connect(_on_restore_iap_pressed)
 	remove_iap_button.pressed.connect(_on_remove_iap_pressed)
+	set_restore_code_button.pressed.connect(_on_set_restore_code_pressed)
 	iap_banner.pressed.connect(_on_iap_banner_pressed)
 	IapManager.price_loaded.connect(_on_iap_price_loaded)
 	IapManager.purchase_completed.connect(_on_iap_purchase_completed)
@@ -180,7 +184,36 @@ func _on_options_pressed() -> void:
 	options_cancel_reset_button.visible = false
 	options_reset_button.visible = true
 	iap_message_label.visible = false
+	_update_restore_code_ui()
 	options_overlay.visible = true
+
+
+## Shows the restore-code section only when the active IAP provider has an
+## identity concept (currently RevenueCat); the label always shows the code so
+## the player can copy it to another device.
+func _update_restore_code_ui() -> void:
+	var code: String = IapManager.get_app_user_id()
+	var has_identity: bool = not code.is_empty()
+	restore_code_label.visible = has_identity
+	restore_code_line_edit.visible = has_identity
+	set_restore_code_button.visible = has_identity
+	if has_identity:
+		restore_code_label.text = "Restore code: %s" % code
+
+
+## Applies a player-entered restore code and re-checks entitlements under the
+## new identity (this is how a purchase on another device is restored).
+func _on_set_restore_code_pressed() -> void:
+	var code := restore_code_line_edit.text.strip_edges()
+	if code.is_empty():
+		iap_message_label.text = "Enter a restore code first."
+		iap_message_label.visible = true
+		return
+	iap_message_label.text = "Restore code set — checking purchases..."
+	iap_message_label.visible = true
+	restore_code_line_edit.text = ""
+	IapManager.set_app_user_id(code)
+	_update_restore_code_ui()
 
 
 ## Shows the reset confirmation step.
@@ -290,6 +323,8 @@ func _exit_tree() -> void:
 		restore_iap_button.pressed.disconnect(_on_restore_iap_pressed)
 	if remove_iap_button.pressed.is_connected(_on_remove_iap_pressed):
 		remove_iap_button.pressed.disconnect(_on_remove_iap_pressed)
+	if set_restore_code_button.pressed.is_connected(_on_set_restore_code_pressed):
+		set_restore_code_button.pressed.disconnect(_on_set_restore_code_pressed)
 	if IapManager.price_loaded.is_connected(_on_iap_price_loaded):
 		IapManager.price_loaded.disconnect(_on_iap_price_loaded)
 	if IapManager.purchase_completed.is_connected(_on_iap_purchase_completed):
