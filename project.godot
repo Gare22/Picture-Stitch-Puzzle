@@ -44,16 +44,18 @@ provider_id="revenuecat"
 web_checkout_url="https://pay.rev.cat/sandbox/wbibryznzowvojza/"
 web_price_label="$1.99"
 revenuecat_public_key="rcb_WGomPNHlZqOXtpwTTZuyLNpVLyWl"
-revenuecat_entitlement_id="unlock_all"
+revenuecat_entitlement_id="picture_stitch_puzzle_pro"
+revenuecat_product_id="picstitch_unlock_all"
 
 [identity]
 
-provider_id="none"
-itch_web_client_id=""
-itch_loopback_client_id=""
-itch_web_redirect_uri=""
+provider_id="itch"
+itch_client_id=""
+itch_web_redirect_uri="https://gares-games.itch.io/picture-stitch"
 itch_loopback_redirect_uri="http://127.0.0.1:39201/callback"
 itch_loopback_port=39201
+itch_web_client_id="59a278dfd6cfcc5be257f136a918435d"
+itch_loopback_client_id="ff8b77ba13c96828c9069dfd295e5e5f"
 
 [internationalization]
 

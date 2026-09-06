@@ -187,11 +187,15 @@ func _on_http_completed(result: int, response_code: int, _headers: PackedStringA
 			_clear_session()
 		return
 	var user: Dictionary = parsed.get("user", {})
-	var user_id: String = str(user.get("id", ""))
-	if user_id.is_empty():
+	var raw_id: Variant = user.get("id", null)
+	if raw_id == null:
 		printerr("ItchIdentitySource: profile response had no user id")
 		_clear_session()
 		return
+	# Godot's JSON parser returns every number as a float, so str() of a raw id
+	# would produce "2289629.0" — normalize to int to keep the account id
+	# stable ("itch:2289629") across parses and session round-trips.
+	var user_id: String = str(int(raw_id))
 	_user_id = user_id
 	_user_name = str(user.get("username", user.get("display_name", "")))
 	_save_session()
@@ -383,7 +387,10 @@ func _load_session() -> void:
 	if cfg.load(SESSION_PATH) != OK:
 		return
 	_access_token = str(cfg.get_value("session", "access_token", ""))
-	_user_id = str(cfg.get_value("session", "user_id", ""))
+	# Normalize a session saved before the float-id fix ("2289629.0" -> int) so
+	# a stale cfg can't produce a wrong RevenueCat App User ID.
+	var loaded_id: String = str(cfg.get_value("session", "user_id", ""))
+	_user_id = str(int(loaded_id)) if not loaded_id.is_empty() else ""
 	_user_name = str(cfg.get_value("session", "user_name", ""))
 
 

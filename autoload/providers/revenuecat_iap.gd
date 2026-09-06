@@ -72,7 +72,7 @@ func _ready() -> void:
 	IdentityManager.signed_out.connect(_on_identity_signed_out)
 	# Startup restore: if this identity owns the entitlement, grant it.
 	_fetch_customer_info()
-	print("RevenueCatIapProvider: environment=%s app_user_id=%s" % ["sandbox" if _is_sandbox() else "production", _app_user_id])
+	print("RevenueCatIapProvider: environment=%s" % ["sandbox" if _is_sandbox() else "production"])
 
 
 func is_supported() -> bool:
@@ -111,16 +111,15 @@ func purchase() -> void:
 	payment_flow_started.emit()
 
 
-## Called from the "I've completed payment" overlay. Grants when the server
-## confirms the entitlement; if the payment hasn't propagated to the API yet
-## (or the request fails), falls back to trusting the player's confirmation —
-## a re-check on the next launch/restore reconciles it.
+## Called from the "I've completed payment" overlay. NEVER grants on trust —
+## only a server-backed check confirms the purchase. The check runs through the
+## restore path: when the purchase is found, _on_http_completed grants the
+## entitlement and reports RESTORED; otherwise the UI keeps the player waiting
+## and lets them retry (payments can take a few seconds to propagate).
 func confirm_payment() -> void:
 	if LevelManager.all_puzzles_unlocked:
 		return
-	LevelManager.unlock_all_albums()
-	purchase_completed.emit()
-	_fetch_customer_info()
+	_fetch_customer_info(true)
 
 
 ## Server-backed restore: queries RevenueCat for the current identity's
@@ -133,12 +132,13 @@ func restore_purchases() -> void:
 
 
 ## The RevenueCat App User ID: the account id ("itch:12345") when signed in,
-## otherwise the anonymous install id.
+## otherwise the anonymous install id. Logs changes so a run log shows exactly
+## which customer the provider is querying (e.g. after an OAuth sign-in).
 func _recompute_app_user_id() -> void:
-	if IdentityManager.is_signed_in():
-		_app_user_id = IdentityManager.get_prefixed_user_id()
-	else:
-		_app_user_id = _anon_id
+	var new_id: String = IdentityManager.get_prefixed_user_id() if IdentityManager.is_signed_in() else _anon_id
+	if new_id != _app_user_id:
+		_app_user_id = new_id
+		print("RevenueCatIapProvider: app_user_id -> %s" % _app_user_id)
 
 
 func _on_identity_signed_in(_user_id: String, _user_name: String) -> void:
@@ -285,13 +285,23 @@ func _on_http_completed(result: int, response_code: int, _headers: PackedStringA
 			_fetch_customer_info()
 
 
-## A one-time (lifetime) entitlement is active when its key exists in the
-## customer's entitlements — it has no expiry. Presence is enough here.
+## True when the customer owns the unlock. Checks the mapped entitlement first
+## (dashboard product -> entitlement mapping); falls back to the purchased
+## non-subscription product, which is where checkout purchases land when the
+## product is NOT mapped to an entitlement in the dashboard. Matches the
+## configured product id (iap/revenuecat_product_id), or any non-subscription
+## when unset (this project has exactly one purchasable product).
 func _has_active_entitlement(customer: Dictionary) -> bool:
 	var subscriber: Dictionary = customer.get("subscriber", {})
-	var entitlements: Dictionary = subscriber.get("entitlements", {})
 	var id: String = str(ProjectSettings.get_setting("iap/revenuecat_entitlement_id", "unlock_all"))
-	return entitlements.has(id)
+	if (subscriber.get("entitlements", {}) as Dictionary).has(id):
+		return true
+	var product_id: String = str(ProjectSettings.get_setting("iap/revenuecat_product_id", ""))
+	var non_subs: Dictionary = subscriber.get("non_subscriptions", {})
+	if product_id.is_empty():
+		return not non_subs.is_empty()
+	var purchases: Array = non_subs.get(product_id, [])
+	return purchases.size() > 0
 
 
 ## ── Identity persistence ───────────────────────────────────────────────────

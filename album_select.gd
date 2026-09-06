@@ -28,6 +28,7 @@ extends Control
 @onready var account_prompt_continue_button: Button = $AccountPromptOverlay/Panel/VBox/ContinueButton
 @onready var account_prompt_cancel_button: Button = $AccountPromptOverlay/Panel/VBox/CancelButton
 @onready var payment_overlay: Control = $PaymentOverlay
+@onready var payment_info_label: Label = $PaymentOverlay/Panel/VBox/InfoLabel
 @onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
 @onready var payment_cancel_button: Button = $PaymentOverlay/Panel/VBox/CancelButton
 @onready var iap_banner: Button = $IapBanner
@@ -38,6 +39,11 @@ var _pending_purchase_index: int = -1
 ## When true, proceed to checkout automatically after a sign-in succeeds
 ## (set when the player chose "Sign in" from the purchase account prompt).
 var _purchase_after_sign_in: bool = false
+
+## True while a payment confirmation is being server-verified: the result of
+## the next restore_finished belongs to the payment overlay, not the restore
+## button in Options.
+var _confirm_verify_pending: bool = false
 
 const STYLE := preload("res://assets/app_style.tres") as AppStyle
 
@@ -300,14 +306,24 @@ func _on_iap_payment_flow_started() -> void:
 	payment_overlay.visible = true
 
 
-## Player confirmed they finished the hosted checkout — grant the entitlement.
+## Player confirmed they finished the hosted checkout. The entitlement is NOT
+## granted on trust: the provider re-checks with the store server and only then
+## grants; this overlay stays up (with status text) until that result arrives.
 func _on_payment_confirmed() -> void:
-	payment_overlay.visible = false
+	if LevelManager.all_puzzles_unlocked:
+		payment_overlay.visible = false
+		return
+	_confirm_verify_pending = true
+	payment_confirm_button.disabled = true
+	payment_info_label.text = "Checking payment..."
 	IapManager.confirm_payment()
 
 
 ## Player cancelled the hosted-checkout confirmation.
 func _on_payment_canceled() -> void:
+	_confirm_verify_pending = false
+	payment_confirm_button.disabled = false
+	payment_info_label.text = "Complete your payment in the opened tab.\nTap Confirm once it's done."
 	payment_overlay.visible = false
 
 
@@ -361,7 +377,20 @@ func _on_remove_iap_pressed() -> void:
 
 ## Shows the restore outcome. On a successful restore the entitlement is
 ## granted by the IAP provider (albums_changed refreshes the grid + banner).
+## Also carries the payment-confirmation result (server-backed verify).
 func _on_iap_restore_finished(result: int) -> void:
+	if _confirm_verify_pending:
+		_confirm_verify_pending = false
+		payment_confirm_button.disabled = false
+		payment_info_label.text = "Complete your payment in the opened tab.\nTap Confirm once it's done."
+		match result:
+			IapProvider.RestoreResult.RESTORED:
+				payment_overlay.visible = false
+			IapProvider.RestoreResult.NOT_FOUND:
+				payment_info_label.text = "Payment not detected yet.\nComplete it in the opened tab, wait a moment, then tap Confirm again."
+			IapProvider.RestoreResult.UNAVAILABLE:
+				payment_info_label.text = "Could not reach the store.\nCheck your connection, then tap Confirm again."
+		return
 	match result:
 		IapProvider.RestoreResult.RESTORED:
 			iap_message_label.text = "Purchases restored!"
