@@ -108,9 +108,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
+color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="PurchaseOverlay" unique_id=2102000003]
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -359,9 +360,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
+color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="PaymentOverlay" unique_id=720096057]
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -414,9 +416,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
+color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="AccountPromptOverlay"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -473,9 +476,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
+color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="OAuthTokenOverlay"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
