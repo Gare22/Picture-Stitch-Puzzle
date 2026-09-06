@@ -17,12 +17,21 @@ extends IdentitySource
 ##     never leaves the device.
 ##   Web: itch.io game pages always embed the game in a cross-origin iframe,
 ##     where in-frame redirects are blocked (X-Frame-Options: sameorigin) and
-##     the token hash would land on the parent page the iframe cannot read. The
-##     out-of-band (oob) flow is used instead: the authorize page
-##     (redirect_uri=urn:ietf:wg:oauth:2.0:oob — register this as the web
-##     OAuth app's callback) opens in a NEW TAB and shows the API key; the
-##     player copies it and pastes it back into the game
-##     (manual_token_required -> submit_manual_token).
+##     the token hash would land on the parent page the iframe cannot read.
+##     The authorize page therefore opens in a NEW TAB (popups from iframes are
+##     allowed, in-frame navigations are not) and the token comes back one of
+##     two ways:
+##       * AUTO (recommended): identity/itch_web_callback_url points at a tiny
+##         relay page we host (web/itch_oauth_callback.html, e.g. on GitHub
+##         Pages — HTTPS required, must be registered as this OAuth app's
+##         callback URL). itch redirects the popup there, the page reads the
+##         hash and postMessages the token back to the game window — the player
+##         never copies anything.
+##       * FALLBACK: without a callback URL the out-of-band (oob) flow is used
+##         (redirect_uri=urn:ietf:wg:oauth:2.0:oob): itch shows the API key and
+##         the player pastes it into the game (manual_token_required ->
+##         submit_manual_token). The paste dialog doubles as the fallback UI
+##         for the auto flow (blocked popup, expired state, etc.).
 ##
 ## Session (access token + profile) persists in user://itch_session.cfg. On
 ## boot the profile is re-fetched to validate the token, so the user stays
@@ -49,8 +58,12 @@ var _pending_conn: StreamPeerTCP = null
 var _access_token: String = ""
 var _user_id: String = ""
 var _user_name: String = ""
-## The login URL for the currently-pending oob flow ("" when none).
+## The login URL for the currently-pending web flow ("" when none).
 var _oob_login_url: String = ""
+## Hosted relay page (identity/itch_web_callback_url); "" = oob fallback.
+var _callback_url: String = ""
+## Kept referenced so the JS->GDScript message bridge isn't garbage collected.
+var _web_msg_callback: JavaScriptObject = null
 
 @onready var _http: HTTPRequest = $HTTPRequest
 
@@ -60,6 +73,9 @@ func _ready() -> void:
 	if _is_web:
 		_client_id = str(ProjectSettings.get_setting("identity/itch_web_client_id", ""))
 		_redirect_uri = str(ProjectSettings.get_setting("identity/itch_web_redirect_uri", ""))
+		_callback_url = str(ProjectSettings.get_setting("identity/itch_web_callback_url", "")).strip_edges()
+		if not _callback_url.is_empty():
+			_install_web_message_listener()
 	else:
 		_client_id = str(ProjectSettings.get_setting("identity/itch_loopback_client_id", ""))
 		_redirect_uri = str(ProjectSettings.get_setting(
@@ -105,9 +121,11 @@ func sign_in() -> void:
 	_signing_in = true
 	_state = _generate_state()
 	if _is_web:
-		# Web is always oob (see header doc): itch game pages embed the game in
-		# a cross-origin iframe where in-frame redirects are blocked.
-		_begin_oob_flow()
+		# Web is always the popup flow (see header doc): itch game pages embed
+		# the game in a cross-origin iframe where in-frame redirects are
+		# blocked. With a hosted callback URL the token relays back
+		# automatically; without one the player pastes it (oob).
+		_begin_web_flow()
 	else:
 		if not _start_loopback_listener():
 			return  # failure already reported via sign_in_failed
@@ -162,24 +180,66 @@ func _build_authorize_url(p_redirect_uri := "", p_include_state := true) -> Stri
 	return AUTHORIZE_URL + "?" + "&".join(parts)
 
 
-## Embedded-web (iframe) sign-in: open the oob authorize page in a NEW TAB —
-## popups from iframes are allowed, in-frame navigations are not. itch shows
-## the API key; the player copies it and pastes it back via submit_manual_token.
-func _begin_oob_flow() -> void:
-	_oob_login_url = _build_authorize_url(OOB_REDIRECT_URI, false)
+## Web (iframe) sign-in: open the authorize page in a NEW TAB — popups from
+## iframes are allowed, in-frame navigations are not. The redirect target is
+## the hosted relay page (auto, token comes back via postMessage) or the oob
+## urn (the player pastes the API key). The paste dialog is shown either way —
+## it doubles as the fallback when the auto relay is blocked or times out.
+func _begin_web_flow() -> void:
+	var use_auto := not _callback_url.is_empty()
+	_oob_login_url = _build_authorize_url(_callback_url if use_auto else OOB_REDIRECT_URI, use_auto)
 	# This runs from the rAF game loop, not the DOM event call stack, so a
-	# browser popup blocker may refuse it; the paste dialog then offers a
-	# direct button (real user gesture) plus the URL itself as a fallback.
+	# browser popup blocker may refuse it; the dialog then offers a direct
+	# button (real user gesture) plus the URL itself as a fallback.
 	JavaScriptBridge.eval("window.open('%s', '_blank')" % _oob_login_url)
 	manual_token_required.emit(_oob_login_url)
 
 
-## Re-opens the oob login page — called from a direct button click, which is a
+## Re-opens the web login page — called from a direct button click, which is a
 ## real user gesture that popup blockers allow even when the auto-open above
 ## was refused.
 func request_oob_login_page() -> void:
 	if _is_web and not _oob_login_url.is_empty():
 		JavaScriptBridge.eval("window.open('%s', '_blank')" % _oob_login_url)
+
+
+## Installs the popup -> game message bridge (web only, auto flow). The relay
+## page postMessages {type:"itch_oauth", access_token, state} to this window;
+## the JS wrapper filters for that payload and hands clean strings to GDScript.
+func _install_web_message_listener() -> void:
+	if not _is_web:
+		return
+	_web_msg_callback = JavaScriptBridge.create_callback(_on_web_oauth_message)
+	var window_obj: JavaScriptObject = JavaScriptBridge.get_interface("window")
+	window_obj.__itchOauthHandler = _web_msg_callback
+	JavaScriptBridge.eval("""
+		window.addEventListener('message', function (e) {
+			var d = e.data;
+			if (d && d.type === 'itch_oauth' && d.access_token) {
+				window.__itchOauthHandler(d.access_token, d.state || '');
+			}
+		});
+	""")
+
+
+## The relay page's token arrives here. State is validated when present (the
+## auto flow always sends it); the token is then persisted and profile-fetched
+## exactly like every other flow.
+func _on_web_oauth_message(args: Array) -> void:
+	var token: String = str(args[0] if args.size() > 0 else "")
+	var state: String = str(args[1] if args.size() > 1 else "")
+	if not _signing_in:
+		return
+	if not state.is_empty() and state != _state:
+		printerr("ItchIdentitySource: web OAuth state mismatch — ignoring")
+		sign_in_failed.emit("OAuth state mismatch")
+		return
+	if token.is_empty():
+		return
+	_signing_in = false
+	_access_token = token
+	_save_session()
+	_fetch_profile()
 
 
 ## Feeds a manually pasted oob token back and validates it with the profile

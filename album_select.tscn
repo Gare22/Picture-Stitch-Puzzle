@@ -446,8 +446,8 @@ theme_override_constants/separation = 12
 
 [node name="InfoLabel" type="Label" parent="OAuthTokenOverlay/Panel/VBox"]
 layout_mode = 2
-text = "Open the itch.io login page in a new tab,
-copy your API key, then paste it below to sign in."
+text = "Sign in to itch.io in the new tab.
+You'll be signed in automatically; if not, copy your API key and paste it below."
 horizontal_alignment = 1
 autowrap_mode = 2
 

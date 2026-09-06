@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>itch.io sign-in</title>
+<style>body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333}</style>
+</head>
+<body>
+<p id="status">Signing in&hellip;</p>
+<script>
+(function () {
+  // OAuth implicit flow: the access token arrives in the URL hash fragment of
+  // this page. Relay it to the game window that opened us, then clean up.
+  var params = new URLSearchParams(window.location.hash.slice(1));
+  var token = params.get("access_token");
+  var state = params.get("state");
+  var status = document.getElementById("status");
+  if (token && window.opener) {
+    window.opener.postMessage(
+      { type: "itch_oauth", access_token: token, state: state || "" },
+      "*"
+    );
+    // Never leave the token in the address bar.
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+    status.textContent = "Signed in! You can close this tab.";
+    setTimeout(function () { window.close(); }, 1500);
+  } else {
+    status.textContent = "Sign-in failed. Close this tab and try again.";
+  }
+})();
+</script>
+</body>
+</html>

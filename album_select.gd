@@ -246,6 +246,9 @@ func _on_identity_sign_out_pressed() -> void:
 
 
 func _on_identity_signed_in(_user_id: String, _user_name: String) -> void:
+	# An auto-relay sign-in may have completed while the paste dialog was up —
+	# dismiss it.
+	oauth_token_overlay.visible = false
 	_update_identity_ui()
 	# If the player chose "Sign in" from the purchase prompt, continue to
 	# checkout now that the account is active (Android/desktop only — on web the

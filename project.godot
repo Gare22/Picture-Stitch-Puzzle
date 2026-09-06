@@ -50,8 +50,8 @@ revenuecat_product_id="picstitch_unlock_all"
 [identity]
 
 provider_id="itch"
-itch_client_id=""
 itch_web_redirect_uri="https://gares-games.itch.io/picture-stitch"
+itch_web_callback_url=""
 itch_loopback_redirect_uri="http://127.0.0.1:39201/callback"
 itch_loopback_port=39201
 itch_web_client_id="59a278dfd6cfcc5be257f136a918435d"
