@@ -3,42 +3,97 @@ extends Node
 ## Orchestrates the puzzle game: timer, board setup, win detection, and menu navigation.
 
 @onready var timer_label: Label = $TimerLabel
-@onready var menu_button: Button = $MenuButton
-@onready var restart_button: Button = $RestartButton
-@onready var win_message: Label = $WinMessage
-@onready var win_button: Button = $WinButton
+@onready var restart_button: Button = $MarginContainer/HBoxContainer/RestartButton
+@onready var back_button: Button = $MarginContainer/HBoxContainer/BackButton
+@onready var back_dialog: ConfirmationDialog = $BackConfirmDialog
+@onready var restart_dialog: ConfirmationDialog = $RestartConfirmDialog
+@onready var currency_hud: PanelContainer = $MarginContainer/HBoxContainer/CurrencyHUD
+@onready var win_panel: Control = $GameLayout/WinPanel
 
 var elapsed_time: float = 0.0
 var is_complete: bool = false
 
-## Default puzzle dimensions.
-const DEFAULT_COLUMNS: int = 4
-const DEFAULT_ROWS: int = 4
-const SOURCE_IMAGE_PATH: String = "res://assets/puzzle_image.png"
+## When true, cycles through all grid sizes 3×3→6×6 for testing.
+@export var test_grid_cycle: bool = false
+
+## Test-mode puzzle dimensions: cycles through all 3×3 to 6×6 combos.
+static var _test_cols: int = 3
+static var _test_rows: int = 3
+
+var puzzle_columns: int
+var puzzle_rows: int
+
+
+## Loads a texture from a path, handling both res:// (imported) and user:// (runtime) paths.
+## Uses ResourceLoader for res:// paths because FileAccess.file_exists() fails
+## on exported builds (imported resources are remapped to .ctex and the raw
+## source file is not present).
+func _load_texture(path: String) -> Texture2D:
+	if path.is_empty():
+		return null
+	if path.begins_with("res://"):
+		if not ResourceLoader.exists(path):
+			return null
+		return load(path) as Texture2D
+	# user:// or absolute path — use Image API for runtime-downloaded images
+	if not FileAccess.file_exists(path):
+		return null
+	var img := Image.load_from_file(path)
+	if img == null or img.is_empty() or img.get_width() == 0:
+		return null
+	# Generate mipmaps so downscaled rendering (album covers, puzzle pieces)
+	# looks as smooth as imported res:// textures, which get mipmaps from the
+	# import pipeline automatically.
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
 
 
 func _ready() -> void:
-	var image = load(SOURCE_IMAGE_PATH) as Texture2D
-	if image == null:
-		push_error("Picture Puzzle: Could not load source image at ", SOURCE_IMAGE_PATH)
+	if test_grid_cycle:
+		puzzle_columns = _test_cols
+		puzzle_rows = _test_rows
+	else:
+		puzzle_columns = LevelManager.current_grid_size
+		puzzle_rows = LevelManager.current_grid_size
+
+	var level: Dictionary = LevelManager.get_current_level()
+	if level.is_empty():
+		push_error("Picture Puzzle: No level selected")
 		return
 
-	# Locate the PuzzleBoard — it's a direct child
-	var board = $PuzzleBoard
+	var image = _load_texture(level["path"])
+	if image == null:
+		push_error("Picture Puzzle: Could not load image at ", level["path"])
+		return
+
+	# Locate the PuzzleBoard — it's inside the CenterContainer in the GameLayout VBox
+	var board = $GameLayout/BoardCenter/PuzzleBoard
 	if board == null:
 		push_error("Picture Puzzle: PuzzleBoard node not found")
 		return
 
 	# Set to true to show numbered labels on each piece (for debugging)
 	board.test_mode = false
-	board.setup(image, DEFAULT_COLUMNS, DEFAULT_ROWS)
+	board.setup(image, puzzle_columns, puzzle_rows)
 
-	menu_button.pressed.connect(_on_menu_pressed)
-	restart_button.pressed.connect(_on_restart_pressed)
-	win_button.pressed.connect(_on_menu_pressed)
+	# Advance test grid size for next puzzle
+	if test_grid_cycle:
+		_test_cols += 1
+		if _test_cols > 6:
+			_test_cols = 3
+			_test_rows += 1
+			if _test_rows > 6:
+				_test_rows = 3
 
-	win_message.visible = false
-	win_button.visible = false
+	restart_button.pressed.connect(_on_restart_button_pressed)
+	restart_dialog.get_ok_button().text = "Restart puzzle"
+	restart_dialog.get_cancel_button().text = "Keep working on it"
+	restart_dialog.confirmed.connect(_on_restart_pressed)
+
+	back_button.pressed.connect(_on_back_pressed)
+	back_dialog.get_ok_button().text = "Go back to menu"
+	back_dialog.get_cancel_button().text = "Continue puzzle"
+	back_dialog.confirmed.connect(_on_back_to_album)
 
 
 func _process(delta: float) -> void:
@@ -66,8 +121,8 @@ static func _format_time(total_seconds: float) -> String:
 		return "%02d" % [seconds]
 
 
-func _on_menu_pressed() -> void:
-	get_tree().reload_current_scene()
+func _on_restart_button_pressed() -> void:
+	restart_dialog.popup_centered()
 
 
 func _on_restart_pressed() -> void:
@@ -77,5 +132,37 @@ func _on_restart_pressed() -> void:
 ## Called by PuzzleBoard when all pieces are in their correct positions.
 func on_puzzle_complete() -> void:
 	is_complete = true
-	win_message.visible = true
-	win_button.visible = true
+	var diff_idx := LevelManager.grid_size_to_difficulty_index(LevelManager.current_grid_size)
+	LevelManager.mark_star_earned(LevelManager.current_album_index, LevelManager.current_index, diff_idx)
+	var coins_earned := LevelManager.reward_for_difficulty(diff_idx)
+
+	# Show the currency HUD
+	currency_hud.visible = true
+
+	# Configure and show the win panel (VBox layout handles the shift automatically)
+	var is_max := LevelManager.current_grid_size >= 6
+	win_panel.setup(coins_earned, is_max)
+	win_panel.set_reward_wheel($RewardWheel)
+	win_panel.visible = true
+	win_panel.next_difficulty_pressed.connect(_on_next_difficulty)
+	win_panel.play_again_pressed.connect(_on_restart_pressed)
+	win_panel.back_to_album_pressed.connect(_on_back_to_album)
+	win_panel.coins_claimed.connect(_on_coins_claimed)
+
+
+func _on_next_difficulty() -> void:
+	# Advance to the next difficulty level
+	LevelManager.current_grid_size = mini(LevelManager.current_grid_size + 1, 6)
+	get_tree().reload_current_scene()
+
+
+func _on_back_pressed() -> void:
+	back_dialog.popup_centered()
+
+
+func _on_back_to_album() -> void:
+	get_tree().change_scene_to_file("res://album_select.tscn")
+
+
+func _on_coins_claimed(amount: int) -> void:
+	LevelManager.add_currency(amount)

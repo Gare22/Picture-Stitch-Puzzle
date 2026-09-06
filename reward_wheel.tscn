@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://b58k0vdavh41m"]
+
+[ext_resource type="Script" uid="uid://c45et0h1kr2lr" path="res://reward_wheel.gd" id="1_rw"]
+[ext_resource type="Texture2D" uid="uid://c35w282xrg3vs" path="res://assets/wheel_placeholder.png" id="2_wheel"]
+[ext_resource type="Texture2D" uid="uid://c8oysp8tu0cx" path="res://assets/wheel_pointer.png" id="3_ptr"]
+
+[node name="RewardWheel" type="Control" unique_id=1261048719]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rw")
+
+[node name="Dim" type="ColorRect" parent="." unique_id=227956134]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="WheelHolder" type="Control" parent="." unique_id=532118315]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -160.0
+offset_right = 160.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WheelTexture" type="TextureRect" parent="WheelHolder" unique_id=1047872245]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_wheel")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Pointer" type="TextureRect" parent="WheelHolder" unique_id=132682358]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 32.0
+offset_top = -123.0
+offset_right = 96.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+texture = ExtResource("3_ptr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ResultLabel" type="Label" parent="." unique_id=84023534]
+layout_mode = 1
+offset_top = 90.0
+offset_right = 360.0
+offset_bottom = 150.0
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="CollectButton" type="Button" parent="." unique_id=1926524022]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -170.0
+offset_right = 80.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Collect"

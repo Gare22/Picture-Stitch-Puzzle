@@ -8,19 +8,62 @@
 
 config_version=5
 
+[ads]
+
+provider_id="auto"
+web_simulate_rewarded=true
+
 [application]
 
 config/name="Picture Puzzle"
-run/main_scene="res://puzzle_game.tscn"
+run/main_scene="res://album_select.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+
+[autoload]
+
+LevelManager="*res://autoload/level_manager.tscn"
+IdentityManager="*res://autoload/identity_manager.tscn"
+IapManager="*res://autoload/iap_manager.tscn"
+AdsManager="*res://autoload/ads_manager.tscn"
 
 [display]
 
-window/size/viewport_width=400
-window/size/viewport_height=640
-window/stretch/mode="viewport"
+window/size/viewport_width=360
+window/size/viewport_height=800
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/GodotGooglePlayBilling/plugin.cfg")
+
+[iap]
+
+provider_id="revenuecat"
+web_checkout_url="https://pay.rev.cat/sandbox/wbibryznzowvojza/"
+web_price_label="$1.99"
+revenuecat_public_key="rcb_WGomPNHlZqOXtpwTTZuyLNpVLyWl"
+revenuecat_entitlement_id="picture_stitch_puzzle_pro"
+revenuecat_product_id="picstitch_unlock_all"
+
+[identity]
+
+provider_id="itch"
+itch_web_redirect_uri="https://gares-games.itch.io/picture-stitch"
+itch_web_callback_url=""
+itch_loopback_redirect_uri="http://127.0.0.1:39201/callback"
+itch_loopback_port=39201
+itch_web_client_id="59a278dfd6cfcc5be257f136a918435d"
+itch_loopback_client_id="ff8b77ba13c96828c9069dfd295e5e5f"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://addons/admob/gdscript/sample/translations/admob_sample.en.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.pt_BR.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.es.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.zh_CN.translation", "res://addons/admob/gdscript/sample/translations/admob_sample.ja.translation")
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=3
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

@@ -1,16 +1,52 @@
 [gd_scene format=3 uid="uid://bw63grendnsql"]
 
 [ext_resource type="Script" uid="uid://dyqsfrnxmwjsu" path="res://puzzle_game.gd" id="1_fbgxn"]
-[ext_resource type="PackedScene" path="res://board/puzzle_board.tscn" id="2_i3a0x"]
+[ext_resource type="PackedScene" uid="uid://b3kg23vxtacch" path="res://board/puzzle_board.tscn" id="2_i3a0x"]
+[ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="3_bg"]
+[ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
+[ext_resource type="PackedScene" uid="uid://c8dm16j6t6v83" path="res://win_panel.tscn" id="5_wp"]
+[ext_resource type="PackedScene" uid="uid://b58k0vdavh41m" path="res://reward_wheel.tscn" id="6_rw"]
 
 [node name="PuzzleGame" type="Node" unique_id=1092117998]
 script = ExtResource("1_fbgxn")
 
-[node name="PuzzleBoard" parent="." unique_id=1425944829 instance=ExtResource("2_i3a0x")]
+[node name="Background" type="TextureRect" parent="." unique_id=499967374]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="GameLayout" type="VBoxContainer" parent="." unique_id=532230944]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="BoardCenter" type="CenterContainer" parent="GameLayout" unique_id=1320003582]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PuzzleBoard" parent="GameLayout/BoardCenter" unique_id=1425944829 instance=ExtResource("2_i3a0x")]
+layout_mode = 2
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
+[node name="WinPanel" parent="GameLayout" unique_id=960259601 instance=ExtResource("5_wp")]
+visible = false
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
 [node name="TimerLabel" type="Label" parent="." unique_id=422968927]
+visible = false
 custom_minimum_size = Vector2(400, 30)
 offset_top = 10.0
 offset_right = 400.0
@@ -18,37 +54,53 @@ offset_bottom = 40.0
 text = "00"
 horizontal_alignment = 1
 
-[node name="MenuButton" type="Button" parent="." unique_id=1874506301]
-custom_minimum_size = Vector2(80, 30)
-offset_left = 10.0
-offset_top = 600.0
-offset_right = 90.0
-offset_bottom = 630.0
-text = "New Puzzle"
+[node name="BackConfirmDialog" type="ConfirmationDialog" parent="." unique_id=1318771732]
+oversampling_override = 1.0
+title = "Leave Puzzle"
+position = Vector2i(0, 36)
+size = Vector2i(346, 100)
+dialog_text = "Leave this puzzle and return to the album?"
 
-[node name="RestartButton" type="Button" parent="." unique_id=1069824365]
-custom_minimum_size = Vector2(80, 30)
-offset_left = 310.0
-offset_top = 600.0
-offset_right = 390.0
-offset_bottom = 630.0
-text = "Restart"
+[node name="RestartConfirmDialog" type="ConfirmationDialog" parent="." unique_id=416220583]
+title = "Restart Puzzle"
+dialog_text = "Do you want to restart the puzzle?"
 
-[node name="WinMessage" type="Label" parent="." unique_id=337760106]
-visible = false
-custom_minimum_size = Vector2(400, 40)
-offset_top = 280.0
-offset_right = 400.0
-offset_bottom = 320.0
-text = "Puzzle Complete!"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1150073110]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
-[node name="WinButton" type="Button" parent="." unique_id=1127578031]
-visible = false
-custom_minimum_size = Vector2(200, 50)
-offset_left = 100.0
-offset_top = 330.0
-offset_right = 300.0
-offset_bottom = 380.0
-text = "New Puzzle"
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1393794304]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="RestartButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1069824365]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 8
+text = "R"
+
+[node name="Control" type="Control" parent="MarginContainer/HBoxContainer" unique_id=1113417322]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CurrencyHUD" parent="MarginContainer/HBoxContainer" unique_id=1369080865 instance=ExtResource("4_ch")]
+layout_mode = 2
+
+[node name="Control2" type="Control" parent="MarginContainer/HBoxContainer" unique_id=2005479584]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1770697438]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 8
+text = "←"
+
+[node name="RewardWheel" parent="." unique_id=1362436111 instance=ExtResource("6_rw")]

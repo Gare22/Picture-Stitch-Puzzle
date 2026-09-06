@@ -1,14 +1,22 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dfp3q4cs0nabf"]
 
-[ext_resource type="Script" path="res://piece/puzzle_piece.gd" id="1_a74qk"]
+[ext_resource type="Script" uid="uid://u4ykkk6ox58w" path="res://piece/puzzle_piece.gd" id="1_a74qk"]
+[ext_resource type="AudioStream" uid="uid://d3uk8n1egdhgx" path="res://sounds/Game_PickupBlipQuicker.wav" id="2_me4qw"]
+[ext_resource type="AudioStream" uid="uid://bcq7nasa1pqop" path="res://sounds/drop_blip.wav" id="2_pickup"]
 
-[node name="PuzzlePiece" type="TextureRect"]
+[node name="PuzzlePiece" type="TextureRect" unique_id=1634430269]
 script = ExtResource("1_a74qk")
 
-[node name="PieceLabel" type="Label" parent="."]
+[node name="PieceLabel" type="Label" parent="." unique_id=1180125647]
 visible = false
 layout_mode = 0
 size_flags_horizontal = 4
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="PickupSound" type="AudioStreamPlayer" parent="." unique_id=1408736007]
+stream = ExtResource("2_me4qw")
+
+[node name="DropSound" type="AudioStreamPlayer" parent="." unique_id=837954591]
+stream = ExtResource("2_pickup")

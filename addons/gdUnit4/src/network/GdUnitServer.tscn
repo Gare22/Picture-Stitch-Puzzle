@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cn5mp3tmi2gb1"]
+
+[ext_resource type="Script" uid="uid://f1fsksk5yltc" path="res://addons/gdUnit4/src/network/GdUnitServer.gd" id="1"]
+[ext_resource type="Script" uid="uid://c28r85qg7xr4q" path="res://addons/gdUnit4/src/network/GdUnitTcpServer.gd" id="2"]
+
+[node name="Control" type="Node" unique_id=2032736878]
+script = ExtResource("1")
+
+[node name="TcpServer" type="Node" parent="." unique_id=1978633700]
+script = ExtResource("2")

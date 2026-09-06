@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://nfnp1rc4i7qo"]
+
+[ext_resource type="Script" uid="uid://dnpmfhbtn51ei" path="res://currency_hud.gd" id="1_ch"]
+[ext_resource type="Texture2D" uid="uid://cibcfqixig1t3" path="res://assets/coin.png" id="2_kxijx"]
+
+[node name="CurrencyHUD" type="PanelContainer" unique_id=1769940593]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -56.0
+offset_right = 56.0
+offset_bottom = 36.0
+grow_horizontal = 2
+script = ExtResource("1_ch")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1714747398]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=397217528]
+layout_mode = 2
+
+[node name="CoinLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=73647982]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer" unique_id=992364441]
+layout_mode = 2
+texture = ExtResource("2_kxijx")
+expand_mode = 3
+stretch_mode = 4

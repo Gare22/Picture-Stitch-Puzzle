@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b3qyo34qt2j62"]
+
+[ext_resource type="Script" uid="uid://4lgvmu4dx0ne" path="res://autoload/providers/google_play_iap.gd" id="1_gp"]
+[ext_resource type="Script" uid="uid://dncdv6imkqra2" path="res://addons/GodotGooglePlayBilling/BillingClient.gd" id="2_billing"]
+
+[node name="GooglePlayIap" type="Node" unique_id=1793741900]
+script = ExtResource("1_gp")
+
+[node name="BillingClient" type="Node" parent="." unique_id=1210264953]
+script = ExtResource("2_billing")

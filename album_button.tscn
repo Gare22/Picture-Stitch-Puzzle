@@ -1,0 +1,145 @@
+[gd_scene format=3 uid="uid://lbumbutton01"]
+
+[ext_resource type="Script" uid="uid://bvm2xgntrlhyu" path="res://album_button.gd" id="1_ab"]
+[ext_resource type="Texture2D" uid="uid://dbuleg7024twm" path="res://assets/star.png" id="2_star"]
+
+[node name="AlbumButton" type="Control" unique_id=1400865126]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_ab")
+
+[node name="CoverOld" type="TextureRect" parent="." unique_id=1539187124]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="CoverNew" type="TextureRect" parent="." unique_id=384966219]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="LockOverlay" type="Control" parent="." unique_id=2101000001]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dim" type="ColorRect" parent="LockOverlay" unique_id=2101000002]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="LockLabel" type="Label" parent="LockOverlay" unique_id=2101000003]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -40.0
+offset_right = 60.0
+offset_bottom = -8.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Locked"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PriceLabel" type="Label" parent="LockOverlay" unique_id=2101000004]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 8.0
+offset_right = 60.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ClickButton" type="Button" parent="." unique_id=581975339]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+mouse_filter = 1
+flat = true
+
+[node name="NameLabel" type="Label" parent="ClickButton" unique_id=2060122987]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.77000004
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Temp"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StarHud" type="HBoxContainer" parent="." unique_id=280565167]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.03
+anchor_right = 1.0
+anchor_bottom = 0.03
+offset_left = -74.0
+offset_right = -4.0
+offset_bottom = 22.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 3
+alignment = 2
+
+[node name="StarCountLabel" type="Label" parent="StarHud" unique_id=123321683]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 12
+text = "0/12"
+vertical_alignment = 1
+
+[node name="StarIcon" type="TextureRect" parent="StarHud" unique_id=1500742505]
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 4
+stretch_mode = 5
+
+[node name="CoverTimer" type="Timer" parent="." unique_id=55870034]

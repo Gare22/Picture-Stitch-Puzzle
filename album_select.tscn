@@ -1,0 +1,473 @@
+[gd_scene format=3 uid="uid://lbumselect01"]
+
+[ext_resource type="Script" uid="uid://cykxi4nkknhtw" path="res://album_select.gd" id="1_as"]
+[ext_resource type="Script" uid="uid://ov0c85ywi23v" path="res://debug/multi_instance_window.gd" id="2_dbg"]
+[ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="3_bg"]
+[ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_t1w0i"]
+[ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
+
+[node name="AlbumSelect" type="Control" unique_id=1836148606]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_as")
+
+[node name="Background" type="TextureRect" parent="." unique_id=63967828]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1865265365]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 65.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_t1w0i")
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=1173451490]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=1282662350]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=1538581140]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="BackButton" type="Button" parent="." unique_id=1618479630]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 130.0
+offset_top = -45.0
+offset_right = -130.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Back"
+
+[node name="DebugWindow" type="Node" parent="." unique_id=251302199]
+script = ExtResource("2_dbg")
+
+[node name="CurrencyHUD" parent="." unique_id=1256850830 instance=ExtResource("4_ch")]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -132.0
+offset_top = -45.0
+offset_right = -20.0
+offset_bottom = -9.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="PurchaseOverlay" type="Control" parent="." unique_id=2102000001]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="PurchaseOverlay" unique_id=2102000002]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="PurchaseOverlay" unique_id=2102000003]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -110.0
+offset_right = 150.0
+offset_bottom = 110.0
+
+[node name="VBox" type="VBoxContainer" parent="PurchaseOverlay/Panel" unique_id=2102000004]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="InfoLabel" type="Label" parent="PurchaseOverlay/Panel/VBox" unique_id=2102000005]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ConfirmButton" type="Button" parent="PurchaseOverlay/Panel/VBox" unique_id=2102000006]
+layout_mode = 2
+text = "Buy"
+
+[node name="CancelButton" type="Button" parent="PurchaseOverlay/Panel/VBox" unique_id=2102000007]
+layout_mode = 2
+text = "Cancel"
+
+[node name="MessageLabel" type="Label" parent="PurchaseOverlay/Panel/VBox" unique_id=2102000008]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+horizontal_alignment = 1
+
+[node name="DownloadLabel" type="Label" parent="." unique_id=2102000009]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.02
+anchor_right = 0.5
+anchor_bottom = 0.02
+offset_left = -130.0
+offset_right = 130.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "Downloading more albums..."
+horizontal_alignment = 1
+
+[node name="IapBanner" type="Button" parent="." unique_id=1410400558]
+visible = false
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 6.0
+offset_right = -16.0
+offset_bottom = 58.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 13
+text = "Enjoy the game?
+Unlock all puzzles for $1.99"
+autowrap_mode = 3
+
+[node name="OptionsButton" type="Button" parent="." unique_id=2102000010]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -45.0
+offset_right = 120.0
+offset_bottom = -10.0
+grow_vertical = 0
+text = "Options"
+
+[node name="OptionsOverlay" type="Control" parent="." unique_id=2102000011]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="OptionsOverlay" unique_id=2102000012]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="OptionsOverlay" unique_id=2102000013]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -130.0
+offset_right = 160.0
+offset_bottom = 130.0
+
+[node name="VBox" type="VBoxContainer" parent="OptionsOverlay/Panel" unique_id=2102000014]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=2102000015]
+layout_mode = 2
+text = "Options"
+horizontal_alignment = 1
+
+[node name="ResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000016]
+layout_mode = 2
+text = "Reset All Progress"
+
+[node name="ConfirmLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=2102000017]
+visible = false
+layout_mode = 2
+text = "Erase ALL progress? This cannot be undone."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ConfirmResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000018]
+visible = false
+layout_mode = 2
+text = "Yes, Erase Everything"
+
+[node name="CancelResetButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000019]
+visible = false
+layout_mode = 2
+text = "Cancel"
+
+[node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=494256681]
+layout_mode = 2
+text = "Restore Purchases"
+
+[node name="RemoveIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=757655518]
+visible = false
+layout_mode = 2
+text = "Remove IAP (dev only)"
+
+[node name="IapMessageLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=1210120735]
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="IdentityStatusLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Not signed in"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="IdentitySignInButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Sign in with itch.io"
+
+[node name="IdentitySignOutButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Sign out"
+
+[node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
+layout_mode = 2
+text = "Close"
+
+[node name="PaymentOverlay" type="Control" parent="." unique_id=1653564972]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="PaymentOverlay" unique_id=234097290]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="PaymentOverlay" unique_id=720096057]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -80.0
+offset_right = 170.0
+offset_bottom = 80.0
+
+[node name="VBox" type="VBoxContainer" parent="PaymentOverlay/Panel" unique_id=1296553243]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="InfoLabel" type="Label" parent="PaymentOverlay/Panel/VBox" unique_id=1153587783]
+layout_mode = 2
+text = "Complete your payment in the opened tab.
+Tap Confirm once it's done."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ConfirmButton" type="Button" parent="PaymentOverlay/Panel/VBox" unique_id=107979957]
+layout_mode = 2
+text = "I've completed payment"
+
+[node name="CancelButton" type="Button" parent="PaymentOverlay/Panel/VBox" unique_id=895744035]
+layout_mode = 2
+text = "Cancel"
+
+[node name="AccountPromptOverlay" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="AccountPromptOverlay"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="AccountPromptOverlay"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -110.0
+offset_right = 170.0
+offset_bottom = 110.0
+
+[node name="VBox" type="VBoxContainer" parent="AccountPromptOverlay/Panel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="InfoLabel" type="Label" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Sign in with itch.io to restore your purchase on any device.
+If you continue without signing in, your purchase is tied to this device and can't be recovered."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SignInButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Sign in with itch.io"
+
+[node name="ContinueButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Continue without account"
+
+[node name="CancelButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Not now"
+
+[node name="OAuthTokenOverlay" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="OAuthTokenOverlay"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="OAuthTokenOverlay"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -120.0
+offset_right = 220.0
+offset_bottom = 120.0
+
+[node name="VBox" type="VBoxContainer" parent="OAuthTokenOverlay/Panel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="InfoLabel" type="Label" parent="OAuthTokenOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Sign in to itch.io in the new tab.
+You'll be signed in automatically; if not, copy your API key and paste it below."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="OpenLoginButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Open itch.io login page"
+
+[node name="LoginUrlEdit" type="LineEdit" parent="OAuthTokenOverlay/Panel/VBox"]
+layout_mode = 2
+editable = false
+placeholder_text = "Login URL (shown if the tab didn't open)"
+
+[node name="TokenEdit" type="LineEdit" parent="OAuthTokenOverlay/Panel/VBox"]
+layout_mode = 2
+placeholder_text = "Paste your itch.io API key here"
+
+[node name="ConfirmButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Sign in"
+
+[node name="CancelButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Cancel"

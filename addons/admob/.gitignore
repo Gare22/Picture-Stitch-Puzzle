@@ -1,0 +1,10 @@
+*.zip
+
+# Android 
+!android/
+
+# iOS
+!ios/
+
+/downloads/*
+!/downloads/.gitkeep

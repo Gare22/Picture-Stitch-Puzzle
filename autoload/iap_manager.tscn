@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dbdhe78auu3a6"]
+
+[ext_resource type="Script" uid="uid://8vmecmkcbogx" path="res://autoload/iap_manager.gd" id="1_iap"]
+
+[node name="IapManager" type="Node" unique_id=1985527960]
+script = ExtResource("1_iap")
+TEST_MODE = false

@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://dn2ne61cpawii"]
+
+[ext_resource type="Script" uid="uid://dr6jbwidpgo0o" path="res://level_button.gd" id="1_lb"]
+[ext_resource type="Texture2D" uid="uid://dbuleg7024twm" path="res://assets/star.png" id="2_star"]
+
+[node name="LevelButton" type="Button" unique_id=1332221288]
+custom_minimum_size = Vector2(80, 160)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_lb")
+
+[node name="StarRow" type="HBoxContainer" parent="." unique_id=856638387]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.75
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="Star0" type="TextureRect" parent="StarRow" unique_id=161726143]
+modulate = Color(0, 0, 0, 0.5803922)
+custom_minimum_size = Vector2(24, 16)
+layout_mode = 2
+size_flags_horizontal = 9
+size_flags_vertical = 9
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 4
+stretch_mode = 5
+
+[node name="Star1" type="TextureRect" parent="StarRow" unique_id=391111671]
+modulate = Color(0, 0, 0, 0.5803922)
+custom_minimum_size = Vector2(24, 16)
+layout_mode = 2
+size_flags_horizontal = 9
+size_flags_vertical = 9
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 4
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="StarRow" unique_id=976936991]
+modulate = Color(0, 0, 0, 0.5803922)
+custom_minimum_size = Vector2(24, 16)
+layout_mode = 2
+size_flags_horizontal = 9
+size_flags_vertical = 9
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 4
+stretch_mode = 5

@@ -1,6 +1,7 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b3kg23vxtacch"]
 
-[ext_resource type="Script" path="res://board/puzzle_board.gd" id="1_c7uit"]
+[ext_resource type="Script" uid="uid://d3vpe1cx2uq5f" path="res://board/puzzle_board.gd" id="1_c7uit"]
 
-[node name="PuzzleBoard" type="GridContainer"]
+[node name="PuzzleBoard" type="GridContainer" unique_id=249074780]
 script = ExtResource("1_c7uit")
+test_mode = true

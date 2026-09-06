@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://608v5vdgkk01"]
+
+[ext_resource type="Script" uid="uid://bemd7ljfyx4ww" path="res://difficulty_menu.gd" id="1_dm"]
+[ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="2_44gva"]
+[ext_resource type="Texture2D" uid="uid://dbuleg7024twm" path="res://assets/star.png" id="2_star"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_44gva"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.18, 0.18, 0.18, 0.64705884)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_44gva"]
+
+[node name="DifficultyMenu" type="Control" unique_id=378900477]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dm")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1049815223]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_44gva")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ContentVBox" type="VBoxContainer" parent="." unique_id=1712345678]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -169.0
+offset_top = -376.0
+offset_right = 169.0
+offset_bottom = 376.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="PanelContainer" type="PanelContainer" parent="ContentVBox" unique_id=151109837]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_44gva")
+
+[node name="PuzzleTexture" type="TextureRect" parent="ContentVBox/PanelContainer" unique_id=885050456]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+expand_mode = 5
+stretch_mode = 5
+
+[node name="Panel" type="PanelContainer" parent="ContentVBox" unique_id=434888778]
+layout_mode = 2
+size_flags_horizontal = 9
+theme_override_styles/panel = SubResource("StyleBoxEmpty_44gva")
+
+[node name="VBox" type="VBoxContainer" parent="ContentVBox/Panel" unique_id=1033646120]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EasyButton" type="Button" parent="ContentVBox/Panel/VBox" unique_id=886261475]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Easy 4x4"
+
+[node name="Star" type="TextureRect" parent="ContentVBox/Panel/VBox/EasyButton" unique_id=1048447627]
+modulate = Color(0, 0, 0, 0.5803922)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -10.0
+offset_right = 28.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MediumButton" type="Button" parent="ContentVBox/Panel/VBox" unique_id=849581862]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Medium 5x5"
+
+[node name="Star" type="TextureRect" parent="ContentVBox/Panel/VBox/MediumButton" unique_id=1420054378]
+modulate = Color(0, 0, 0, 0.5803922)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -10.0
+offset_right = 28.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HardButton" type="Button" parent="ContentVBox/Panel/VBox" unique_id=1703328552]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Hard 6x6"
+
+[node name="Star" type="TextureRect" parent="ContentVBox/Panel/VBox/HardButton" unique_id=830947473]
+modulate = Color(0, 0, 0, 0.5803922)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -10.0
+offset_right = 28.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackButton" type="Button" parent="ContentVBox/Panel/VBox" unique_id=1052872433]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Back"

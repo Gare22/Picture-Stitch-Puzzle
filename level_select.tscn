@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://do4e6jms0sph3"]
+
+[ext_resource type="Script" uid="uid://cxauuqo6g17tu" path="res://level_select.gd" id="1_ls"]
+[ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="2_bg"]
+[ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_apu6u"]
+[ext_resource type="PackedScene" uid="uid://608v5vdgkk01" path="res://difficulty_menu.tscn" id="3_dm"]
+[ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
+
+[node name="LevelSelect" type="Control" unique_id=156040848]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ls")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1554686343]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=24152581]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 1.0
+offset_bottom = -55.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_apu6u")
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=867812674]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=905699353]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=186500959]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+columns = 2
+
+[node name="BackButton" type="Button" parent="." unique_id=1072905673]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 130.0
+offset_top = -45.0
+offset_right = -130.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Back"
+
+[node name="DifficultyOverlay" parent="." unique_id=188283379 instance=ExtResource("3_dm")]
+visible = false
+layout_mode = 1
+
+[node name="CurrencyHUD" parent="." unique_id=939683526 instance=ExtResource("4_ch")]
+layout_mode = 0
+anchors_preset = 0

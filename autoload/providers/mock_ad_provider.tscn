@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ddtaj7vrn4ho5"]
+
+[ext_resource type="Script" uid="uid://cr6bj5sm2hf3q" path="res://autoload/providers/mock_ad_provider.gd" id="1_mock"]
+
+[node name="MockAdProvider" type="Node" unique_id=1878803402]
+script = ExtResource("1_mock")
