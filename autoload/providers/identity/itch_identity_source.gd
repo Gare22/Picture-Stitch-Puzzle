@@ -254,7 +254,26 @@ func submit_manual_token(token: String) -> void:
 	_fetch_profile()
 
 
+## The itch.io API sends NO CORS headers (verified on every response type),
+## so browser builds cannot call api.itch.io directly — the fetch is blocked
+## before any data returns. identity/itch_api_proxy_url points at a tiny
+## pass-through proxy (see tools/itch_api_proxy_worker.js) that forwards the
+## Authorization header and adds Access-Control-Allow-Origin. Desktop/Android
+## use the API directly (native HTTP has no CORS).
 func _fetch_profile() -> void:
+	if _is_web:
+		var proxy: String = str(ProjectSettings.get_setting("identity/itch_api_proxy_url", "")).strip_edges()
+		if proxy.is_empty():
+			printerr("ItchIdentitySource: web profile fetch blocked by CORS — set identity/itch_api_proxy_url")
+			if _signing_in:
+				_sign_in_fail("Sign-in requires identity/itch_api_proxy_url on web (itch.io API has no CORS)")
+			return
+		var headers := PackedStringArray([
+			"Authorization: Bearer %s" % _access_token,
+			"Accept: application/json",
+		])
+		_http.request(proxy, headers, HTTPClient.METHOD_GET)
+		return
 	var headers := PackedStringArray([
 		"Authorization: Bearer %s" % _access_token,
 		"Accept: application/json",
