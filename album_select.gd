@@ -13,10 +13,10 @@ extends Control
 @onready var options_button: Button = $OptionsButton
 @onready var options_overlay: Control = $OptionsOverlay
 @onready var options_reset_button: Button = $OptionsOverlay/Panel/VBox/ResetButton
-@onready var options_confirm_label: Label = $OptionsOverlay/Panel/VBox/ConfirmLabel
-@onready var options_confirm_reset_button: Button = $OptionsOverlay/Panel/VBox/ConfirmResetButton
-@onready var options_cancel_reset_button: Button = $OptionsOverlay/Panel/VBox/CancelResetButton
-@onready var options_delete_all_check: CheckBox = $OptionsOverlay/Panel/VBox/DeleteAllCheck
+@onready var reset_overlay: Control = $ResetOverlay
+@onready var reset_confirm_button: Button = $ResetOverlay/Panel/VBox/ConfirmButton
+@onready var reset_cancel_button: Button = $ResetOverlay/Panel/VBox/CancelButton
+@onready var reset_delete_all_check: CheckBox = $ResetOverlay/Panel/VBox/DeleteAllCheck
 @onready var options_close_button: Button = $OptionsOverlay/Panel/VBox/CloseButton
 @onready var restore_iap_button: Button = $OptionsOverlay/Panel/VBox/RestoreIapButton
 @onready var remove_iap_button: Button = $OptionsOverlay/Panel/VBox/RemoveIapButton
@@ -83,8 +83,8 @@ func _ready() -> void:
 	purchase_cancel_button.pressed.connect(_on_purchase_canceled)
 	options_button.pressed.connect(_on_options_pressed)
 	options_reset_button.pressed.connect(_on_reset_pressed)
-	options_confirm_reset_button.pressed.connect(_on_confirm_reset_pressed)
-	options_cancel_reset_button.pressed.connect(_on_cancel_reset_pressed)
+	reset_confirm_button.pressed.connect(_on_confirm_reset_pressed)
+	reset_cancel_button.pressed.connect(_on_cancel_reset_pressed)
 	options_close_button.pressed.connect(_on_close_options_pressed)
 	restore_iap_button.pressed.connect(_on_restore_iap_pressed)
 	remove_iap_button.pressed.connect(_on_remove_iap_pressed)
@@ -206,14 +206,8 @@ func _on_back_pressed() -> void:
 	get_tree().reload_current_scene()
 
 
-## Opens the options overlay (reset UI hidden initially).
+## Opens the options overlay.
 func _on_options_pressed() -> void:
-	options_confirm_label.visible = false
-	options_confirm_reset_button.visible = false
-	options_cancel_reset_button.visible = false
-	options_delete_all_check.visible = false
-	options_delete_all_check.button_pressed = false
-	options_reset_button.visible = true
 	iap_message_label.visible = false
 	_update_identity_ui()
 	options_overlay.visible = true
@@ -284,23 +278,21 @@ func _on_oauth_token_canceled() -> void:
 	oauth_token_overlay.visible = false
 
 
-## Shows the reset confirmation step.
+## Opens the reset confirmation popup (its own overlay, so the options menu
+## stays clean).
 func _on_reset_pressed() -> void:
-	options_reset_button.visible = false
-	options_confirm_label.visible = true
-	options_confirm_reset_button.visible = true
-	options_cancel_reset_button.visible = true
-	options_delete_all_check.visible = true
+	reset_delete_all_check.button_pressed = false
+	reset_overlay.visible = true
 
 
-## Performs the full progress reset and closes the overlay. When the
+## Performs the full progress reset and closes the popup. When the
 ## "delete all data" toggle is checked, also wipes the local purchase state
 ## (unlock entitlement + provider caches) and signs the player out, so the
 ## game behaves like a fresh install.
 func _on_confirm_reset_pressed() -> void:
-	var wipe_all: bool = options_delete_all_check.button_pressed
-	options_delete_all_check.button_pressed = false
-	options_delete_all_check.visible = false
+	var wipe_all: bool = reset_delete_all_check.button_pressed
+	reset_delete_all_check.button_pressed = false
+	reset_overlay.visible = false
 	if wipe_all:
 		LevelManager.reset_all_data()
 		IapManager.reset_all_data()
@@ -313,12 +305,8 @@ func _on_confirm_reset_pressed() -> void:
 
 ## Cancels the reset confirmation, returning to the options list.
 func _on_cancel_reset_pressed() -> void:
-	options_confirm_label.visible = false
-	options_confirm_reset_button.visible = false
-	options_cancel_reset_button.visible = false
-	options_delete_all_check.visible = false
-	options_delete_all_check.button_pressed = false
-	options_reset_button.visible = true
+	reset_delete_all_check.button_pressed = false
+	reset_overlay.visible = false
 
 
 func _on_close_options_pressed() -> void:
@@ -498,10 +486,10 @@ func _exit_tree() -> void:
 		options_button.pressed.disconnect(_on_options_pressed)
 	if options_reset_button.pressed.is_connected(_on_reset_pressed):
 		options_reset_button.pressed.disconnect(_on_reset_pressed)
-	if options_confirm_reset_button.pressed.is_connected(_on_confirm_reset_pressed):
-		options_confirm_reset_button.pressed.disconnect(_on_confirm_reset_pressed)
-	if options_cancel_reset_button.pressed.is_connected(_on_cancel_reset_pressed):
-		options_cancel_reset_button.pressed.disconnect(_on_cancel_reset_pressed)
+	if reset_confirm_button.pressed.is_connected(_on_confirm_reset_pressed):
+		reset_confirm_button.pressed.disconnect(_on_confirm_reset_pressed)
+	if reset_cancel_button.pressed.is_connected(_on_cancel_reset_pressed):
+		reset_cancel_button.pressed.disconnect(_on_cancel_reset_pressed)
 	if options_close_button.pressed.is_connected(_on_close_options_pressed):
 		options_close_button.pressed.disconnect(_on_close_options_pressed)
 	if LevelManager.albums_changed.is_connected(_on_albums_changed):
