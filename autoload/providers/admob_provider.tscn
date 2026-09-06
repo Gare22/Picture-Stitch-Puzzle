@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://autoload/providers/admob_provider.gd" id="1_admob"]
+
+[node name="AdMobProvider" type="Node"]
+script = ExtResource("1_admob")

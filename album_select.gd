@@ -20,6 +20,9 @@ extends Control
 @onready var restore_iap_button: Button = $OptionsOverlay/Panel/VBox/RestoreIapButton
 @onready var remove_iap_button: Button = $OptionsOverlay/Panel/VBox/RemoveIapButton
 @onready var iap_message_label: Label = $OptionsOverlay/Panel/VBox/IapMessageLabel
+@onready var payment_overlay: Control = $PaymentOverlay
+@onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
+@onready var payment_cancel_button: Button = $PaymentOverlay/Panel/VBox/CancelButton
 @onready var iap_banner: Button = $IapBanner
 
 ## Index of the album whose purchase dialog is currently open (-1 = none).
@@ -69,6 +72,9 @@ func _ready() -> void:
 	IapManager.purchase_completed.connect(_on_iap_purchase_completed)
 	IapManager.became_unavailable.connect(_on_iap_became_unavailable)
 	IapManager.restore_finished.connect(_on_iap_restore_finished)
+	IapManager.payment_flow_started.connect(_on_iap_payment_flow_started)
+	payment_confirm_button.pressed.connect(_on_payment_confirmed)
+	payment_cancel_button.pressed.connect(_on_payment_canceled)
 	# Restore is only meaningful where billing exists; Remove-IAP is a dev-only
 	# test tool (IapManager.TEST_MODE is the same flag that simulates purchases).
 	restore_iap_button.visible = IapManager.is_supported()
@@ -227,6 +233,23 @@ func _on_iap_became_unavailable() -> void:
 	_update_iap_banner()
 
 
+## The web IAP provider opened a hosted checkout tab — prompt the player to
+## confirm once the payment is complete.
+func _on_iap_payment_flow_started() -> void:
+	payment_overlay.visible = true
+
+
+## Player confirmed they finished the hosted checkout — grant the entitlement.
+func _on_payment_confirmed() -> void:
+	payment_overlay.visible = false
+	IapManager.confirm_payment()
+
+
+## Player cancelled the hosted-checkout confirmation.
+func _on_payment_canceled() -> void:
+	payment_overlay.visible = false
+
+
 ## ── Options: restore / remove IAP ─────────────────────────────────────────
 
 
@@ -246,15 +269,15 @@ func _on_remove_iap_pressed() -> void:
 
 
 ## Shows the restore outcome. On a successful restore the entitlement is
-## granted by IapManager (albums_changed refreshes the grid + banner).
+## granted by the IAP provider (albums_changed refreshes the grid + banner).
 func _on_iap_restore_finished(result: int) -> void:
 	match result:
-		IapManager.RestoreResult.RESTORED:
+		IapProvider.RestoreResult.RESTORED:
 			iap_message_label.text = "Purchases restored!"
-		IapManager.RestoreResult.NOT_FOUND:
+		IapProvider.RestoreResult.NOT_FOUND:
 			iap_message_label.text = "No previous purchases found."
-		IapManager.RestoreResult.UNAVAILABLE:
-			iap_message_label.text = "Could not reach the Play Store."
+		IapProvider.RestoreResult.UNAVAILABLE:
+			iap_message_label.text = "Could not reach the store."
 	iap_message_label.visible = true
 
 
@@ -275,6 +298,12 @@ func _exit_tree() -> void:
 		IapManager.became_unavailable.disconnect(_on_iap_became_unavailable)
 	if IapManager.restore_finished.is_connected(_on_iap_restore_finished):
 		IapManager.restore_finished.disconnect(_on_iap_restore_finished)
+	if IapManager.payment_flow_started.is_connected(_on_iap_payment_flow_started):
+		IapManager.payment_flow_started.disconnect(_on_iap_payment_flow_started)
+	if payment_confirm_button.pressed.is_connected(_on_payment_confirmed):
+		payment_confirm_button.pressed.disconnect(_on_payment_confirmed)
+	if payment_cancel_button.pressed.is_connected(_on_payment_canceled):
+		payment_cancel_button.pressed.disconnect(_on_payment_canceled)
 	if purchase_confirm_button.pressed.is_connected(_on_purchase_confirmed):
 		purchase_confirm_button.pressed.disconnect(_on_purchase_confirmed)
 	if purchase_cancel_button.pressed.is_connected(_on_purchase_canceled):

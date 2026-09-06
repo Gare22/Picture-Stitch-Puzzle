@@ -20,8 +20,17 @@ var _coins_earned: int = 0
 
 
 func _ready() -> void:
-	AdMobManager.rewarded_earned.connect(_on_rewarded_earned)
-	AdMobManager.ad_failed.connect(_on_ad_failed)
+	AdsManager.rewarded_earned.connect(_on_rewarded_earned)
+	AdsManager.ad_failed.connect(_on_ad_failed)
+
+
+func _exit_tree() -> void:
+	# The AdsManager autoload outlives this panel — drop the connections so a
+	# late signal never reaches a freed node.
+	if AdsManager.rewarded_earned.is_connected(_on_rewarded_earned):
+		AdsManager.rewarded_earned.disconnect(_on_rewarded_earned)
+	if AdsManager.ad_failed.is_connected(_on_ad_failed):
+		AdsManager.ad_failed.disconnect(_on_ad_failed)
 
 
 ## Wires the reward-wheel overlay (owned by puzzle_game.tscn) into this panel.
@@ -60,7 +69,7 @@ func setup(coins_earned: int, is_max_difficulty: bool) -> void:
 func _on_ad_pressed() -> void:
 	ad_button.disabled = true
 	ad_button.text = "Loading ad..."
-	AdMobManager.show_rewarded()
+	AdsManager.show_rewarded()
 
 
 func _on_rewarded_earned() -> void:

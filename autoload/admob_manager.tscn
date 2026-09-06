@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://cnx6hyavsp6bw"]
-
-[ext_resource type="Script" uid="uid://dpt2exw2v4xhs" path="res://autoload/admob_manager.gd" id="1_admob"]
-
-[node name="AdMobManager" type="Node" unique_id=65388019]
-script = ExtResource("1_admob")

@@ -8,6 +8,11 @@
 
 config_version=5
 
+[ads]
+
+provider_id="auto"
+web_simulate_rewarded=true
+
 [application]
 
 config/name="Picture Puzzle"
@@ -17,8 +22,8 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [autoload]
 
 LevelManager="*res://autoload/level_manager.tscn"
-AdMobManager="*res://autoload/admob_manager.tscn"
 IapManager="*res://autoload/iap_manager.tscn"
+AdsManager="*res://autoload/ads_manager.tscn"
 
 [display]
 
@@ -31,6 +36,12 @@ window/handheld/orientation=1
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/GodotGooglePlayBilling/plugin.cfg")
+
+[iap]
+
+provider_id="auto"
+web_checkout_url=""
+web_price_label=""
 
 [internationalization]
 

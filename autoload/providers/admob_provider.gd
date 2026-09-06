@@ -1,10 +1,8 @@
-extends Node
+class_name AdMobProvider
+extends AdProvider
 
-## Autoload singleton managing AdMob rewarded ads.
-## Emits EXACTLY ONE of `rewarded_earned` / `ad_failed` per `show_rewarded()` call.
-
-signal rewarded_earned
-signal ad_failed
+## AdMob rewarded-ads implementation (godot-admob plugin, GMA SDK).
+## Emits EXACTLY ONE of rewarded_earned / ad_failed per show_rewarded() call.
 
 const TEST_REWARDED_ANDROID := "ca-app-pub-3940256099942544/5224354917"
 const TEST_REWARDED_IOS := "ca-app-pub-3940256099942544/1712485313"
@@ -24,9 +22,13 @@ var _reward_pending: bool = false
 func _ready() -> void:
 	_is_mobile = OS.get_name() == "Android" or OS.get_name() == "iOS"
 	if not _is_mobile:
-		print("AdMobManager: non-mobile platform detected — ad initialization skipped.")
+		print("AdMobProvider: non-mobile platform detected — ad initialization skipped.")
 		return
 	request_user_consent()
+
+
+func is_supported() -> bool:
+	return _is_mobile or TEST_MODE
 
 
 # --- Consent + initialization (UMF v2 flow, adapted to godot-admob v5.0.0 API) ---
@@ -92,7 +94,7 @@ func _load_rewarded() -> void:
 		_rewarded_ad = ad
 		_setup_rewarded_callbacks()
 	callback.on_ad_failed_to_load = func(error: LoadAdError) -> void:
-		printerr("AdMobManager: rewarded ad failed to load: ", error.message)
+		printerr("AdMobProvider: rewarded ad failed to load: ", error.message)
 		_rewarded_ad = null
 	_rewarded_loader.load(ad_unit_id, AdRequest.new(), callback)
 

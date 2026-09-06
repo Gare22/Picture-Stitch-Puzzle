@@ -1,10 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://autoload/iap_manager.gd" id="1_iap"]
-[ext_resource type="Script" path="res://addons/GodotGooglePlayBilling/BillingClient.gd" id="2_billing"]
 
 [node name="IapManager" type="Node"]
 script = ExtResource("1_iap")
-
-[node name="BillingClient" type="Node" parent="."]
-script = ExtResource("2_billing")

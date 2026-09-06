@@ -272,3 +272,57 @@ autowrap_mode = 2
 [node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
 layout_mode = 2
 text = "Close"
+
+[node name="PaymentOverlay" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="PaymentOverlay"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="PaymentOverlay"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -80.0
+offset_right = 170.0
+offset_bottom = 80.0
+
+[node name="VBox" type="VBoxContainer" parent="PaymentOverlay/Panel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="InfoLabel" type="Label" parent="PaymentOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Complete your payment in the opened tab.\nTap Confirm once it's done."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ConfirmButton" type="Button" parent="PaymentOverlay/Panel/VBox"]
+layout_mode = 2
+text = "I've completed payment"
+
+[node name="CancelButton" type="Button" parent="PaymentOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Cancel"

@@ -1,246 +1,146 @@
 extends Node
 
-## Autoload singleton for the "Unlock All Puzzles" Google Play in-app purchase.
-## Wraps the GodotGooglePlayBilling plugin (addons/GodotGooglePlayBilling).
-## The billing flow is entirely Play-managed; this node only:
-##   1. connects to Play Billing at startup,
-##   2. fetches the product's localized price,
-##   3. restores existing purchases (query_purchases),
-##   4. launches the purchase flow and acknowledges the result,
-##   5. grants the entitlement through LevelManager.unlock_all_albums().
+## Autoload facade for in-app purchases. Injects one IAP provider at startup
+## (Google Play Billing, a web payment link, or a dev mock) and forwards its
+## signals and calls, so the rest of the game never talks to a store platform
+## directly. Swap platforms by changing which provider gets injected.
+##
+## Provider selection (Project Settings -> iap/provider_id):
+##   "auto"        — Android -> google_play, Web -> web, anything else -> mock
+##   "google_play" — force Google Play Billing (GodotGooglePlayBilling plugin)
+##   "web"         — force the web payment-link provider (no Google account)
+##   "mock"        — force the dev simulation
+## An explicit provider_id is always honored (e.g. --iap/provider_id=web on a
+## desktop build to test the web flow); "auto" falls back to mock in TEST_MODE.
 
-## Emitted once the localized price string is known ("$2.99", "2,99 €", ...).
-signal price_loaded(price: String)
-
-## Emitted when the unlock-all entitlement becomes active (purchased or restored).
-signal purchase_completed
-
-## Emitted when the purchase flow could not be started/finished. Reason is a
-## debug string, safe to log; the UI stays silent to remain non-intrusive.
-signal purchase_failed(reason: String)
-
-## Emitted when billing cannot be used on this device (connect error).
-signal became_unavailable
-
-## Result of a user-initiated restore_purchases() call.
-enum RestoreResult {
-	RESTORED,     # entitlement is active (already owned or re-granted)
-	NOT_FOUND,    # no previous purchases found for this account
-	UNAVAILABLE,  # billing not connected / query failed
-}
-
-## Emitted when a user-initiated purchase restore finishes.
-signal restore_finished(result: RestoreResult)
-
-## Product ID configured in the Google Play Console. Must match EXACTLY.
-const PRODUCT_ID: String = "unlock_all_puzzles"
-
-## Placeholder price shown by the simulated dev flow (TEST_MODE only).
-const TEST_PRICE: String = "$1.99 (test)"
-
-## How many times a lost billing connection is re-established before giving
-## up and emitting became_unavailable.
-const MAX_RECONNECT_ATTEMPTS: int = 3
-
-## Simulates the whole flow on non-Android dev machines so the banner and the
-## unlock path can be tested without the Play Billing plugin. MUST be set to
-## false for release builds (same discipline as AdMobManager.TEST_MODE).
+## Simulates the whole flow on non-mobile dev machines via the mock provider.
+## MUST be set to false for release builds.
 const TEST_MODE: bool = true
 
-var _price: String = ""
-var _unavailable: bool = false
-var _reconnect_attempts: int = 0
-var _restore_in_progress: bool = false
+signal price_loaded(price: String)
+signal purchase_completed
+signal purchase_failed(reason: String)
+signal became_unavailable
+signal restore_finished(result: IapProvider.RestoreResult)
+signal payment_flow_started
 
-@onready var billing_client: BillingClient = $BillingClient
+var _provider: IapProvider = null
+var _unavailable: bool = false
+
+const PROVIDER_SCENES := {
+	"google_play": "res://autoload/providers/google_play_iap.tscn",
+	"web": "res://autoload/providers/web_iap.tscn",
+	"mock": "res://autoload/providers/mock_iap.tscn",
+}
 
 
 func _ready() -> void:
-	if not is_supported():
-		print("IapManager: Play Billing not supported on this platform — IAP disabled.")
+	var provider_id := _resolve_provider_id()
+	var scene_path: String = PROVIDER_SCENES.get(provider_id, "")
+	if scene_path.is_empty():
+		push_error("IapManager: unknown provider_id '%s'" % provider_id)
 		_unavailable = true
 		return
-	if TEST_MODE:
-		_simulate_product_load()
+	var scene: PackedScene = load(scene_path)
+	if scene == null:
+		push_error("IapManager: failed to load provider scene '%s'" % scene_path)
+		_unavailable = true
 		return
-	billing_client.connected.connect(_on_billing_connected)
-	billing_client.disconnected.connect(_on_billing_disconnected)
-	billing_client.connect_error.connect(_on_billing_connect_error)
-	billing_client.query_product_details_response.connect(_on_product_details_response)
-	billing_client.query_purchases_response.connect(_on_purchases_response)
-	billing_client.on_purchase_updated.connect(_on_purchase_updated)
-	billing_client.acknowledge_purchase_response.connect(_on_acknowledge_response)
-	billing_client.start_connection()
+	_provider = scene.instantiate() as IapProvider
+	if _provider == null:
+		push_error("IapManager: provider scene '%s' did not produce an IapProvider" % scene_path)
+		_unavailable = true
+		return
+	# Connect BEFORE add_child: add_child() runs the provider's _ready()
+	# synchronously, and a signal emitted there (e.g. price_loaded) must not be
+	# lost. Connecting an instantiated-but-not-in-tree node is legal.
+	_provider.price_loaded.connect(_on_provider_price_loaded)
+	_provider.purchase_completed.connect(_on_provider_purchase_completed)
+	_provider.purchase_failed.connect(_on_provider_purchase_failed)
+	_provider.became_unavailable.connect(_on_provider_became_unavailable)
+	_provider.restore_finished.connect(_on_provider_restore_finished)
+	_provider.payment_flow_started.connect(_on_provider_payment_flow_started)
+	add_child(_provider)
+
+
+## Maps the configured provider_id to an actual provider for this run.
+func _resolve_provider_id() -> String:
+	var id: String = str(ProjectSettings.get_setting("iap/provider_id", "auto"))
+	if id != "auto":
+		return id
+	if TEST_MODE:
+		return "mock"
+	match OS.get_name():
+		"Android": return "google_play"
+		"Web": return "web"
+		_: return "mock"
 
 
 ## True when the purchase banner should be offered on this platform.
 func is_supported() -> bool:
-	if TEST_MODE:
-		return true
-	return OS.get_name() == "Android"
+	return _provider != null and _provider.is_supported()
 
 
 ## True when billing is known to be unusable on this device.
 func is_unavailable() -> bool:
-	return _unavailable
+	return _unavailable or (_provider != null and _provider.is_unavailable())
 
 
-## Localized price string from Play, or "" until the product details arrive.
+## Localized price string from the active provider, or "" until known.
 func get_price_display() -> String:
-	return _price
+	if _provider == null:
+		return ""
+	return _provider.get_price()
 
 
-## Launches the Google Play purchase flow for the unlock-all product.
+## Launches the purchase flow for the unlock-all product.
 func purchase_unlock_all() -> void:
-	if LevelManager.all_puzzles_unlocked:
-		return
-	if TEST_MODE:
-		_simulate_purchase()
-		return
-	if _unavailable or not billing_client.is_ready():
-		purchase_failed.emit("Billing is not connected yet")
-		return
-	var result: Dictionary = billing_client.purchase(PRODUCT_ID)
-	if result.get("response_code", -1) != BillingClient.BillingResponseCode.OK:
-		var reason: String = str(result.get("debug_message", ""))
-		printerr("IapManager: purchase flow failed: ", reason)
-		purchase_failed.emit(reason)
+	if _provider != null:
+		_provider.purchase()
 
 
-## Re-checks the player's purchases against Google Play and re-grants any
-## owned entitlements (the "Restore Purchases" button). Safe to call anytime;
-## the outcome arrives on restore_finished.
+## Re-checks entitlements with the active provider.
 func restore_purchases() -> void:
-	if TEST_MODE:
-		_simulate_restore()
-		return
-	if _unavailable or not billing_client.is_ready():
-		restore_finished.emit(RestoreResult.UNAVAILABLE)
-		return
-	_restore_in_progress = true
-	billing_client.query_purchases(BillingClient.ProductType.INAPP)
+	if _provider != null:
+		_provider.restore_purchases()
+
+
+## Confirms a payment completed through a hosted checkout (web provider only).
+func confirm_payment() -> void:
+	if _provider != null:
+		_provider.confirm_payment()
 
 
 ## DEV-ONLY: clears the local unlock-all entitlement so the purchase flow can
-## be re-tested. A real Google Play purchase is untouched — the next
-## query_purchases (app start or manual restore) re-grants it automatically.
+## be re-tested. A real store purchase is untouched — providers that can
+## re-verify (e.g. Google Play) restore it on the next query.
 func remove_all_unlock_entitlement() -> void:
 	LevelManager.remove_unlock_all()
 
 
-## ── Billing signal handlers (real flow, TEST_MODE = false) ─────────────────
+## ── Provider signal passthroughs ───────────────────────────────────────────
 
 
-func _on_billing_connected() -> void:
-	_reconnect_attempts = 0
-	# Fetch the localized price and restore any prior purchase in one go.
-	billing_client.query_product_details(
-		PackedStringArray([PRODUCT_ID]), BillingClient.ProductType.INAPP
-	)
-	billing_client.query_purchases(BillingClient.ProductType.INAPP)
+func _on_provider_price_loaded(price: String) -> void:
+	price_loaded.emit(price)
 
 
-func _on_billing_disconnected() -> void:
-	# Retry a bounded number of times; connect_error handles the
-	# permanently-unavailable case.
-	if _unavailable:
-		return
-	_reconnect_attempts += 1
-	if _reconnect_attempts > MAX_RECONNECT_ATTEMPTS:
-		printerr("IapManager: billing disconnected %d times — giving up." % _reconnect_attempts)
-		_unavailable = true
-		became_unavailable.emit()
-		return
-	billing_client.start_connection()
+func _on_provider_purchase_completed() -> void:
+	purchase_completed.emit()
 
 
-func _on_billing_connect_error(response_code: int, debug_message: String) -> void:
-	printerr("IapManager: billing connect failed (%d): %s" % [response_code, debug_message])
+func _on_provider_purchase_failed(reason: String) -> void:
+	purchase_failed.emit(reason)
+
+
+func _on_provider_became_unavailable() -> void:
 	_unavailable = true
 	became_unavailable.emit()
 
 
-func _on_product_details_response(response: Dictionary) -> void:
-	if response.get("response_code", -1) != BillingClient.BillingResponseCode.OK:
-		printerr("IapManager: product query failed: ", response.get("debug_message", ""))
-		return
-	for details: Dictionary in response.get("product_details", []):
-		if details.get("product_id", "") != PRODUCT_ID:
-			continue
-		var offers: Array = details.get("one_time_purchase_offer_details_list", [])
-		if offers.size() > 0:
-			var offer: Dictionary = offers[0]
-			var price: String = str(offer.get("formatted_price", ""))
-			if not price.is_empty() and _price != price:
-				_price = price
-				price_loaded.emit(_price)
-		break
+func _on_provider_restore_finished(result: IapProvider.RestoreResult) -> void:
+	restore_finished.emit(result)
 
 
-func _on_purchases_response(response: Dictionary) -> void:
-	if response.get("response_code", -1) != BillingClient.BillingResponseCode.OK:
-		printerr("IapManager: purchase query failed: ", response.get("debug_message", ""))
-		if _restore_in_progress:
-			_restore_in_progress = false
-			restore_finished.emit(RestoreResult.UNAVAILABLE)
-		return
-	_process_purchases(response.get("purchases", []))
-	if _restore_in_progress:
-		_restore_in_progress = false
-		restore_finished.emit(
-			RestoreResult.RESTORED if LevelManager.all_puzzles_unlocked else RestoreResult.NOT_FOUND
-		)
-
-
-func _on_purchase_updated(response: Dictionary) -> void:
-	if response.get("response_code", -1) != BillingClient.BillingResponseCode.OK:
-		var reason: String = str(response.get("debug_message", ""))
-		printerr("IapManager: purchase update error: ", reason)
-		purchase_failed.emit(reason)
-		return
-	_process_purchases(response.get("purchases", []))
-
-
-## Grants the entitlement for every completed unlock-all purchase and
-## acknowledges it (required by Google — unacknowledged purchases are refunded).
-## Called for both startup restores and live purchase updates.
-func _process_purchases(purchases: Array) -> void:
-	for purchase: Dictionary in purchases:
-		if not (PRODUCT_ID in purchase.get("product_ids", [])):
-			continue
-		# PENDING payments must wait until Google marks them PURCHASED.
-		if int(purchase.get("purchase_state", -1)) != BillingClient.PurchaseState.PURCHASED:
-			continue
-		LevelManager.unlock_all_albums()
-		if not purchase.get("is_acknowledged", false):
-			billing_client.acknowledge_purchase(str(purchase.get("purchase_token", "")))
-		purchase_completed.emit()
-
-
-func _on_acknowledge_response(response: Dictionary) -> void:
-	if response.get("response_code", -1) != BillingClient.BillingResponseCode.OK:
-		# Not fatal: the entitlement is already granted locally, and the next
-		# launch's query_purchases finds the purchase again to re-acknowledge.
-		printerr("IapManager: acknowledge failed: ", response.get("debug_message", ""))
-
-
-## ── TEST_MODE simulation (dev machines without the billing plugin) ─────────
-
-
-func _simulate_product_load() -> void:
-	await get_tree().create_timer(0.8).timeout
-	_price = TEST_PRICE
-	price_loaded.emit(_price)
-
-
-func _simulate_purchase() -> void:
-	await get_tree().create_timer(1.0).timeout
-	LevelManager.unlock_all_albums()
-	purchase_completed.emit()
-
-
-func _simulate_restore() -> void:
-	await get_tree().create_timer(0.6).timeout
-	restore_finished.emit(
-		RestoreResult.RESTORED if LevelManager.all_puzzles_unlocked else RestoreResult.NOT_FOUND
-	)
+func _on_provider_payment_flow_started() -> void:
+	payment_flow_started.emit()
