@@ -7,16 +7,25 @@ signal play_again_pressed
 signal back_to_album_pressed
 signal coins_claimed(coins: int)
 
-@onready var reward_phase: VBoxContainer = $Panel/VBox/RewardPhase
-@onready var nav_phase: VBoxContainer = $Panel/VBox/NavPhase
-@onready var coin_label: Label = $Panel/VBox/RewardPhase/RewardRow/CoinLabel
-@onready var ad_button: Button = $Panel/VBox/RewardPhase/RewardRow/AdButton
-@onready var claim_button: Button = $Panel/VBox/RewardPhase/ClaimButton
-@onready var next_button: Button = $Panel/VBox/NavPhase/NextButton
-@onready var back_button: Button = $Panel/VBox/NavPhase/BackButton
+@onready var panel: PanelContainer = $Center/Panel
+@onready var reward_phase: VBoxContainer = $Center/Panel/VBox/RewardPhase
+@onready var nav_phase: VBoxContainer = $Center/Panel/VBox/NavPhase
+@onready var coin_label: Label = $Center/Panel/VBox/RewardPhase/RewardRow/CoinLabel
+@onready var ad_button: Button = $Center/Panel/VBox/RewardPhase/RewardRow/AdButton
+@onready var claim_button: Button = $Center/Panel/VBox/RewardPhase/ClaimButton
+@onready var next_button: Button = $Center/Panel/VBox/NavPhase/NextButton
+@onready var back_button: Button = $Center/Panel/VBox/NavPhase/BackButton
 var reward_wheel: Control = null
 
 var _coins_earned: int = 0
+
+
+## Caps the panel width at the puzzle board's width so the popup never
+## outgrows the puzzle image it belongs to. The CenterContainer keeps it
+## centered; if the content needs more room than the cap, the content's own
+## minimum width wins.
+func set_width_cap(max_w: float) -> void:
+	panel.custom_minimum_size.x = max_w
 
 
 func _ready() -> void:
