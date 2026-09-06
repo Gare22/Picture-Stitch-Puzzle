@@ -58,10 +58,25 @@ size_flags_horizontal = 3
 [node name="GridContainer" type="GridContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=1538581140]
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 6
+size_flags_vertical = 4
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 50
+
+[node name="IapBanner" type="Button" parent="ScrollContainer/MarginContainer/VBox/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Unlock all Current and Future Puzzle Albums for $1.99"
+autowrap_mode = 3
+
+[node name="Control" type="Control" parent="ScrollContainer/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
 
 [node name="BackButton" type="Button" parent="." unique_id=1618479630]
 visible = false
@@ -170,21 +185,6 @@ offset_bottom = 28.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Downloading more albums..."
 horizontal_alignment = 1
-
-[node name="IapBanner" type="Button" parent="." unique_id=1410400558]
-visible = false
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 16.0
-offset_top = 6.0
-offset_right = -16.0
-offset_bottom = 58.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 13
-text = "Enjoy the game?
-Unlock all puzzles for $1.99"
-autowrap_mode = 3
 
 [node name="OptionsButton" type="Button" parent="." unique_id=2102000010]
 layout_mode = 1
