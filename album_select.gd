@@ -20,9 +20,13 @@ extends Control
 @onready var restore_iap_button: Button = $OptionsOverlay/Panel/VBox/RestoreIapButton
 @onready var remove_iap_button: Button = $OptionsOverlay/Panel/VBox/RemoveIapButton
 @onready var iap_message_label: Label = $OptionsOverlay/Panel/VBox/IapMessageLabel
-@onready var restore_code_label: Label = $OptionsOverlay/Panel/VBox/RestoreCodeLabel
-@onready var restore_code_line_edit: LineEdit = $OptionsOverlay/Panel/VBox/RestoreCodeLineEdit
-@onready var set_restore_code_button: Button = $OptionsOverlay/Panel/VBox/SetRestoreCodeButton
+@onready var identity_status_label: Label = $OptionsOverlay/Panel/VBox/IdentityStatusLabel
+@onready var identity_sign_in_button: Button = $OptionsOverlay/Panel/VBox/IdentitySignInButton
+@onready var identity_sign_out_button: Button = $OptionsOverlay/Panel/VBox/IdentitySignOutButton
+@onready var account_prompt_overlay: Control = $AccountPromptOverlay
+@onready var account_prompt_sign_in_button: Button = $AccountPromptOverlay/Panel/VBox/SignInButton
+@onready var account_prompt_continue_button: Button = $AccountPromptOverlay/Panel/VBox/ContinueButton
+@onready var account_prompt_cancel_button: Button = $AccountPromptOverlay/Panel/VBox/CancelButton
 @onready var payment_overlay: Control = $PaymentOverlay
 @onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
 @onready var payment_cancel_button: Button = $PaymentOverlay/Panel/VBox/CancelButton
@@ -30,6 +34,10 @@ extends Control
 
 ## Index of the album whose purchase dialog is currently open (-1 = none).
 var _pending_purchase_index: int = -1
+
+## When true, proceed to checkout automatically after a sign-in succeeds
+## (set when the player chose "Sign in" from the purchase account prompt).
+var _purchase_after_sign_in: bool = false
 
 const STYLE := preload("res://assets/app_style.tres") as AppStyle
 
@@ -70,7 +78,14 @@ func _ready() -> void:
 	options_close_button.pressed.connect(_on_close_options_pressed)
 	restore_iap_button.pressed.connect(_on_restore_iap_pressed)
 	remove_iap_button.pressed.connect(_on_remove_iap_pressed)
-	set_restore_code_button.pressed.connect(_on_set_restore_code_pressed)
+	identity_sign_in_button.pressed.connect(_on_identity_sign_in_pressed)
+	identity_sign_out_button.pressed.connect(_on_identity_sign_out_pressed)
+	account_prompt_sign_in_button.pressed.connect(_on_account_prompt_sign_in)
+	account_prompt_continue_button.pressed.connect(_on_account_prompt_continue)
+	account_prompt_cancel_button.pressed.connect(_on_account_prompt_cancel)
+	IdentityManager.signed_in.connect(_on_identity_signed_in)
+	IdentityManager.signed_out.connect(_on_identity_signed_out)
+	IdentityManager.sign_in_failed.connect(_on_identity_sign_in_failed)
 	iap_banner.pressed.connect(_on_iap_banner_pressed)
 	IapManager.price_loaded.connect(_on_iap_price_loaded)
 	IapManager.purchase_completed.connect(_on_iap_purchase_completed)
@@ -83,6 +98,7 @@ func _ready() -> void:
 	# test tool (IapManager.TEST_MODE is the same flag that simulates purchases).
 	restore_iap_button.visible = IapManager.is_supported()
 	remove_iap_button.visible = IapManager.TEST_MODE
+	_update_identity_ui()
 	_update_iap_banner()
 	_build_grid()
 	LevelManager.albums_changed.connect(_on_albums_changed)
@@ -184,36 +200,52 @@ func _on_options_pressed() -> void:
 	options_cancel_reset_button.visible = false
 	options_reset_button.visible = true
 	iap_message_label.visible = false
-	_update_restore_code_ui()
+	_update_identity_ui()
 	options_overlay.visible = true
 
 
-## Shows the restore-code section only when the active IAP provider has an
-## identity concept (currently RevenueCat); the label always shows the code so
-## the player can copy it to another device.
-func _update_restore_code_ui() -> void:
-	var code: String = IapManager.get_app_user_id()
-	var has_identity: bool = not code.is_empty()
-	restore_code_label.visible = has_identity
-	restore_code_line_edit.visible = has_identity
-	set_restore_code_button.visible = has_identity
-	if has_identity:
-		restore_code_label.text = "Restore code: %s" % code
+## Shows the itch.io account section only when an identity source is
+## configured. Signed-in players see their username + a sign-out button;
+## otherwise a sign-in button.
+func _update_identity_ui() -> void:
+	var supported: bool = IdentityManager.is_supported()
+	identity_status_label.visible = supported
+	identity_sign_in_button.visible = supported and not IdentityManager.is_signed_in()
+	identity_sign_out_button.visible = supported and IdentityManager.is_signed_in()
+	if supported:
+		if IdentityManager.is_signed_in():
+			identity_status_label.text = "itch.io account: %s" % IdentityManager.get_user_name()
+		else:
+			identity_status_label.text = "Not signed in"
 
 
-## Applies a player-entered restore code and re-checks entitlements under the
-## new identity (this is how a purchase on another device is restored).
-func _on_set_restore_code_pressed() -> void:
-	var code := restore_code_line_edit.text.strip_edges()
-	if code.is_empty():
-		iap_message_label.text = "Enter a restore code first."
-		iap_message_label.visible = true
-		return
-	iap_message_label.text = "Restore code set — checking purchases..."
-	iap_message_label.visible = true
-	restore_code_line_edit.text = ""
-	IapManager.set_app_user_id(code)
-	_update_restore_code_ui()
+func _on_identity_sign_in_pressed() -> void:
+	identity_status_label.text = "Signing in..."
+	IdentityManager.sign_in()
+
+
+func _on_identity_sign_out_pressed() -> void:
+	IdentityManager.sign_out()
+	_update_identity_ui()
+
+
+func _on_identity_signed_in(_user_id: String, _user_name: String) -> void:
+	_update_identity_ui()
+	# If the player chose "Sign in" from the purchase prompt, continue to
+	# checkout now that the account is active (Android/desktop only — on web the
+	# same-window redirect reloads the game, so the player taps the banner again).
+	if _purchase_after_sign_in:
+		_purchase_after_sign_in = false
+		IapManager.purchase_unlock_all()
+
+
+func _on_identity_signed_out() -> void:
+	_update_identity_ui()
+
+
+func _on_identity_sign_in_failed(reason: String) -> void:
+	_update_identity_ui()
+	identity_status_label.text = "Sign-in failed: %s" % reason
 
 
 ## Shows the reset confirmation step.
@@ -244,10 +276,6 @@ func _on_close_options_pressed() -> void:
 
 
 ## ── "Unlock All Puzzles" IAP banner ───────────────────────────────────────
-
-
-func _on_iap_banner_pressed() -> void:
-	IapManager.purchase_unlock_all()
 
 
 ## Re-renders the banner once the localized price arrives from Play.
@@ -283,12 +311,42 @@ func _on_payment_canceled() -> void:
 	payment_overlay.visible = false
 
 
+## ── Purchase: optional account prompt (itch.io restore) ────────────────────
+
+
+## Before opening the checkout, players who are not signed in are offered the
+## itch.io account so the purchase can follow them to any device. They can
+## continue anonymously, but the purchase is then device-tied (warned here).
+func _on_iap_banner_pressed() -> void:
+	if IdentityManager.is_supported() and not IdentityManager.is_signed_in():
+		account_prompt_overlay.visible = true
+		return
+	IapManager.purchase_unlock_all()
+
+
+func _on_account_prompt_sign_in() -> void:
+	_purchase_after_sign_in = true
+	account_prompt_overlay.visible = false
+	IdentityManager.sign_in()
+
+
+func _on_account_prompt_continue() -> void:
+	_purchase_after_sign_in = false
+	account_prompt_overlay.visible = false
+	IapManager.purchase_unlock_all()
+
+
+func _on_account_prompt_cancel() -> void:
+	_purchase_after_sign_in = false
+	account_prompt_overlay.visible = false
+
+
 ## ── Options: restore / remove IAP ─────────────────────────────────────────
 
 
-## Re-checks Google Play for previously purchased entitlements.
+## Re-checks the active IAP provider for previously purchased entitlements.
 func _on_restore_iap_pressed() -> void:
-	iap_message_label.text = "Checking Play Store..."
+	iap_message_label.text = "Checking purchases..."
 	iap_message_label.visible = true
 	IapManager.restore_purchases()
 
@@ -323,8 +381,22 @@ func _exit_tree() -> void:
 		restore_iap_button.pressed.disconnect(_on_restore_iap_pressed)
 	if remove_iap_button.pressed.is_connected(_on_remove_iap_pressed):
 		remove_iap_button.pressed.disconnect(_on_remove_iap_pressed)
-	if set_restore_code_button.pressed.is_connected(_on_set_restore_code_pressed):
-		set_restore_code_button.pressed.disconnect(_on_set_restore_code_pressed)
+	if identity_sign_in_button.pressed.is_connected(_on_identity_sign_in_pressed):
+		identity_sign_in_button.pressed.disconnect(_on_identity_sign_in_pressed)
+	if identity_sign_out_button.pressed.is_connected(_on_identity_sign_out_pressed):
+		identity_sign_out_button.pressed.disconnect(_on_identity_sign_out_pressed)
+	if account_prompt_sign_in_button.pressed.is_connected(_on_account_prompt_sign_in):
+		account_prompt_sign_in_button.pressed.disconnect(_on_account_prompt_sign_in)
+	if account_prompt_continue_button.pressed.is_connected(_on_account_prompt_continue):
+		account_prompt_continue_button.pressed.disconnect(_on_account_prompt_continue)
+	if account_prompt_cancel_button.pressed.is_connected(_on_account_prompt_cancel):
+		account_prompt_cancel_button.pressed.disconnect(_on_account_prompt_cancel)
+	if IdentityManager.signed_in.is_connected(_on_identity_signed_in):
+		IdentityManager.signed_in.disconnect(_on_identity_signed_in)
+	if IdentityManager.signed_out.is_connected(_on_identity_signed_out):
+		IdentityManager.signed_out.disconnect(_on_identity_signed_out)
+	if IdentityManager.sign_in_failed.is_connected(_on_identity_sign_in_failed):
+		IdentityManager.sign_in_failed.disconnect(_on_identity_sign_in_failed)
 	if IapManager.price_loaded.is_connected(_on_iap_price_loaded):
 		IapManager.price_loaded.disconnect(_on_iap_price_loaded)
 	if IapManager.purchase_completed.is_connected(_on_iap_purchase_completed):

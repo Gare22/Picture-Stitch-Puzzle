@@ -115,19 +115,6 @@ func confirm_payment() -> void:
 		_provider.confirm_payment()
 
 
-## Current restore code (provider-specific; "" for providers without identity).
-func get_app_user_id() -> String:
-	if _provider == null:
-		return ""
-	return _provider.get_app_user_id()
-
-
-## Sets a player-provided restore code (provider-specific; no-op otherwise).
-func set_app_user_id(id: String) -> void:
-	if _provider != null:
-		_provider.set_app_user_id(id)
-
-
 ## DEV-ONLY: clears the local unlock-all entitlement so the purchase flow can
 ## be re-tested. A real store purchase is untouched — providers that can
 ## re-verify (e.g. Google Play) restore it on the next query.

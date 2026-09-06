@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://autoload/providers/identity/itch_identity_source.gd" id="1_itch"]
+
+[node name="ItchIdentitySource" type="Node"]
+script = ExtResource("1_itch")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]

@@ -269,22 +269,22 @@ layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="RestoreCodeLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
+[node name="IdentityStatusLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
 visible = false
 layout_mode = 2
-text = "Restore code: -"
+text = "Not signed in"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="RestoreCodeLineEdit" type="LineEdit" parent="OptionsOverlay/Panel/VBox"]
+[node name="IdentitySignInButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
 visible = false
 layout_mode = 2
-placeholder_text = "Restore code (from another device)"
+text = "Sign in with itch.io"
 
-[node name="SetRestoreCodeButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+[node name="IdentitySignOutButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
 visible = false
 layout_mode = 2
-text = "Set Restore Code"
+text = "Sign out"
 
 [node name="CloseButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=2102000020]
 layout_mode = 2
@@ -344,3 +344,62 @@ text = "I've completed payment"
 [node name="CancelButton" type="Button" parent="PaymentOverlay/Panel/VBox" unique_id=895744035]
 layout_mode = 2
 text = "Cancel"
+
+[node name="AccountPromptOverlay" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="AccountPromptOverlay"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="AccountPromptOverlay"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -110.0
+offset_right = 170.0
+offset_bottom = 110.0
+
+[node name="VBox" type="VBoxContainer" parent="AccountPromptOverlay/Panel"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme_override_constants/separation = 12
+
+[node name="InfoLabel" type="Label" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Sign in with itch.io to restore your purchase on any device.
+If you continue without signing in, your purchase is tied to this device and can't be recovered."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SignInButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Sign in with itch.io"
+
+[node name="ContinueButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Continue without account"
+
+[node name="CancelButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+layout_mode = 2
+text = "Not now"

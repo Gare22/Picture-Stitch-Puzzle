@@ -6,3 +6,5 @@
 script = ExtResource("1_rc")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="IdentifyHttp" type="HTTPRequest" parent="."]
