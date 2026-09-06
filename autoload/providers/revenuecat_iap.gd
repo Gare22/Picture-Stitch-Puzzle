@@ -22,6 +22,13 @@ extends IapProvider
 ## (the same call RevenueCat's own web SDK makes). Signing in on a device that
 ## previously purchased anonymously migrates that purchase onto the account via
 ##   POST /v1/subscribers/identify
+##
+## Sandbox: test purchases made through a sandbox checkout
+## (https://pay.rev.cat/sandbox/...) are only returned by the API when the
+## request carries X-Is-Sandbox: true — sending false makes every restore come
+## back empty. The sandbox flag is derived from BOTH the key prefix (rcb_sb_)
+## and the checkout URL, so a production-key + sandbox-checkout test setup
+## still restores correctly.
 
 const API_BASE := "https://api.revenuecat.com/v1"
 const IDENTITY_PATH := "user://iap_identity.cfg"
@@ -42,6 +49,14 @@ var _anon_id: String = ""
 ## worth migrating (identify would otherwise POST a customer with no record).
 var _anon_owned: bool = false
 
+## Set when a sign-in lands while the boot-time anonymous check is still in
+## flight: the migration decision is made when that response arrives.
+var _migration_pending: bool = false
+
+## The app_user_id the in-flight customer-info check queried (its response
+## arrives after _app_user_id may have changed, e.g. mid sign-in).
+var _checked_user_id: String = ""
+
 @onready var _http: HTTPRequest = $HTTPRequest
 
 
@@ -57,6 +72,7 @@ func _ready() -> void:
 	IdentityManager.signed_out.connect(_on_identity_signed_out)
 	# Startup restore: if this identity owns the entitlement, grant it.
 	_fetch_customer_info()
+	print("RevenueCatIapProvider: environment=%s app_user_id=%s" % ["sandbox" if _is_sandbox() else "production", _app_user_id])
 
 
 func is_supported() -> bool:
@@ -129,11 +145,18 @@ func _on_identity_signed_in(_user_id: String, _user_name: String) -> void:
 	var previous := _app_user_id
 	_recompute_app_user_id()
 	_initial_check_done = false
-	if previous == _anon_id and _app_user_id != _anon_id and _anon_owned:
-		# First sign-in on this device with an anonymous purchase: migrate it
-		# onto the account so it follows the user (RevenueCat identify
-		# aliases/merges the customers).
-		_identify_customer(previous, _app_user_id)
+	if previous == _anon_id and _app_user_id != _anon_id:
+		if _request_in_flight:
+			# The boot-time anonymous check is still running — it decides
+			# whether there is anything to migrate.
+			_migration_pending = true
+		elif _anon_owned:
+			# First sign-in on this device with an anonymous purchase: migrate it
+			# onto the account so it follows the user (RevenueCat identify
+			# aliases/merges the customers).
+			_identify_customer(previous, _app_user_id)
+		else:
+			_fetch_customer_info()
 	else:
 		_fetch_customer_info()
 
@@ -157,7 +180,7 @@ func _identify_customer(old_id: String, new_id: String) -> void:
 		"Content-Type: application/json",
 		"Accept: application/json",
 		"X-Platform: web",
-		"X-Is-Sandbox: %s" % _is_sandbox_key(),
+		"X-Is-Sandbox: %s" % _is_sandbox(),
 	])
 	$IdentifyHttp.request("%s/subscribers/identify" % API_BASE, headers, HTTPClient.METHOD_POST, body)
 
@@ -188,6 +211,7 @@ func _fetch_customer_info(for_restore := false) -> bool:
 			restore_finished.emit(RestoreResult.UNAVAILABLE)
 		return false
 	_request_in_flight = true
+	_checked_user_id = _app_user_id
 	var url := "%s/subscribers/%s" % [API_BASE, _app_user_id.uri_encode()]
 	# Mirror the headers RevenueCat's own web SDK sends (same base URL for
 	# sandbox and production; the key prefix signals the environment).
@@ -196,7 +220,7 @@ func _fetch_customer_info(for_restore := false) -> bool:
 		"Content-Type: application/json",
 		"Accept: application/json",
 		"X-Platform: web",
-		"X-Is-Sandbox: %s" % _is_sandbox_key(),
+		"X-Is-Sandbox: %s" % _is_sandbox(),
 	])
 	var err := _http.request(url, headers, HTTPClient.METHOD_GET)
 	if err != OK:
@@ -208,10 +232,17 @@ func _fetch_customer_info(for_restore := false) -> bool:
 	return true
 
 
-## Sandbox keys are prefixed rcb_sb_ (production rcb_) — mirrors the SDK.
-func _is_sandbox_key() -> bool:
+## True when this build talks to the RevenueCat sandbox environment. The API
+## only returns sandbox/test purchases when the request carries
+## X-Is-Sandbox: true — sending false makes every restore come back empty.
+## Derived from BOTH the key prefix (rcb_sb_) and the checkout URL, so a
+## production-key + sandbox-checkout test setup is still detected as sandbox.
+func _is_sandbox() -> bool:
 	var key: String = str(ProjectSettings.get_setting("iap/revenuecat_public_key", ""))
-	return key.begins_with("rcb_sb_")
+	if key.begins_with("rcb_sb_"):
+		return true
+	var checkout: String = str(ProjectSettings.get_setting("iap/web_checkout_url", ""))
+	return checkout.contains("/sandbox/")
 
 
 func _on_http_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -223,21 +254,35 @@ func _on_http_completed(result: int, response_code: int, _headers: PackedStringA
 		printerr("RevenueCatIapProvider: customer info failed (result=%d code=%d)" % [result, response_code])
 		if was_restore:
 			restore_finished.emit(RestoreResult.UNAVAILABLE)
+		if _migration_pending:
+			_migration_pending = false
+			# Can't tell whether the anonymous id owned anything — check the
+			# account id directly instead of migrating blindly.
+			_fetch_customer_info()
 		return
 	var parsed: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if not (parsed is Dictionary):
 		printerr("RevenueCatIapProvider: malformed customer info response")
 		if was_restore:
 			restore_finished.emit(RestoreResult.UNAVAILABLE)
+		if _migration_pending:
+			_migration_pending = false
+			_fetch_customer_info()
 		return
 	var owned: bool = _has_active_entitlement(parsed)
-	if _app_user_id == _anon_id and owned:
+	if _checked_user_id == _anon_id and owned:
 		_anon_owned = true
 	if owned and not LevelManager.all_puzzles_unlocked:
 		LevelManager.unlock_all_albums()
 		purchase_completed.emit()
 	if was_restore:
 		restore_finished.emit(RestoreResult.RESTORED if owned else RestoreResult.NOT_FOUND)
+	if _migration_pending:
+		_migration_pending = false
+		if _anon_owned and _app_user_id != _anon_id:
+			_identify_customer(_anon_id, _app_user_id)
+		else:
+			_fetch_customer_info()
 
 
 ## A one-time (lifetime) entitlement is active when its key exists in the
