@@ -5,16 +5,16 @@
     "price": 1000,
     "puzzle_count": 4,
     "previews": [
-      "https://garretttallent.com/puzzles/sheep/preview-1.png",
-      "https://garretttallent.com/puzzles/sheep/preview-2.png",
-      "https://garretttallent.com/puzzles/sheep/preview-3.png",
-      "https://garretttallent.com/puzzles/sheep/preview-4.png"
+      "https://puzzle.gares.games/puzzles/sheep/preview-1.png",
+      "https://puzzle.gares.games/puzzles/sheep/preview-2.png",
+      "https://puzzle.gares.games/puzzles/sheep/preview-3.png",
+      "https://puzzle.gares.games/puzzles/sheep/preview-4.png"
     ],
     "images": [
-      "https://garretttallent.com/puzzles/sheep/2.png",
-      "https://garretttallent.com/puzzles/sheep/3.png",
-      "https://garretttallent.com/puzzles/sheep/4.png",
-      "https://garretttallent.com/puzzles/sheep/5.png"
+      "https://puzzle.gares.games/puzzles/sheep/2.png",
+      "https://puzzle.gares.games/puzzles/sheep/3.png",
+      "https://puzzle.gares.games/puzzles/sheep/4.png",
+      "https://puzzle.gares.games/puzzles/sheep/5.png"
     ]
   },
   {
@@ -23,10 +23,10 @@
     "price": 1000,
     "puzzle_count": 1,
     "previews": [
-      "https://garretttallent.com/puzzles/test/preview-1.png"
+      "https://puzzle.gares.games/puzzles/test/preview-1.png"
     ],
     "images": [
-      "https://garretttallent.com/puzzles/test/Bigtoes-PixelArt-Background.png"
+      "https://puzzle.gares.games/puzzles/test/Bigtoes-PixelArt-Background.png"
     ]
   }
 ]
