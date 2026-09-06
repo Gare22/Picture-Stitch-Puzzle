@@ -4,3 +4,4 @@
 
 [resource]
 script = ExtResource("1_style")
+max_content_width = 900.0

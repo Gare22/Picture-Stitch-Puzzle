@@ -13,6 +13,14 @@ const LEVEL_BUTTON_SCENE := preload("res://level_button.tscn")
 ## Index of the level the player tapped, held until a difficulty is chosen.
 var _pending_level_index: int = -1
 
+## Textures of the current level list, kept for re-computing column widths on
+## viewport resize without reloading them.
+var _last_textures: Array[Texture2D] = []
+
+## Last computed column width; viewport resize events that don't change it are
+## ignored (avoids pointless relayouts during window drag-resize).
+var _last_target_width: float = -1.0
+
 
 ## Loads a texture from a path, handling both res:// (imported) and user:// (runtime) paths.
 ## Uses ResourceLoader for res:// paths because FileAccess.file_exists() fails
@@ -44,7 +52,8 @@ func _load_texture(path: String) -> Texture2D:
 ## so every grid row, sized by its tallest image, stays fully visible.
 func _column_width(textures: Array[Texture2D]) -> float:
 	var vp := get_viewport_rect().size
-	var width_col := (vp.x - STYLE.grid_edge_gap * 2.0 - STYLE.level_grid_separation * (float(STYLE.grid_columns) - 1.0)) / float(STYLE.grid_columns)
+	var width_budget := minf(vp.x, STYLE.max_content_width)
+	var width_col := (width_budget - STYLE.grid_edge_gap * 2.0 - STYLE.level_grid_separation * (float(STYLE.grid_columns) - 1.0)) / float(STYLE.grid_columns)
 	var rows := ceili(float(textures.size()) / float(STYLE.grid_columns))
 	if rows <= 0:
 		return width_col
@@ -82,6 +91,27 @@ func _ready() -> void:
 	difficulty_overlay.difficulty_selected.connect(_on_difficulty_pressed)
 	difficulty_overlay.back_pressed.connect(_on_overlay_back_pressed)
 	_build_grid()
+	_last_target_width = _column_width(_last_textures)
+	# Re-lay the grid when the window/viewport resizes (web fullscreen toggles,
+	# desktop window drags) so cards keep their capped size and re-center.
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
+
+
+## Re-sizes the level buttons after a viewport change without reloading any
+## textures: only the button minimum size is updated (aspect preserved).
+func _on_viewport_size_changed() -> void:
+	var target := _column_width(_last_textures)
+	if target == _last_target_width:
+		return
+	_last_target_width = target
+	for btn in grid.get_children():
+		if btn is LevelButton:
+			btn.resize_to(target)
+
+
+func _exit_tree() -> void:
+	if get_viewport() != null and get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.disconnect(_on_viewport_size_changed)
 
 
 func _build_grid() -> void:
@@ -93,6 +123,7 @@ func _build_grid() -> void:
 	var textures: Array[Texture2D] = []
 	for i in range(count):
 		textures.append(_load_texture(LevelManager.levels[i]["path"]))
+	_last_textures = textures
 
 	var target_width := _column_width(textures)
 	for i in range(count):

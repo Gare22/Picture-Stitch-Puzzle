@@ -87,6 +87,16 @@ func _make_rounded_material(cell_size: Vector2) -> ShaderMaterial:
 	return mat
 
 
+## Updates the cell size after a viewport resize: fixes the minimum size and
+## the rounded-corner shader's control_size, without reloading any textures.
+func resize_to(cell_size: Vector2) -> void:
+	custom_minimum_size = cell_size
+	if $CoverOld.material != null:
+		$CoverOld.material.set_shader_parameter("control_size", cell_size)
+	if $CoverNew.material != null:
+		$CoverNew.material.set_shader_parameter("control_size", cell_size)
+
+
 ## Loads a texture from a path, handling both res:// (imported) and user:// (runtime) paths.
 ## Uses ResourceLoader for res:// paths because FileAccess.file_exists() fails
 ## on exported builds (imported resources are remapped to .ctex and the raw

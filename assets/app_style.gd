@@ -18,3 +18,9 @@ extends Resource
 
 ## Corner radius (px) of the album cover thumbnails.
 @export var album_corner_radius: float = 12.0
+
+## Max width (px) of the album/level grid content. The logical viewport grows
+## with the window (stretch mode "expand"), so on desktop fullscreen the grids
+## would stretch comically wide; this caps the width budget used to compute
+## cell sizes. 0 disables the cap.
+@export var max_content_width: float = 900.0
