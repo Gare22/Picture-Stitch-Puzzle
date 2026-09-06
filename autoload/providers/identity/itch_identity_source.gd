@@ -13,12 +13,16 @@ extends IdentitySource
 ##     with a local TCPServer (no native code, no manifest changes). The token
 ##     travels in the URL *hash*, which browsers never send to the server, so
 ##     the listener serves a tiny page whose JavaScript reads the hash and
-##     POSTs the token back to the loopback address — same machine, so the
-##     token never leaves the device.
-##   Web: same-window redirect — the game navigates to itch and, on return, the
-##     token is read from window.location.hash at boot via JavaScriptBridge
-##     (state survives the navigation in sessionStorage) and the hash is then
-##     cleared so the token is not left in the address bar.
+##     POSTs it back to the loopback address — same machine, so the token
+##     never leaves the device.
+##   Web: itch.io game pages always embed the game in a cross-origin iframe,
+##     where in-frame redirects are blocked (X-Frame-Options: sameorigin) and
+##     the token hash would land on the parent page the iframe cannot read. The
+##     out-of-band (oob) flow is used instead: the authorize page
+##     (redirect_uri=urn:ietf:wg:oauth:2.0:oob — register this as the web
+##     OAuth app's callback) opens in a NEW TAB and shows the API key; the
+##     player copies it and pastes it back into the game
+##     (manual_token_required -> submit_manual_token).
 ##
 ## Session (access token + profile) persists in user://itch_session.cfg. On
 ## boot the profile is re-fetched to validate the token, so the user stays
@@ -28,6 +32,7 @@ const AUTHORIZE_URL := "https://itch.io/user/oauth"
 const PROFILE_URL := "https://api.itch.io/profile"
 const SESSION_PATH := "user://itch_session.cfg"
 const SCOPE := "profile:me"
+const OOB_REDIRECT_URI := "urn:ietf:wg:oauth:2.0:oob"
 const SIGN_IN_TIMEOUT_SEC := 300.0
 
 var _client_id: String = ""
@@ -59,8 +64,6 @@ func _ready() -> void:
 			"identity/itch_loopback_redirect_uri", "http://127.0.0.1:39201/callback"))
 		_port = int(str(ProjectSettings.get_setting("identity/itch_loopback_port", 39201)))
 	_http.request_completed.connect(_on_http_completed)
-	if _is_web and _maybe_consume_web_callback():
-		return
 	_load_session()
 	if not _access_token.is_empty():
 		# Validate the persisted token and refresh the cached profile.
@@ -99,16 +102,14 @@ func sign_in() -> void:
 	_sign_in_started_at = Time.get_ticks_msec() / 1000.0
 	_signing_in = true
 	_state = _generate_state()
-	var url := _build_authorize_url()
 	if _is_web:
-		# Persist the state across the same-window navigation so the returning
-		# boot can verify the callback.
-		JavaScriptBridge.eval("sessionStorage.setItem('itch_oauth_state', '%s')" % _state)
-		JavaScriptBridge.eval("window.location = '%s'" % url)
+		# Web is always oob (see header doc): itch game pages embed the game in
+		# a cross-origin iframe where in-frame redirects are blocked.
+		_begin_oob_flow()
 	else:
 		if not _start_loopback_listener():
 			return  # failure already reported via sign_in_failed
-		OS.shell_open(url)
+		OS.shell_open(_build_authorize_url())
 
 
 func sign_out() -> void:
@@ -147,15 +148,37 @@ func _process(_delta: float) -> void:
 ## ── OAuth plumbing ──────────────────────────────────────────────────────────
 
 
-func _build_authorize_url() -> String:
+func _build_authorize_url(p_redirect_uri := "", p_include_state := true) -> String:
 	var parts := PackedStringArray([
 		"client_id=%s" % _client_id.uri_encode(),
 		"scope=%s" % SCOPE.uri_encode(),
-		"redirect_uri=%s" % _redirect_uri.uri_encode(),
+		"redirect_uri=%s" % (p_redirect_uri if not p_redirect_uri.is_empty() else _redirect_uri).uri_encode(),
 		"response_type=token",
-		"state=%s" % _state.uri_encode(),
 	])
+	if p_include_state:
+		parts.append("state=%s" % _state.uri_encode())
 	return AUTHORIZE_URL + "?" + "&".join(parts)
+
+
+## Embedded-web (iframe) sign-in: open the oob authorize page in a NEW TAB —
+## popups from iframes are allowed, in-frame navigations are not. itch shows
+## the API key; the player copies it and pastes it back via submit_manual_token.
+func _begin_oob_flow() -> void:
+	var url := _build_authorize_url(OOB_REDIRECT_URI, false)
+	JavaScriptBridge.eval("window.open('%s', '_blank')" % url)
+	manual_token_required.emit()
+
+
+## Feeds a manually pasted oob token back and validates it with the profile
+## fetch (the token is the credential — no state round-trip in oob).
+func submit_manual_token(token: String) -> void:
+	var trimmed := token.strip_edges()
+	if trimmed.is_empty():
+		sign_in_failed.emit("No token entered")
+		return
+	_access_token = trimmed
+	_save_session()
+	_fetch_profile()
 
 
 func _fetch_profile() -> void:
@@ -315,38 +338,6 @@ fetch('http://127.0.0.1:%d/', {
 ## ── Web callback (same-window redirect) ────────────────────────────────────
 
 
-## Called at boot on web: if we just returned from the itch authorize page, the
-## access token is in window.location.hash. Consume it, verify the state,
-## clear the hash, and fetch the profile. Returns true when a callback was
-## consumed.
-func _maybe_consume_web_callback() -> bool:
-	if not _is_web:
-		return false
-	var hash := str(JavaScriptBridge.eval("window.location.hash"))
-	if hash.is_empty():
-		return false
-	var params := _parse_query(hash.trim_prefix("#"))
-	var token: String = str(params.get("access_token", ""))
-	if token.is_empty():
-		# Returned from itch without a callback (abandoned flow) — reset so a new
-		# sign-in attempt can start fresh.
-		_signing_in = false
-		return false
-	var expected_state: String = str(JavaScriptBridge.eval("sessionStorage.getItem('itch_oauth_state')"))
-	if expected_state.is_empty() or expected_state == "<null>" or str(params.get("state", "")) != expected_state:
-		printerr("ItchIdentitySource: web OAuth state mismatch — ignoring callback")
-		return false
-	JavaScriptBridge.eval("sessionStorage.removeItem('itch_oauth_state')")
-	# Strip the hash so a reload doesn't re-consume the token and it isn't left
-	# in the address bar.
-	JavaScriptBridge.eval("history.replaceState({}, '', window.location.pathname + window.location.search)")
-	_signing_in = false
-	_access_token = token
-	_save_session()
-	_fetch_profile()
-	return true
-
-
 ## ── Helpers ────────────────────────────────────────────────────────────────
 
 
@@ -358,17 +349,6 @@ func _base64url(bytes: PackedByteArray) -> String:
 	var s := Marshalls.raw_to_base64(bytes).replace("+", "-").replace("/", "_")
 	# RFC 4648 base64url omits all padding ("=" × 1 or 2).
 	return s.trim_suffix("==").trim_suffix("=")
-
-
-func _parse_query(query: String) -> Dictionary:
-	var result := {}
-	for pair in query.split("&"):
-		if pair.is_empty():
-			continue
-		var kv := pair.split("=", true, 1)
-		if kv.size() == 2:
-			result[kv[0]] = kv[1].uri_decode()
-	return result
 
 
 ## ── Session persistence ────────────────────────────────────────────────────

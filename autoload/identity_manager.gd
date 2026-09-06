@@ -12,6 +12,7 @@ extends Node
 signal signed_in(user_id: String, user_name: String)
 signal signed_out
 signal sign_in_failed(reason: String)
+signal manual_token_required
 
 const SOURCE_SCENES := {
 	"itch": "res://autoload/providers/identity/itch_identity_source.tscn",
@@ -40,6 +41,7 @@ func _ready() -> void:
 	_source.signed_in.connect(_on_source_signed_in)
 	_source.signed_out.connect(_on_source_signed_out)
 	_source.sign_in_failed.connect(_on_source_sign_in_failed)
+	_source.manual_token_required.connect(_on_source_manual_token_required)
 	add_child(_source)
 
 
@@ -87,6 +89,12 @@ func sign_out() -> void:
 		_source.sign_out()
 
 
+## Feeds a manually pasted token back to the source (oob web-embed flow).
+func submit_manual_token(token: String) -> void:
+	if _source != null:
+		_source.submit_manual_token(token)
+
+
 ## ── Source signal passthroughs ─────────────────────────────────────────────
 
 
@@ -100,3 +108,7 @@ func _on_source_signed_out() -> void:
 
 func _on_source_sign_in_failed(reason: String) -> void:
 	sign_in_failed.emit(reason)
+
+
+func _on_source_manual_token_required() -> void:
+	manual_token_required.emit()

@@ -15,6 +15,11 @@ signal signed_out
 ## Emitted when an interactive sign-in attempt fails. Reason is a debug string.
 signal sign_in_failed(reason: String)
 
+## Emitted when the source needs the player to copy a token from a page it
+## opened in a new tab and paste it back into the game (out-of-band / oob flow
+## — used on web embeds like itch.io, where in-frame redirects are blocked).
+signal manual_token_required
+
 ## True when this source is configured and can be used on this platform.
 func is_supported() -> bool:
 	return false
@@ -42,4 +47,9 @@ func sign_in() -> void:
 
 ## Ends the current session.
 func sign_out() -> void:
+	pass
+
+## Feeds a manually pasted token back to the source (oob flow). No-op for
+## sources that never require it.
+func submit_manual_token(_token: String) -> void:
 	pass

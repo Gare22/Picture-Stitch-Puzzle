@@ -27,6 +27,10 @@ extends Control
 @onready var account_prompt_sign_in_button: Button = $AccountPromptOverlay/Panel/VBox/SignInButton
 @onready var account_prompt_continue_button: Button = $AccountPromptOverlay/Panel/VBox/ContinueButton
 @onready var account_prompt_cancel_button: Button = $AccountPromptOverlay/Panel/VBox/CancelButton
+@onready var oauth_token_overlay: Control = $OAuthTokenOverlay
+@onready var oauth_token_edit: LineEdit = $OAuthTokenOverlay/Panel/VBox/TokenEdit
+@onready var oauth_token_confirm_button: Button = $OAuthTokenOverlay/Panel/VBox/ConfirmButton
+@onready var oauth_token_cancel_button: Button = $OAuthTokenOverlay/Panel/VBox/CancelButton
 @onready var payment_overlay: Control = $PaymentOverlay
 @onready var payment_info_label: Label = $PaymentOverlay/Panel/VBox/InfoLabel
 @onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
@@ -89,9 +93,12 @@ func _ready() -> void:
 	account_prompt_sign_in_button.pressed.connect(_on_account_prompt_sign_in)
 	account_prompt_continue_button.pressed.connect(_on_account_prompt_continue)
 	account_prompt_cancel_button.pressed.connect(_on_account_prompt_cancel)
+	oauth_token_confirm_button.pressed.connect(_on_oauth_token_confirmed)
+	oauth_token_cancel_button.pressed.connect(_on_oauth_token_canceled)
 	IdentityManager.signed_in.connect(_on_identity_signed_in)
 	IdentityManager.signed_out.connect(_on_identity_signed_out)
 	IdentityManager.sign_in_failed.connect(_on_identity_sign_in_failed)
+	IdentityManager.manual_token_required.connect(_on_manual_token_required)
 	iap_banner.pressed.connect(_on_iap_banner_pressed)
 	IapManager.price_loaded.connect(_on_iap_price_loaded)
 	IapManager.purchase_completed.connect(_on_iap_purchase_completed)
@@ -252,6 +259,27 @@ func _on_identity_signed_out() -> void:
 func _on_identity_sign_in_failed(reason: String) -> void:
 	_update_identity_ui()
 	identity_status_label.text = "Sign-in failed: %s" % reason
+
+
+## The identity source opened an out-of-band authorize tab (web iframe embeds):
+## show the paste dialog so the player can drop the copied API key in.
+func _on_manual_token_required() -> void:
+	oauth_token_edit.clear()
+	oauth_token_overlay.visible = true
+	oauth_token_edit.grab_focus()
+
+
+func _on_oauth_token_confirmed() -> void:
+	var token: String = oauth_token_edit.text.strip_edges()
+	if token.is_empty():
+		return  # keep the dialog up until something is pasted
+	oauth_token_overlay.visible = false
+	identity_status_label.text = "Signing in..."
+	IdentityManager.submit_manual_token(token)
+
+
+func _on_oauth_token_canceled() -> void:
+	oauth_token_overlay.visible = false
 
 
 ## Shows the reset confirmation step.
@@ -426,6 +454,12 @@ func _exit_tree() -> void:
 		IdentityManager.signed_out.disconnect(_on_identity_signed_out)
 	if IdentityManager.sign_in_failed.is_connected(_on_identity_sign_in_failed):
 		IdentityManager.sign_in_failed.disconnect(_on_identity_sign_in_failed)
+	if IdentityManager.manual_token_required.is_connected(_on_manual_token_required):
+		IdentityManager.manual_token_required.disconnect(_on_manual_token_required)
+	if oauth_token_confirm_button.pressed.is_connected(_on_oauth_token_confirmed):
+		oauth_token_confirm_button.pressed.disconnect(_on_oauth_token_confirmed)
+	if oauth_token_cancel_button.pressed.is_connected(_on_oauth_token_canceled):
+		oauth_token_cancel_button.pressed.disconnect(_on_oauth_token_canceled)
 	if IapManager.price_loaded.is_connected(_on_iap_price_loaded):
 		IapManager.price_loaded.disconnect(_on_iap_price_loaded)
 	if IapManager.purchase_completed.is_connected(_on_iap_purchase_completed):
