@@ -49,7 +49,8 @@ revenuecat_entitlement_id="unlock_all"
 [identity]
 
 provider_id="none"
-itch_client_id=""
+itch_web_client_id=""
+itch_loopback_client_id=""
 itch_web_redirect_uri=""
 itch_loopback_redirect_uri="http://127.0.0.1:39201/callback"
 itch_loopback_port=39201
