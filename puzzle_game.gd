@@ -75,6 +75,9 @@ func _ready() -> void:
 	# Set to true to show numbered labels on each piece (for debugging)
 	board.test_mode = false
 	board.setup(image, puzzle_columns, puzzle_rows)
+	# Re-fit the board when the window/viewport resizes (web fullscreen toggles,
+	# desktop window drags) so pieces keep filling the available area.
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 
 	# Advance test grid size for next puzzle
 	if test_grid_cycle:
@@ -94,6 +97,17 @@ func _ready() -> void:
 	back_dialog.get_ok_button().text = "Go back to menu"
 	back_dialog.get_cancel_button().text = "Continue puzzle"
 	back_dialog.confirmed.connect(_on_back_to_album)
+
+
+func _exit_tree() -> void:
+	if get_viewport() != null and get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.disconnect(_on_viewport_size_changed)
+
+
+func _on_viewport_size_changed() -> void:
+	var board: Node = $GameLayout/BoardCenter/PuzzleBoard
+	if board != null and board.has_method("refit"):
+		board.refit()
 
 
 func _process(delta: float) -> void:

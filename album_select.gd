@@ -40,6 +40,10 @@ extends Control
 ## Index of the album whose purchase dialog is currently open (-1 = none).
 var _pending_purchase_index: int = -1
 
+## Last computed album-cell size; viewport resize events that don't change it
+## are ignored (avoids pointless relayouts during window drag-resize).
+var _last_cell_size := Vector2.ZERO
+
 ## When true, proceed to checkout automatically after a sign-in succeeds
 ## (set when the player chose "Sign in" from the purchase account prompt).
 var _purchase_after_sign_in: bool = false
@@ -65,7 +69,9 @@ const ALBUM_BUTTON_SCENE := preload("res://album_button.tscn")
 
 func _cell_size() -> Vector2:
 	var vp_w: float = get_viewport_rect().size.x
-	var col_w := (vp_w - STYLE.grid_edge_gap * 2.0 - STYLE.album_grid_separation * (STYLE.grid_columns - 1)) / STYLE.grid_columns
+	# Cap the width budget so fullscreen desktops don't stretch cells huge.
+	var budget := minf(vp_w, STYLE.max_content_width)
+	var col_w := (budget - STYLE.grid_edge_gap * 2.0 - STYLE.album_grid_separation * (STYLE.grid_columns - 1)) / STYLE.grid_columns
 	return Vector2(col_w, col_w)
 
 
@@ -114,9 +120,26 @@ func _ready() -> void:
 	_update_identity_ui()
 	_update_iap_banner()
 	_build_grid()
+	_last_cell_size = _cell_size()
+	# Re-lay the grid when the window/viewport resizes (web fullscreen toggles,
+	# desktop window drags) so cells keep their capped size and re-center.
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	LevelManager.albums_changed.connect(_on_albums_changed)
 	LevelManager.downloading_changed.connect(_on_downloading_changed)
 	$DownloadLabel.visible = LevelManager.is_downloading()
+
+
+## Re-sizes the album cells after a viewport change without reloading any
+## cover textures: only the minimum size and the rounded-corner shader's
+## control_size are updated.
+func _on_viewport_size_changed() -> void:
+	var size := _cell_size()
+	if size == _last_cell_size:
+		return
+	_last_cell_size = size
+	for cell in grid.get_children():
+		if cell is AlbumButton:
+			cell.resize_to(size)
 
 
 ## Shows the "Unlock All Puzzles" banner only when the platform supports
@@ -434,6 +457,8 @@ func _on_iap_restore_finished(result: int) -> void:
 
 
 func _exit_tree() -> void:
+	if get_viewport() != null and get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.disconnect(_on_viewport_size_changed)
 	if back_button.pressed.is_connected(_on_back_pressed):
 		back_button.pressed.disconnect(_on_back_pressed)
 	if iap_banner.pressed.is_connected(_on_iap_banner_pressed):

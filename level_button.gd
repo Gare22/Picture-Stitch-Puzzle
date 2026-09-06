@@ -30,6 +30,19 @@ func setup(image: Texture2D, earned: Array, index: int, target_width: float) -> 
 	set_stars(earned)
 
 
+## Updates the button size after a viewport resize, preserving the image's
+## aspect ratio (mirrors the size math from setup(), without touching the icon).
+func resize_to(target_width: float) -> void:
+	var image: Texture2D = icon
+	if image != null:
+		var tex_size := image.get_size()
+		if tex_size.x > 0.0 and tex_size.y > 0.0:
+			var fit_scale := target_width / tex_size.x
+			custom_minimum_size = Vector2(target_width, tex_size.y * fit_scale)
+			return
+	custom_minimum_size = Vector2(target_width, target_width)
+
+
 ## Scene-default modulates for each star, captured once in _ready.
 var _star_defaults: Array[Color] = []
 

@@ -19,6 +19,10 @@ const BOTTOM_PADDING: float = 50.0 # room for menu button
 var cell_display_w: float = 0.0
 var cell_display_h: float = 0.0
 
+## Natural (1:1) source-image dimensions, kept for viewport-resize refits.
+var _src_w: float = 0.0
+var _src_h: float = 0.0
+
 
 ## Called by GameManager after instantiation.
 ## Slices the source image into a grid, creates pieces, shuffles them, and draws borders.
@@ -26,6 +30,8 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 	columns_count = p_columns
 	rows_count = p_rows
 	columns = columns_count
+	_src_w = source_image.get_width()
+	_src_h = source_image.get_height()
 
 	# Cell dimensions in image-space
 	var cell_w = source_image.get_width() / float(columns_count)
@@ -127,6 +133,31 @@ func setup(source_image: Texture2D, p_columns: int, p_rows: int) -> void:
 	var total_board_h = cell_display_h * rows_count
 	custom_minimum_size = Vector2(total_board_w, total_board_h)
 
+	update_borders()
+
+
+## Re-fits the board after a viewport resize (web fullscreen toggles, desktop
+## window drags) without re-slicing any textures: recomputes the cell display
+## size from the stored source dimensions, resizes every piece, and redraws
+## the borders. The pieces use stretch-mode scaling, so the AtlasTextures stay
+## untouched.
+func refit() -> void:
+	if _src_w <= 0.0 or _src_h <= 0.0:
+		return
+	var viewport_size := get_viewport_rect().size
+	var avail_w := viewport_size.x - SIDE_PADDING * 2.0
+	var avail_h := viewport_size.y - TOP_PADDING - BOTTOM_PADDING
+	var board_scale := minf(avail_w / _src_w, avail_h / _src_h)
+	var new_w := ceili(_src_w / float(columns_count) * board_scale)
+	var new_h := ceili(_src_h / float(rows_count) * board_scale)
+	if new_w == cell_display_w and new_h == cell_display_h:
+		return
+	cell_display_w = new_w
+	cell_display_h = new_h
+	for piece in get_pieces():
+		piece.custom_minimum_size = Vector2(cell_display_w, cell_display_h)
+		piece.size = Vector2(cell_display_w, cell_display_h)
+	custom_minimum_size = Vector2(cell_display_w * columns_count, cell_display_h * rows_count)
 	update_borders()
 
 
