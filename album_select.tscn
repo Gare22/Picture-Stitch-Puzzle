@@ -254,6 +254,11 @@ visible = false
 layout_mode = 2
 text = "Cancel"
 
+[node name="DeleteAllCheck" type="CheckBox" parent="OptionsOverlay/Panel/VBox"]
+visible = false
+layout_mode = 2
+text = "Also delete all data (purchases, sign-in)"
+
 [node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=494256681]
 layout_mode = 2
 text = "Restore Purchases"
