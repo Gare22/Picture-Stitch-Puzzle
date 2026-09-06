@@ -36,16 +36,16 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="LockOverlay" type="Control" parent="." unique_id=2101000001]
-anchors_preset = 15
+visible = false
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-visible = false
 
 [node name="Dim" type="ColorRect" parent="LockOverlay" unique_id=2101000002]
-anchors_preset = 15
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -54,7 +54,7 @@ mouse_filter = 2
 color = Color(0, 0, 0, 0.55)
 
 [node name="LockLabel" type="Label" parent="LockOverlay" unique_id=2101000003]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -63,15 +63,14 @@ offset_left = -60.0
 offset_top = -40.0
 offset_right = 60.0
 offset_bottom = -8.0
-mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
 text = "Locked"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 22
 
 [node name="PriceLabel" type="Label" parent="LockOverlay" unique_id=2101000004]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -80,12 +79,10 @@ offset_left = -60.0
 offset_top = 8.0
 offset_right = 60.0
 offset_bottom = 40.0
-mouse_filter = 2
-text = ""
-horizontal_alignment = 1
-vertical_alignment = 1
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ClickButton" type="Button" parent="." unique_id=581975339]
 layout_mode = 1
@@ -110,7 +107,7 @@ text = "Temp"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StarHud" type="HBoxContainer" parent="."]
+[node name="StarHud" type="HBoxContainer" parent="." unique_id=280565167]
 visible = false
 layout_mode = 1
 anchors_preset = -1
@@ -126,7 +123,7 @@ mouse_filter = 2
 theme_override_constants/separation = 3
 alignment = 2
 
-[node name="StarCountLabel" type="Label" parent="StarHud"]
+[node name="StarCountLabel" type="Label" parent="StarHud" unique_id=123321683]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
@@ -136,7 +133,7 @@ theme_override_font_sizes/font_size = 12
 text = "0/12"
 vertical_alignment = 1
 
-[node name="StarIcon" type="TextureRect" parent="StarHud"]
+[node name="StarIcon" type="TextureRect" parent="StarHud" unique_id=1500742505]
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4

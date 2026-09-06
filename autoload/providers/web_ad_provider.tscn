@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://212boc3x8od4"]
 
-[ext_resource type="Script" path="res://autoload/providers/web_ad_provider.gd" id="1_web"]
+[ext_resource type="Script" uid="uid://4rccb8tpavid" path="res://autoload/providers/web_ad_provider.gd" id="1_web"]
 
-[node name="WebAdProvider" type="Node"]
+[node name="WebAdProvider" type="Node" unique_id=1295898248]
 script = ExtResource("1_web")

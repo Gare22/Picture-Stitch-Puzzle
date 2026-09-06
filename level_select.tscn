@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="2_bg"]
 [ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_apu6u"]
 [ext_resource type="PackedScene" uid="uid://608v5vdgkk01" path="res://difficulty_menu.tscn" id="3_dm"]
-[ext_resource type="PackedScene" path="res://currency_hud.tscn" id="4_ch"]
+[ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
 
 [node name="LevelSelect" type="Control" unique_id=156040848]
 layout_mode = 3
@@ -74,4 +74,6 @@ text = "Back"
 visible = false
 layout_mode = 1
 
-[node name="CurrencyHUD" parent="." instance=ExtResource("4_ch")]
+[node name="CurrencyHUD" parent="." unique_id=939683526 instance=ExtResource("4_ch")]
+layout_mode = 0
+anchors_preset = 0

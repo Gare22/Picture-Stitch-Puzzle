@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dkl0ov3vkn76o"]
+[gd_scene format=3 uid="uid://dkl0ov3vkn76o"]
 
 [ext_resource type="Script" uid="uid://iuwm4pp8nn0i" path="res://addons/admob/gdscript/sample/tabs/Interstitial.gd" id="1_h2qnh"]
 
-[node name="Interstitial" type="VBoxContainer"]
+[node name="Interstitial" type="VBoxContainer" unique_id=1402076534]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,31 +11,31 @@ grow_vertical = 2
 theme_override_constants/separation = 15
 script = ExtResource("1_h2qnh")
 
-[node name="Load" type="Button" parent="."]
+[node name="Load" type="Button" parent="." unique_id=1176297946]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_colors/font_hover_color = Color(0.25, 0.75, 0.25, 1)
-theme_override_colors/font_pressed_color = Color(0.1, 0.35, 0.1, 1)
 theme_override_colors/font_color = Color(0.15, 0.45, 0.15, 1)
+theme_override_colors/font_pressed_color = Color(0.1, 0.35, 0.1, 1)
+theme_override_colors/font_hover_color = Color(0.25, 0.75, 0.25, 1)
 text = "GAD_Load"
 
-[node name="Show" type="Button" parent="."]
+[node name="Show" type="Button" parent="." unique_id=281786265]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_colors/font_disabled_color = Color(0.1, 0.25, 0.5, 0.4)
-theme_override_colors/font_hover_color = Color(0.25, 0.5, 0.9, 1)
-theme_override_colors/font_pressed_color = Color(0.05, 0.15, 0.3, 1)
 theme_override_colors/font_color = Color(0.1, 0.25, 0.5, 1)
+theme_override_colors/font_pressed_color = Color(0.05, 0.15, 0.3, 1)
+theme_override_colors/font_hover_color = Color(0.25, 0.5, 0.9, 1)
+theme_override_colors/font_disabled_color = Color(0.1, 0.25, 0.5, 0.4)
 disabled = true
 text = "GAD_Show"
 
-[node name="Destroy" type="Button" parent="."]
+[node name="Destroy" type="Button" parent="." unique_id=527086633]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_colors/font_disabled_color = Color(0.6, 0.15, 0.15, 0.4)
-theme_override_colors/font_hover_color = Color(0.9, 0.3, 0.3, 1)
-theme_override_colors/font_pressed_color = Color(0.4, 0.05, 0.05, 1)
 theme_override_colors/font_color = Color(0.6, 0.15, 0.15, 1)
+theme_override_colors/font_pressed_color = Color(0.4, 0.05, 0.05, 1)
+theme_override_colors/font_hover_color = Color(0.9, 0.3, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(0.6, 0.15, 0.15, 0.4)
 disabled = true
 text = "GAD_Destroy"
 

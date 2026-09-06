@@ -1,16 +1,16 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dwodsqts524em"]
 
-[ext_resource type="Script" path="res://test_gap.gd" id="1_test"]
-[ext_resource type="PackedScene" path="res://board/puzzle_board.tscn" id="2_board"]
+[ext_resource type="Script" uid="uid://dkjdtdmob8nwv" path="res://test_gap.gd" id="1_test"]
+[ext_resource type="PackedScene" uid="uid://b3kg23vxtacch" path="res://board/puzzle_board.tscn" id="2_board"]
 
-[node name="TestGap" type="Node"]
+[node name="TestGap" type="Node" unique_id=1938370513]
 script = ExtResource("1_test")
 
-[node name="PuzzleBoard" parent="." instance=ExtResource("2_board")]
+[node name="PuzzleBoard" parent="." unique_id=1320449768 instance=ExtResource("2_board")]
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
-[node name="DebugLabel" type="Label" parent="."]
+[node name="DebugLabel" type="Label" parent="." unique_id=1984280863]
 anchors_preset = 10
 anchor_right = 1.0
 offset_top = 5.0

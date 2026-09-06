@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://dey5hxh7lfu4i"]
 
-[ext_resource type="Script" path="res://autoload/providers/mock_iap.gd" id="1_mock"]
+[ext_resource type="Script" uid="uid://7kt4byfnwqip" path="res://autoload/providers/mock_iap.gd" id="1_mock"]
 
-[node name="MockIap" type="Node"]
+[node name="MockIap" type="Node" unique_id=1050504353]
 script = ExtResource("1_mock")

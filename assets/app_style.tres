@@ -1,11 +1,6 @@
-[gd_resource type="Resource" script_class="AppStyle" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="AppStyle" format=3 uid="uid://bunjh8ktcchk4"]
 
-[ext_resource type="Script" path="res://assets/app_style.gd" id="1_style"]
+[ext_resource type="Script" uid="uid://k7w6nuqx56pq" path="res://assets/app_style.gd" id="1_style"]
 
 [resource]
 script = ExtResource("1_style")
-grid_edge_gap = 8.0
-grid_columns = 2
-album_grid_separation = 8.0
-level_grid_separation = 5.0
-album_corner_radius = 12.0

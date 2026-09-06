@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bnptawvmfxhhu"]
+[gd_scene format=3 uid="uid://bnptawvmfxhhu"]
 
 [ext_resource type="Script" uid="uid://cndg5n6fmx0a6" path="res://addons/admob/gdscript/sample/tabs/Ump.gd" id="1_pyoth"]
 
-[node name="UMP" type="VBoxContainer"]
+[node name="UMP" type="VBoxContainer" unique_id=44529840]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,17 +11,17 @@ grow_vertical = 2
 theme_override_constants/separation = 15
 script = ExtResource("1_pyoth")
 
-[node name="GetConsentStatus" type="Button" parent="."]
+[node name="GetConsentStatus" type="Button" parent="." unique_id=1938203322]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_GetConsentStatus"
 
-[node name="ResetConsentInformation" type="Button" parent="."]
+[node name="ResetConsentInformation" type="Button" parent="." unique_id=744146690]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_ResetConsentInformation"
 
-[node name="ShowPrivacyOptionsForm" type="Button" parent="."]
+[node name="ShowPrivacyOptionsForm" type="Button" parent="." unique_id=701166597]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_ShowPrivacyOptionsForm"

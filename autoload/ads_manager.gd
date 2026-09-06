@@ -6,16 +6,17 @@ extends Node
 ## which provider gets injected.
 ##
 ## Provider selection (Project Settings -> ads/provider_id):
-##   "auto"  — Android/iOS -> admob, Web -> web, anything else -> mock
+##   "auto"  — web everywhere (Google ads are not used in this project);
+##             TEST_MODE falls back to the mock dev simulation
 ##   "admob" — force AdMob (godot-admob plugin)
 ##   "web"   — force the web placeholder provider (no Google account)
 ##   "mock"  — force the dev simulation
-## An explicit provider_id is always honored; "auto" falls back to mock in
-## TEST_MODE so dev machines behave like before.
+## An explicit provider_id is always honored; with "auto", TEST_MODE picks the
+## mock provider on dev machines, otherwise the web provider is used everywhere.
 
 ## Simulates rewarded ads on dev machines via the mock provider. MUST be set to
 ## false for release builds.
-const TEST_MODE: bool = true
+@export var TEST_MODE: bool = true
 
 ## Emitted when a rewarded ad was watched to completion.
 signal rewarded_earned
@@ -60,10 +61,9 @@ func _resolve_provider_id() -> String:
 		return id
 	if TEST_MODE:
 		return "mock"
-	match OS.get_name():
-		"Android", "iOS": return "admob"
-		"Web": return "web"
-		_: return "mock"
+	# Google ads aren't used in this project — route every platform through the
+	# web provider. "admob" stays available via explicit config.
+	return "web"
 
 
 ## True when the active provider can serve ads on this platform.

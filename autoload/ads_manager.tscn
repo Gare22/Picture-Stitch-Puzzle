@@ -4,3 +4,4 @@
 
 [node name="AdsManager" type="Node" unique_id=65388019]
 script = ExtResource("1_ads")
+TEST_MODE = false

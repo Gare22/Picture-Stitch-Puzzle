@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bvpkbh4330hdw"]
 
-[ext_resource type="Script" path="res://autoload/providers/web_iap.gd" id="1_web"]
+[ext_resource type="Script" uid="uid://cpo6t31t6p3nx" path="res://autoload/providers/web_iap.gd" id="1_web"]
 
-[node name="WebIap" type="Node"]
+[node name="WebIap" type="Node" unique_id=505903689]
 script = ExtResource("1_web")

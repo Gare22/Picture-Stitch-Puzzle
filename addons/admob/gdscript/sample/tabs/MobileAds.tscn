@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://df7w8m2v87p5"]
+[gd_scene format=3 uid="uid://df7w8m2v87p5"]
 
-[ext_resource type="Script" path="res://addons/admob/gdscript/sample/tabs/MobileAds.gd" id="1_mads"]
+[ext_resource type="Script" uid="uid://bh53g1jdwb21i" path="res://addons/admob/gdscript/sample/tabs/MobileAds.gd" id="1_mads"]
 [ext_resource type="AudioStream" uid="uid://f3f176vu6pfo" path="res://addons/admob/assets/music.ogg" id="2_music"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
@@ -17,7 +17,7 @@ shadow_color = Color(0, 0, 0, 0.1)
 shadow_size = 4
 shadow_offset = Vector2(0, 2)
 
-[node name="MobileAds" type="VBoxContainer"]
+[node name="MobileAds" type="VBoxContainer" unique_id=464176681]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -26,38 +26,38 @@ grow_vertical = 2
 theme_override_constants/separation = 15
 script = ExtResource("1_mads")
 
-[node name="GetInitStatus" type="Button" parent="."]
+[node name="GetInitStatus" type="Button" parent="." unique_id=1718997483]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_GetInitializationStatus"
 
-[node name="iOSAppPause" type="CheckButton" parent="."]
+[node name="iOSAppPause" type="CheckButton" parent="." unique_id=2055976138]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_SetiOSAppPauseOnBackground"
 alignment = 1
 
-[node name="MuteMusic" type="CheckButton" parent="."]
+[node name="MuteMusic" type="CheckButton" parent="." unique_id=520533547]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_MuteMusic"
 alignment = 1
 
-[node name="AdVolumeCard" type="PanelContainer" parent="."]
+[node name="AdVolumeCard" type="PanelContainer" parent="." unique_id=840245668]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 
-[node name="AdVolumeContainer" type="HBoxContainer" parent="AdVolumeCard"]
+[node name="AdVolumeContainer" type="HBoxContainer" parent="AdVolumeCard" unique_id=1768984626]
 layout_mode = 2
 alignment = 1
 
-[node name="AdVolumeLabel" type="Label" parent="AdVolumeCard/AdVolumeContainer"]
+[node name="AdVolumeLabel" type="Label" parent="AdVolumeCard/AdVolumeContainer" unique_id=1726188805]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "GAD_AdVolume"
 
-[node name="AdVolumeSlider" type="HSlider" parent="AdVolumeCard/AdVolumeContainer"]
+[node name="AdVolumeSlider" type="HSlider" parent="AdVolumeCard/AdVolumeContainer" unique_id=1679178817]
 custom_minimum_size = Vector2(200, 30)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -65,44 +65,44 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="ConsentCookies" type="CheckButton" parent="."]
+[node name="ConsentCookies" type="CheckButton" parent="." unique_id=186278292]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "Consent for Cookies (Limited Ads)"
 alignment = 1
 
-[node name="AdMuted" type="CheckButton" parent="."]
+[node name="AdMuted" type="CheckButton" parent="." unique_id=13082292]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_MuteAds"
 alignment = 1
 
-[node name="OpenAdInspector" type="Button" parent="."]
+[node name="OpenAdInspector" type="Button" parent="." unique_id=1504199480]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "GAD_OpenAdInspector"
 
-[node name="LanguageCard" type="PanelContainer" parent="."]
+[node name="LanguageCard" type="PanelContainer" parent="." unique_id=1769865935]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 
-[node name="LanguageContainer" type="HBoxContainer" parent="LanguageCard"]
+[node name="LanguageContainer" type="HBoxContainer" parent="LanguageCard" unique_id=1520435078]
 layout_mode = 2
 alignment = 1
 
-[node name="LanguageLabel" type="Label" parent="LanguageCard/LanguageContainer"]
+[node name="LanguageLabel" type="Label" parent="LanguageCard/LanguageContainer" unique_id=553499511]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Language"
 
-[node name="LanguageButton" type="OptionButton" parent="LanguageCard/LanguageContainer"]
+[node name="LanguageButton" type="OptionButton" parent="LanguageCard/LanguageContainer" unique_id=1178658930]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=578225134]
 stream = ExtResource("2_music")
 volume_db = -10.0
 autoplay = true

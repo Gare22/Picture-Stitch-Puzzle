@@ -55,6 +55,12 @@ func purchase() -> void:
 	if _unavailable or not billing_client.is_ready():
 		purchase_failed.emit("Billing is not connected yet")
 		return
+	if _price.is_empty():
+		# The product query returned nothing (no matching product in the Play
+		# Console) or never arrived — surface that instead of the raw library
+		# "productId not found" error.
+		purchase_failed.emit("Product details unavailable — check the product ID in the Google Play Console")
+		return
 	var result: Dictionary = billing_client.purchase(PRODUCT_ID)
 	if result.get("response_code", -1) != BillingClient.BillingResponseCode.OK:
 		var reason: String = str(result.get("debug_message", ""))

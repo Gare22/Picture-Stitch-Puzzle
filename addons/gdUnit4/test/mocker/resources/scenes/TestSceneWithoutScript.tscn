@@ -1,66 +1,70 @@
 [gd_scene format=3 uid="uid://bvp8uaof31fhm"]
 
-[node name="Control" type="Control"]
+[node name="Control" type="Control" unique_id=1823211078]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1764271232]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1969296660]
 layout_mode = 2
 
-[node name="test1" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="test1" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1093745994]
 layout_mode = 2
 text = "Test 1"
 
-[node name="test2" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="test2" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=596451894]
 layout_mode = 2
 text = "Test 2"
 
-[node name="test3" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="test3" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1985082644]
 layout_mode = 2
 text = "Test 3"
 
-[node name="PanelContainer" type="TabContainer" parent="VBoxContainer"]
+[node name="PanelContainer" type="TabContainer" parent="VBoxContainer" unique_id=404237586]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+current_tab = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer" unique_id=1310125397]
 layout_mode = 2
+metadata/_tab_index = 0
 
-[node name="Panel1" type="ColorRect" parent="VBoxContainer/PanelContainer/HBoxContainer"]
+[node name="Panel1" type="ColorRect" parent="VBoxContainer/PanelContainer/HBoxContainer" unique_id=899593423]
 layout_mode = 2
 color = Color(0.694118, 0.207843, 0.207843, 1)
 
-[node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel1"]
+[node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel1" unique_id=1483708479]
 layout_mode = 0
 anchor_right = 1.0
 offset_bottom = 14.0
 text = "Panel 1"
 
-[node name="Panel2" type="ColorRect" parent="VBoxContainer/PanelContainer/HBoxContainer"]
+[node name="Panel2" type="ColorRect" parent="VBoxContainer/PanelContainer/HBoxContainer" unique_id=1903653688]
 layout_mode = 2
 color = Color(0.219608, 0.662745, 0.380392, 1)
 
-[node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel2"]
+[node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel2" unique_id=129208912]
 layout_mode = 0
 anchor_right = 1.0
 offset_bottom = 14.0
 text = "Panel 2"
 
-[node name="Panel3" type="ColorRect" parent="VBoxContainer/PanelContainer/HBoxContainer"]
+[node name="Panel3" type="ColorRect" parent="VBoxContainer/PanelContainer/HBoxContainer" unique_id=1070044634]
 layout_mode = 2
 color = Color(0.12549, 0.286275, 0.776471, 1)
 
-[node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel3"]
+[node name="Label" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer/Panel3" unique_id=1243395407]
 layout_mode = 0
 anchor_right = 1.0
 offset_bottom = 14.0

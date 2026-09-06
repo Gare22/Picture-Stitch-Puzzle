@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://c1rwx6anh3u3m"]
+[gd_scene format=3 uid="uid://c1rwx6anh3u3m"]
 
-[ext_resource type="Script" path="res://addons/gdUnit4/test/update/bbcodeView.gd" id="1"]
-[ext_resource type="Script" path="res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd" id="6"]
+[ext_resource type="Script" uid="uid://yj86wjx3m75d" path="res://addons/gdUnit4/test/update/bbcodeView.gd" id="1"]
+[ext_resource type="Script" uid="uid://bg53kt1ku47ph" path="res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd" id="6"]
 
-[node name="Control" type="Control"]
+[node name="Control" type="Control" unique_id=1005692074]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,25 +12,26 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="HSplitContainer" type="HSplitContainer" parent="."]
+[node name="HSplitContainer" type="HSplitContainer" parent="." unique_id=1694145474]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+split_offsets = PackedInt32Array(600)
 split_offset = 600
 
-[node name="TextEdit" type="TextEdit" parent="HSplitContainer"]
+[node name="TextEdit" type="TextEdit" parent="HSplitContainer" unique_id=1234261688]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="HSplitContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="HSplitContainer" unique_id=454342389]
 use_parent_material = true
 layout_mode = 2
 tooltip_text = "test"
 bbcode_enabled = true
 
-[node name="GdUnitUpdateClient" type="Node" parent="."]
+[node name="GdUnitUpdateClient" type="Node" parent="." unique_id=1965879966]
 script = ExtResource("6")
 
 [connection signal="text_changed" from="HSplitContainer/TextEdit" to="." method="_on_TextEdit_text_changed"]

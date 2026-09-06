@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://cbdmsq72qtcyr"]
+[gd_scene format=3 uid="uid://cbdmsq72qtcyr"]
 
 [sub_resource type="GDScript" id="GDScript_54n73"]
 script/source = "# a small helper to debug the GdUnitCmdTool
@@ -25,5 +25,5 @@ func _notification(what: int) -> void:
 		prints(\"exit\")
 "
 
-[node name="RuntestDebug" type="Node"]
+[node name="RuntestDebug" type="Node" unique_id=1973172337]
 script = SubResource("GDScript_54n73")
