@@ -507,6 +507,16 @@ func reset_all_progress() -> void:
 	albums_changed.emit()
 
 
+## Hard reset: same as reset_all_progress() PLUS clears the local
+## "Unlock All Puzzles" entitlement flag, so the game presents a fresh-install
+## purchase state. Server-side entitlements are NOT revoked — a real store
+## purchase can re-grant on the next provider query; this only clears what
+## THIS device believes it owns.
+func reset_all_data() -> void:
+	all_puzzles_unlocked = false
+	reset_all_progress()
+
+
 ## Recursively deletes a directory and all its contents.
 ## DirAccess.remove() handles both files and empty directories; rmdir() and
 ## remove_dir_recursive() do not exist as instance methods in Godot 4.6.

@@ -16,6 +16,7 @@ extends Control
 @onready var options_confirm_label: Label = $OptionsOverlay/Panel/VBox/ConfirmLabel
 @onready var options_confirm_reset_button: Button = $OptionsOverlay/Panel/VBox/ConfirmResetButton
 @onready var options_cancel_reset_button: Button = $OptionsOverlay/Panel/VBox/CancelResetButton
+@onready var options_delete_all_check: CheckBox = $OptionsOverlay/Panel/VBox/DeleteAllCheck
 @onready var options_close_button: Button = $OptionsOverlay/Panel/VBox/CloseButton
 @onready var restore_iap_button: Button = $OptionsOverlay/Panel/VBox/RestoreIapButton
 @onready var remove_iap_button: Button = $OptionsOverlay/Panel/VBox/RemoveIapButton
@@ -210,6 +211,8 @@ func _on_options_pressed() -> void:
 	options_confirm_label.visible = false
 	options_confirm_reset_button.visible = false
 	options_cancel_reset_button.visible = false
+	options_delete_all_check.visible = false
+	options_delete_all_check.button_pressed = false
 	options_reset_button.visible = true
 	iap_message_label.visible = false
 	_update_identity_ui()
@@ -287,11 +290,23 @@ func _on_reset_pressed() -> void:
 	options_confirm_label.visible = true
 	options_confirm_reset_button.visible = true
 	options_cancel_reset_button.visible = true
+	options_delete_all_check.visible = true
 
 
-## Performs the full progress reset and closes the overlay.
+## Performs the full progress reset and closes the overlay. When the
+## "delete all data" toggle is checked, also wipes the local purchase state
+## (unlock entitlement + provider caches) and signs the player out, so the
+## game behaves like a fresh install.
 func _on_confirm_reset_pressed() -> void:
-	LevelManager.reset_all_progress()
+	var wipe_all: bool = options_delete_all_check.button_pressed
+	options_delete_all_check.button_pressed = false
+	options_delete_all_check.visible = false
+	if wipe_all:
+		LevelManager.reset_all_data()
+		IapManager.reset_all_data()
+		IdentityManager.sign_out()
+	else:
+		LevelManager.reset_all_progress()
 	options_overlay.visible = false
 	_build_grid()
 
@@ -301,6 +316,8 @@ func _on_cancel_reset_pressed() -> void:
 	options_confirm_label.visible = false
 	options_confirm_reset_button.visible = false
 	options_cancel_reset_button.visible = false
+	options_delete_all_check.visible = false
+	options_delete_all_check.button_pressed = false
 	options_reset_button.visible = true
 
 

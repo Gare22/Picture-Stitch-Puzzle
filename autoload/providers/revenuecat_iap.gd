@@ -324,3 +324,20 @@ func _save_identity() -> void:
 
 func _generate_anon_id() -> String:
 	return Crypto.new().generate_random_bytes(16).hex_encode()
+
+
+## Clears the local anonymous RevenueCat identity so the next run (or the
+## next entitlement query) uses a fresh customer. Server-side purchases under
+## the old id are NOT deleted — only the local reference to them is removed.
+func reset_all_data() -> void:
+	if FileAccess.file_exists(IDENTITY_PATH):
+		var da := DirAccess.open("user://")
+		if da != null:
+			da.remove(IDENTITY_PATH.get_file())
+	# Fresh anonymous id right away (mirrors the _ready() bootstrap) so the
+	# provider stays usable without a restart.
+	_anon_id = _generate_anon_id()
+	_save_identity()
+	_anon_owned = false
+	_initial_check_done = false
+	_recompute_app_user_id()

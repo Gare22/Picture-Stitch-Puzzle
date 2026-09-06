@@ -58,3 +58,9 @@ func restore_purchases() -> void:
 ## No-op for every other provider.
 func confirm_payment() -> void:
 	pass
+
+## Clears provider-local purchase state (persisted files/caches). Server-side
+## records owned by the store are NOT deleted — the store remains the source
+## of truth for real purchases. Called by IapManager.reset_all_data().
+func reset_all_data() -> void:
+	pass

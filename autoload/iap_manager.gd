@@ -122,6 +122,15 @@ func remove_all_unlock_entitlement() -> void:
 	LevelManager.remove_unlock_all()
 
 
+## Clears provider-local purchase state (files/caches) as part of a full
+## data wipe. LevelManager.reset_all_data() clears the entitlement flag;
+## this clears what the provider itself persisted (e.g. the anonymous
+## RevenueCat identity). Server-side purchases are not deleted.
+func reset_all_data() -> void:
+	if _provider != null:
+		_provider.reset_all_data()
+
+
 ## ── Provider signal passthroughs ───────────────────────────────────────────
 
 
