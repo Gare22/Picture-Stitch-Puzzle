@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://byr71c5qfqt06" path="res://assets/background_gradient.tres" id="3_bg"]
 [ext_resource type="Theme" uid="uid://bjfxxlmicuc08" path="res://scrollbars.tres" id="3_t1w0i"]
 [ext_resource type="PackedScene" uid="uid://nfnp1rc4i7qo" path="res://currency_hud.tscn" id="4_ch"]
-[ext_resource type="Theme" path="res://assets/dialog_theme.tres" id="5_dt"]
+[ext_resource type="Theme" uid="uid://e2ft2pdrdjgm" path="res://assets/dialog_theme.tres" id="5_dt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_opaque_panel"]
 bg_color = Color(0.11, 0.11, 0.14, 1)
@@ -63,18 +63,18 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/MarginContainer/VBox"]
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=337265579]
 layout_mode = 2
 theme_override_constants/margin_left = 50
 theme_override_constants/margin_right = 50
 
-[node name="IapBanner" type="Button" parent="ScrollContainer/MarginContainer/VBox/MarginContainer"]
+[node name="IapBanner" type="Button" parent="ScrollContainer/MarginContainer/VBox/MarginContainer" unique_id=56414636]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Unlock all Current and Future Puzzle Albums for $1.99"
 autowrap_mode = 3
 
-[node name="Control" type="Control" parent="ScrollContainer/MarginContainer/VBox"]
+[node name="Control" type="Control" parent="ScrollContainer/MarginContainer/VBox" unique_id=860416790]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 
@@ -127,8 +127,6 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="PurchaseOverlay" unique_id=2102000003]
-theme = ExtResource("5_dt")
-theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -138,6 +136,8 @@ offset_left = -150.0
 offset_top = -110.0
 offset_right = 150.0
 offset_bottom = 110.0
+theme = ExtResource("5_dt")
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
 [node name="VBox" type="VBoxContainer" parent="PurchaseOverlay/Panel" unique_id=2102000004]
 layout_mode = 0
@@ -214,9 +214,9 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
-[node name="Panel" type="Panel" parent="OptionsOverlay" unique_id=2102000013]
-theme = ExtResource("5_dt")
-layout_mode = 0
+[node name="Panel" type="PanelContainer" parent="OptionsOverlay" unique_id=1151499783]
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -224,19 +224,14 @@ anchor_bottom = 0.5
 offset_left = -160.0
 offset_top = -130.0
 offset_right = 160.0
-offset_bottom = 130.0
+offset_bottom = 57.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
 [node name="VBox" type="VBoxContainer" parent="OptionsOverlay/Panel" unique_id=2102000014]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 mouse_filter = 0
 theme_override_constants/separation = 12
 
@@ -250,6 +245,7 @@ layout_mode = 2
 text = "Reset All Progress"
 
 [node name="RestoreIapButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=494256681]
+visible = false
 layout_mode = 2
 text = "Restore Purchases"
 
@@ -264,19 +260,18 @@ layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="IdentityStatusLabel" type="Label" parent="OptionsOverlay/Panel/VBox"]
+[node name="IdentityStatusLabel" type="Label" parent="OptionsOverlay/Panel/VBox" unique_id=2069152890]
 visible = false
 layout_mode = 2
 text = "Not signed in"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="IdentitySignInButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
-visible = false
+[node name="IdentitySignInButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=160228757]
 layout_mode = 2
 text = "Sign in with itch.io"
 
-[node name="IdentitySignOutButton" type="Button" parent="OptionsOverlay/Panel/VBox"]
+[node name="IdentitySignOutButton" type="Button" parent="OptionsOverlay/Panel/VBox" unique_id=1635081753]
 visible = false
 layout_mode = 2
 text = "Sign out"
@@ -285,7 +280,7 @@ text = "Sign out"
 layout_mode = 2
 text = "Close"
 
-[node name="ResetOverlay" type="Control" parent="."]
+[node name="ResetOverlay" type="Control" parent="." unique_id=1451463982]
 visible = false
 anchors_preset = 0
 anchor_right = 1.0
@@ -293,7 +288,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Backdrop" type="ColorRect" parent="ResetOverlay"]
+[node name="Backdrop" type="ColorRect" parent="ResetOverlay" unique_id=2107718325]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -301,20 +296,23 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
-[node name="Panel" type="Panel" parent="ResetOverlay"]
-theme = ExtResource("5_dt")
-layout_mode = 0
+[node name="Panel" type="Panel" parent="ResetOverlay" unique_id=876538097]
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -110.0
-offset_right = 200.0
-offset_bottom = 110.0
+offset_left = -129.0
+offset_top = -132.0
+offset_right = 129.0
+offset_bottom = 132.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_dt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
-[node name="VBox" type="VBoxContainer" parent="ResetOverlay/Panel"]
+[node name="VBox" type="VBoxContainer" parent="ResetOverlay/Panel" unique_id=182789924]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -327,26 +325,27 @@ grow_vertical = 2
 mouse_filter = 0
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="ResetOverlay/Panel/VBox"]
+[node name="TitleLabel" type="Label" parent="ResetOverlay/Panel/VBox" unique_id=509338356]
 layout_mode = 2
 text = "Erase ALL progress?"
 horizontal_alignment = 1
 
-[node name="InfoLabel" type="Label" parent="ResetOverlay/Panel/VBox"]
+[node name="InfoLabel" type="Label" parent="ResetOverlay/Panel/VBox" unique_id=1603746611]
 layout_mode = 2
 text = "This cannot be undone."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="DeleteAllCheck" type="CheckBox" parent="ResetOverlay/Panel/VBox"]
+[node name="DeleteAllCheck" type="CheckBox" parent="ResetOverlay/Panel/VBox" unique_id=1428874948]
 layout_mode = 2
 text = "Also delete all data (purchases, sign-in)"
+autowrap_mode = 2
 
-[node name="ConfirmButton" type="Button" parent="ResetOverlay/Panel/VBox"]
+[node name="ConfirmButton" type="Button" parent="ResetOverlay/Panel/VBox" unique_id=1807808729]
 layout_mode = 2
 text = "Yes, Erase Everything"
 
-[node name="CancelButton" type="Button" parent="ResetOverlay/Panel/VBox"]
+[node name="CancelButton" type="Button" parent="ResetOverlay/Panel/VBox" unique_id=789469768]
 layout_mode = 2
 text = "Cancel"
 
@@ -367,8 +366,6 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
 [node name="Panel" type="Panel" parent="PaymentOverlay" unique_id=720096057]
-theme = ExtResource("5_dt")
-theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -378,6 +375,8 @@ offset_left = -170.0
 offset_top = -80.0
 offset_right = 170.0
 offset_bottom = 80.0
+theme = ExtResource("5_dt")
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
 [node name="VBox" type="VBoxContainer" parent="PaymentOverlay/Panel" unique_id=1296553243]
 layout_mode = 0
@@ -407,7 +406,7 @@ text = "I've completed payment"
 layout_mode = 2
 text = "Cancel"
 
-[node name="AccountPromptOverlay" type="Control" parent="."]
+[node name="AccountPromptOverlay" type="Control" parent="." unique_id=111607649]
 visible = false
 anchors_preset = 0
 anchor_right = 1.0
@@ -415,7 +414,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Backdrop" type="ColorRect" parent="AccountPromptOverlay"]
+[node name="Backdrop" type="ColorRect" parent="AccountPromptOverlay" unique_id=2007005362]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -423,9 +422,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
-[node name="Panel" type="Panel" parent="AccountPromptOverlay"]
-theme = ExtResource("5_dt")
-theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
+[node name="Panel" type="Panel" parent="AccountPromptOverlay" unique_id=578906268]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -435,8 +432,10 @@ offset_left = -170.0
 offset_top = -110.0
 offset_right = 170.0
 offset_bottom = 110.0
+theme = ExtResource("5_dt")
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
-[node name="VBox" type="VBoxContainer" parent="AccountPromptOverlay/Panel"]
+[node name="VBox" type="VBoxContainer" parent="AccountPromptOverlay/Panel" unique_id=1522574465]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -449,26 +448,26 @@ grow_vertical = 2
 mouse_filter = 0
 theme_override_constants/separation = 12
 
-[node name="InfoLabel" type="Label" parent="AccountPromptOverlay/Panel/VBox"]
+[node name="InfoLabel" type="Label" parent="AccountPromptOverlay/Panel/VBox" unique_id=265888464]
 layout_mode = 2
 text = "Sign in with itch.io to restore your purchase on any device.
 If you continue without signing in, your purchase is tied to this device and can't be recovered."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="SignInButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+[node name="SignInButton" type="Button" parent="AccountPromptOverlay/Panel/VBox" unique_id=1432319064]
 layout_mode = 2
 text = "Sign in with itch.io"
 
-[node name="ContinueButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+[node name="ContinueButton" type="Button" parent="AccountPromptOverlay/Panel/VBox" unique_id=835476719]
 layout_mode = 2
 text = "Continue without account"
 
-[node name="CancelButton" type="Button" parent="AccountPromptOverlay/Panel/VBox"]
+[node name="CancelButton" type="Button" parent="AccountPromptOverlay/Panel/VBox" unique_id=440221542]
 layout_mode = 2
 text = "Not now"
 
-[node name="OAuthTokenOverlay" type="Control" parent="."]
+[node name="OAuthTokenOverlay" type="Control" parent="." unique_id=2090032862]
 visible = false
 anchors_preset = 0
 anchor_right = 1.0
@@ -476,7 +475,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Backdrop" type="ColorRect" parent="OAuthTokenOverlay"]
+[node name="Backdrop" type="ColorRect" parent="OAuthTokenOverlay" unique_id=1838379418]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -484,9 +483,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
-[node name="Panel" type="Panel" parent="OAuthTokenOverlay"]
-theme = ExtResource("5_dt")
-theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
+[node name="Panel" type="Panel" parent="OAuthTokenOverlay" unique_id=1249268903]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -496,8 +493,10 @@ offset_left = -220.0
 offset_top = -120.0
 offset_right = 220.0
 offset_bottom = 120.0
+theme = ExtResource("5_dt")
+theme_override_styles/panel = SubResource("StyleBoxFlat_opaque_panel")
 
-[node name="VBox" type="VBoxContainer" parent="OAuthTokenOverlay/Panel"]
+[node name="VBox" type="VBoxContainer" parent="OAuthTokenOverlay/Panel" unique_id=1349314478]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -510,17 +509,17 @@ grow_vertical = 2
 mouse_filter = 0
 theme_override_constants/separation = 12
 
-[node name="InfoLabel" type="Label" parent="OAuthTokenOverlay/Panel/VBox"]
+[node name="InfoLabel" type="Label" parent="OAuthTokenOverlay/Panel/VBox" unique_id=1904207523]
 layout_mode = 2
 text = "Sign in to itch.io in the new tab.
 You'll be signed in automatically. If the tab didn't open, tap the button below."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="OpenLoginButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
+[node name="OpenLoginButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox" unique_id=1759778039]
 layout_mode = 2
 text = "Open itch.io login page"
 
-[node name="CancelButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox"]
+[node name="CancelButton" type="Button" parent="OAuthTokenOverlay/Panel/VBox" unique_id=1532262086]
 layout_mode = 2
 text = "Cancel"

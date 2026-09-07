@@ -35,7 +35,8 @@ extends Control
 @onready var payment_info_label: Label = $PaymentOverlay/Panel/VBox/InfoLabel
 @onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
 @onready var payment_cancel_button: Button = $PaymentOverlay/Panel/VBox/CancelButton
-@onready var iap_banner: Button = $IapBanner
+@onready var iap_banner: Button = $ScrollContainer/MarginContainer/VBox/MarginContainer/IapBanner
+
 
 ## Index of the album whose purchase dialog is currently open (-1 = none).
 var _pending_purchase_index: int = -1
@@ -152,9 +153,9 @@ func _update_iap_banner() -> void:
 	iap_banner.visible = IapManager.is_supported()
 	var price: String = IapManager.get_price_display()
 	if price.is_empty():
-		iap_banner.text = "Enjoy the game?\nUnlock all puzzles"
+		iap_banner.text = "Unlock all Current and\n Future Puzzle Albums"
 	else:
-		iap_banner.text = "Enjoy the game?\nUnlock all puzzles for %s" % price
+		iap_banner.text = "Unlock all Current and\n Future Puzzle Albums for %s" % price
 
 
 func _build_grid() -> void:
