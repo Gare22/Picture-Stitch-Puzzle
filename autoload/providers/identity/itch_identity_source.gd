@@ -16,8 +16,8 @@ extends IdentitySource
 ##     user://deep_link_uri.txt (user:// == app files dir on 4.6 Android).
 ##     There is no loopback listener: the browser is a separate app and
 ##     localhost cleartext is blocked by default. The hosted callback page
-##     (web/itch_oauth_callback.html) re-emits the token as a *query* string —
-##     a fragment would never reach the intent.
+##     (public/index.html, served at the GitHub Pages site root) re-emits the
+##     token as a *query* string — a fragment would never reach the intent.
 ##   Desktop: the game opens the itch authorize page in the browser and
 ##     catches the loopback redirect on http://127.0.0.1:<port>/callback with
 ##     a local TCPServer (no native code, no manifest changes). The token
@@ -32,9 +32,9 @@ extends IdentitySource
 ##     allowed, in-frame navigations are not) and the token comes back one of
 ##     two ways:
 ##       * AUTO (recommended): identity/itch_web_callback_url points at a tiny
-##         relay page we host (web/itch_oauth_callback.html, e.g. on GitHub
-##         Pages — HTTPS required, must be registered as this OAuth app's
-##         callback URL). itch redirects the popup there, the page reads the
+##         relay page we host (public/index.html, the GitHub Pages root — HTTPS
+##         required, must be registered as this OAuth app's callback URL). itch
+##         redirects the popup there, the page reads the
 ##         hash and postMessages the token back to the game window — the player
 ##         never copies anything.
 ##       * FALLBACK: without a callback URL the out-of-band (oob) flow is used
