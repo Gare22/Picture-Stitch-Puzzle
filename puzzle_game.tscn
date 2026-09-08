@@ -104,3 +104,4 @@ size_flags_vertical = 8
 text = "←"
 
 [node name="RewardWheel" parent="." unique_id=1362436111 instance=ExtResource("6_rw")]
+visible = false

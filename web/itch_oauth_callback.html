@@ -3,19 +3,44 @@
 <head>
 <meta charset="utf-8">
 <title>itch.io sign-in</title>
-<style>body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333}</style>
+<style>body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333}button{font-size:16px;padding:12px 24px;margin-top:24px}</style>
 </head>
 <body>
 <p id="status">Signing in&hellip;</p>
+<p id="open-app" style="display:none">
+<button onclick="openApp()">Return to Picture Puzzle</button>
+</p>
 <script>
 (function () {
   // OAuth implicit flow: the access token arrives in the URL hash fragment of
-  // this page. Relay it to the game window that opened us, then clean up.
+  // this page.
   var params = new URLSearchParams(window.location.hash.slice(1));
   var token = params.get("access_token");
   var state = params.get("state");
   var status = document.getElementById("status");
-  if (token && window.opener) {
+
+  // Custom-scheme deep link. The token goes in the QUERY string (not the hash)
+  // so it survives the intent -> activity hand-off on Android. The hash never
+  // leaves the browser, which is why this page re-emits it as a query.
+  function deepLink() {
+    return "picturepuzzle://callback?access_token=" +
+      encodeURIComponent(token) + "&state=" + encodeURIComponent(state || "");
+  }
+  window.openApp = function () { window.location.href = deepLink(); };
+
+  var isAndroid = /Android/i.test(navigator.userAgent);
+  if (isAndroid && token) {
+    // The game's GodotApp.java forwards this URI into the game via
+    // deep_link_uri.txt in the app files dir (user://). Some browsers block
+    // automatic custom-scheme launches without a user gesture, so the manual
+    // button above works either way — it is always shown, and tapping it is a
+    // guaranteed user gesture.
+    document.getElementById("open-app").style.display = "block";
+    status.textContent = "Returning to the app\u2026";
+    window.location.replace(deepLink());
+  } else if (token && window.opener) {
+    // Desktop/web popup: relay the token to the game window that opened us,
+    // then clean up.
     window.opener.postMessage(
       { type: "itch_oauth", access_token: token, state: state || "" },
       "*"

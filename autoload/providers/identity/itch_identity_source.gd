@@ -8,9 +8,19 @@ extends IdentitySource
 ## refresh token. The granted credential is a long-lived API key the user can
 ## revoke from their itch.io settings.
 ##
-##   Android / desktop: the game opens the itch authorize page in the browser
-##     and catches the loopback redirect on http://127.0.0.1:<port>/callback
-##     with a local TCPServer (no native code, no manifest changes). The token
+##   Android: the game opens the itch authorize page in the default browser
+##     and the token comes back through the custom URI scheme
+##     picturepuzzle://callback (identity/itch_android_redirect_uri). The
+##     scheme is registered in the game's AndroidManifest intent-filter and
+##     GodotApp.java forwards the URI into the game via
+##     user://deep_link_uri.txt (user:// == app files dir on 4.6 Android).
+##     There is no loopback listener: the browser is a separate app and
+##     localhost cleartext is blocked by default. The hosted callback page
+##     (web/itch_oauth_callback.html) re-emits the token as a *query* string —
+##     a fragment would never reach the intent.
+##   Desktop: the game opens the itch authorize page in the browser and
+##     catches the loopback redirect on http://127.0.0.1:<port>/callback with
+##     a local TCPServer (no native code, no manifest changes). The token
 ##     travels in the URL *hash*, which browsers never send to the server, so
 ##     the listener serves a tiny page whose JavaScript reads the hash and
 ##     POSTs it back to the loopback address — same machine, so the token
@@ -43,11 +53,17 @@ const SESSION_PATH := "user://itch_session.cfg"
 const SCOPE := "profile:me"
 const OOB_REDIRECT_URI := "urn:ietf:wg:oauth:2.0:oob"
 const SIGN_IN_TIMEOUT_SEC := 300.0
+## Where GodotApp.java drops the incoming custom-scheme URI (Android only).
+## Godot 4.6 maps user:// to the app files dir (getFilesDir()), which is
+## exactly where the Java side writes (GodotIO.getDataDir() ignores the
+## project-name subdirectory).
+const DEEP_LINK_PATH := "user://deep_link_uri.txt"
 
 var _client_id: String = ""
 var _redirect_uri: String = ""
 var _port: int = 39201
 var _is_web: bool = false
+var _is_android: bool = false
 
 var _state: String = ""
 var _signing_in: bool = false
@@ -70,12 +86,17 @@ var _web_msg_callback: JavaScriptObject = null
 
 func _ready() -> void:
 	_is_web = OS.get_name() == "Web"
+	_is_android = OS.get_name() == "Android"
 	if _is_web:
 		_client_id = str(ProjectSettings.get_setting("identity/itch_web_client_id", ""))
 		_redirect_uri = str(ProjectSettings.get_setting("identity/itch_web_redirect_uri", ""))
 		_callback_url = str(ProjectSettings.get_setting("identity/itch_web_callback_url", "")).strip_edges()
 		if not _callback_url.is_empty():
 			_install_web_message_listener()
+	elif _is_android:
+		_client_id = str(ProjectSettings.get_setting("identity/itch_android_client_id", ""))
+		_redirect_uri = str(ProjectSettings.get_setting(
+			"identity/itch_android_redirect_uri", "picturepuzzle://callback"))
 	else:
 		_client_id = str(ProjectSettings.get_setting("identity/itch_loopback_client_id", ""))
 		_redirect_uri = str(ProjectSettings.get_setting(
@@ -114,18 +135,31 @@ func sign_in() -> void:
 	if _client_id.is_empty():
 		if _is_web:
 			sign_in_failed.emit("identity/itch_web_client_id is not configured")
+		elif _is_android:
+			sign_in_failed.emit("identity/itch_android_client_id is not configured")
 		else:
 			sign_in_failed.emit("identity/itch_loopback_client_id is not configured")
 		return
 	_sign_in_started_at = Time.get_ticks_msec() / 1000.0
 	_signing_in = true
 	_state = _generate_state()
+	if _is_android:
+		# A stale deep-link file from a previous aborted attempt would fail the
+		# state check of the new attempt — clear it up front.
+		if FileAccess.file_exists(DEEP_LINK_PATH):
+			DirAccess.remove_absolute(DEEP_LINK_PATH)
 	if _is_web:
 		# Web is always the popup flow (see header doc): itch game pages embed
 		# the game in a cross-origin iframe where in-frame redirects are
 		# blocked. With a hosted callback URL the token relays back
 		# automatically; without one the player pastes it (oob).
 		_begin_web_flow()
+	elif _is_android:
+		# Android: open the authorize page in the default browser and wait for
+		# the custom-scheme redirect. The browser is a separate app, so no
+		# localhost listener exists; GodotApp.java forwards the returned URI
+		# into user://deep_link_uri.txt and _process() consumes it below.
+		OS.shell_open(_build_authorize_url())
 	else:
 		if not _start_loopback_listener():
 			return  # failure already reported via sign_in_failed
@@ -138,18 +172,25 @@ func sign_out() -> void:
 	# Cancel any in-flight profile fetch so a late response can't re-sign the
 	# user in after a sign-out.
 	_http.cancel_request()
+	if FileAccess.file_exists(DEEP_LINK_PATH):
+		DirAccess.remove_absolute(DEEP_LINK_PATH)
 	_clear_session()
 	signed_out.emit()
 
 
 func _process(_delta: float) -> void:
-	if not _signing_in or _is_web:
+	if not _signing_in:
 		return
 	if Time.get_ticks_msec() / 1000.0 - _sign_in_started_at > SIGN_IN_TIMEOUT_SEC:
 		printerr("ItchIdentitySource: sign-in timed out")
 		_signing_in = false
 		_stop_listener()
 		sign_in_failed.emit("Sign-in timed out")
+		return
+	if _is_android:
+		_check_deep_link_file()
+		return
+	if _is_web:
 		return
 	if _listener != null:
 		if _listener.is_connection_available() and _pending_conn == null:
@@ -163,6 +204,62 @@ func _process(_delta: float) -> void:
 				_pending_conn = null
 				if result == 1:
 					_stop_listener()
+
+
+## ── Android custom-scheme callback ─────────────────────────────────────────
+
+
+## Android only, called from _process() while a sign-in is pending. Polls the
+## deep-link file that GodotApp.java writes when the browser hands the
+## picturepuzzle://callback URI back to the app (both cold start via onCreate
+## and warm start via onNewIntent). The file is consumed and deleted so an
+## unrelated later launch of the scheme can't replay stale OAuth data.
+func _check_deep_link_file() -> void:
+	if not FileAccess.file_exists(DEEP_LINK_PATH):
+		return
+	var file := FileAccess.open(DEEP_LINK_PATH, FileAccess.READ)
+	if file == null:
+		return
+	var uri := file.get_as_text().strip_edges()
+	file.close()
+	DirAccess.remove_absolute(DEEP_LINK_PATH)
+	if uri.is_empty():
+		return
+	if not uri.begins_with("picturepuzzle://callback"):
+		printerr("ItchIdentitySource: unexpected deep link uri: %s" % uri)
+		return
+	_handle_callback_uri(uri)
+
+
+## Parses the custom-scheme callback (query string, because a fragment never
+## leaves the browser — the hosted relay page re-emits it as query), validates
+## the OAuth state, then completes sign-in exactly like every other flow.
+func _handle_callback_uri(uri: String) -> void:
+	var query_start := uri.find("?")
+	if query_start == -1:
+		printerr("ItchIdentitySource: callback uri had no query string")
+		sign_in_failed.emit("itch.io sign-in failed (token missing from callback)")
+		return
+	var params := {}
+	for pair in uri.substr(query_start + 1).split("&"):
+		if not pair.contains("="):
+			continue
+		var kv := pair.split("=", true, 1)
+		params[kv[0]] = kv[1].uri_decode()
+	var token: String = str(params.get("access_token", ""))
+	var state: String = str(params.get("state", ""))
+	if state != _state:
+		printerr("ItchIdentitySource: OAuth state mismatch — ignoring")
+		sign_in_failed.emit("OAuth state mismatch")
+		return
+	if token.is_empty():
+		printerr("ItchIdentitySource: callback had no access_token")
+		sign_in_failed.emit("itch.io sign-in failed (missing access token)")
+		return
+	_signing_in = false
+	_access_token = token
+	_save_session()
+	_fetch_profile()
 
 
 ## ── OAuth plumbing ──────────────────────────────────────────────────────────

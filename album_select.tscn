@@ -40,22 +40,38 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 65.0
+offset_top = 3.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("3_t1w0i")
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=1173451490]
+[node name="HBox" type="HBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="LeftSpacer" type="Control" parent="ScrollContainer/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/HBox" unique_id=1173451490]
+layout_mode = 2
+size_flags_horizontal = 1
+size_flags_vertical = 3
+theme_override_constants/margin_top = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBox" type="VBoxContainer" parent="ScrollContainer/MarginContainer" unique_id=1282662350]
+[node name="RightSpacer" type="Control" parent="ScrollContainer/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="ScrollContainer/HBox/MarginContainer" unique_id=1282662350]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GridContainer" type="GridContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=1538581140]
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer/HBox/MarginContainer/VBox" unique_id=1538581140]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -63,18 +79,18 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/MarginContainer/VBox" unique_id=337265579]
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/HBox/MarginContainer/VBox" unique_id=337265579]
 layout_mode = 2
 theme_override_constants/margin_left = 50
 theme_override_constants/margin_right = 50
 
-[node name="IapBanner" type="Button" parent="ScrollContainer/MarginContainer/VBox/MarginContainer" unique_id=56414636]
+[node name="IapBanner" type="Button" parent="ScrollContainer/HBox/MarginContainer/VBox/MarginContainer" unique_id=56414636]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Unlock all Current and Future Puzzle Albums for $1.99"
 autowrap_mode = 3
 
-[node name="Control" type="Control" parent="ScrollContainer/MarginContainer/VBox" unique_id=860416790]
+[node name="Control" type="Control" parent="ScrollContainer/HBox/MarginContainer/VBox" unique_id=860416790]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 

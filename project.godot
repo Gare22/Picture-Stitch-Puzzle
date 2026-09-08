@@ -56,6 +56,8 @@ itch_loopback_redirect_uri="http://127.0.0.1:39201/callback"
 itch_loopback_port=39201
 itch_web_client_id="59a278dfd6cfcc5be257f136a918435d"
 itch_loopback_client_id="ff8b77ba13c96828c9069dfd295e5e5f"
+itch_android_client_id="ff8b77ba13c96828c9069dfd295e5e5f"
+itch_android_redirect_uri="picturepuzzle://callback"
 itch_api_proxy_url="https://puzzle.gares.games/api/itch-profile"
 
 [internationalization]

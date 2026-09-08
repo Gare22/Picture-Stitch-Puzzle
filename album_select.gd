@@ -3,7 +3,7 @@ extends Control
 ## Album-selection screen. Shows a scrollable grid of album thumbnails
 ## that the player can tap to load that album's puzzles into level select.
 
-@onready var grid: GridContainer = $ScrollContainer/MarginContainer/VBox/GridContainer
+@onready var grid: GridContainer = $ScrollContainer/HBox/MarginContainer/VBox/GridContainer
 @onready var back_button: Button = $BackButton
 @onready var purchase_overlay: Control = $PurchaseOverlay
 @onready var purchase_info_label: Label = $PurchaseOverlay/Panel/VBox/InfoLabel
@@ -35,7 +35,8 @@ extends Control
 @onready var payment_info_label: Label = $PaymentOverlay/Panel/VBox/InfoLabel
 @onready var payment_confirm_button: Button = $PaymentOverlay/Panel/VBox/ConfirmButton
 @onready var payment_cancel_button: Button = $PaymentOverlay/Panel/VBox/CancelButton
-@onready var iap_banner: Button = $ScrollContainer/MarginContainer/VBox/MarginContainer/IapBanner
+@onready var iap_banner: Button = $ScrollContainer/HBox/MarginContainer/VBox/MarginContainer/IapBanner
+@onready var scroll_margin: MarginContainer = $ScrollContainer/HBox/MarginContainer
 
 
 ## Index of the album whose purchase dialog is currently open (-1 = none).
@@ -66,6 +67,18 @@ const ALBUM_BUTTON_SCENE := preload("res://album_button.tscn")
 @export var cover_stagger: float = 2.0
 ## Crossfade duration in seconds (old cover fades out as new fades in).
 @export var cover_fade_time: float = 0.8
+
+
+## Caps the scroll column at STYLE.max_content_width on wide screens so the
+## album grid doesn't stretch edge-to-edge; on narrow screens the column
+## stays full-width (content-driven). The HBox spacers around
+## scroll_margin center the capped column within the scroll viewport.
+func _apply_column_width() -> void:
+	var cap: float = STYLE.max_content_width
+	if get_viewport_rect().size.x > cap:
+		scroll_margin.custom_minimum_size.x = cap
+	else:
+		scroll_margin.custom_minimum_size.x = 0.0
 
 
 func _cell_size() -> Vector2:
@@ -122,6 +135,7 @@ func _ready() -> void:
 	_update_iap_banner()
 	_build_grid()
 	_last_cell_size = _cell_size()
+	_apply_column_width()
 	# Re-lay the grid when the window/viewport resizes (web fullscreen toggles,
 	# desktop window drags) so cells keep their capped size and re-center.
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
@@ -134,6 +148,7 @@ func _ready() -> void:
 ## cover textures: only the minimum size and the rounded-corner shader's
 ## control_size are updated.
 func _on_viewport_size_changed() -> void:
+	_apply_column_width()
 	var size := _cell_size()
 	if size == _last_cell_size:
 		return
