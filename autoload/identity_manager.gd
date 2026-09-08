@@ -7,7 +7,7 @@ extends Node
 ##
 ## Source selection (Project Settings -> identity/provider_id):
 ##   "none" — no account layer (anonymous play only)
-##   "itch" — itch.io OAuth (implicit flow, loopback/Web same-window flows)
+##   "itch" — itch.io OAuth (implicit flow; Web popup-relay + Android custom-scheme)
 
 signal signed_in(user_id: String, user_name: String)
 signal signed_out

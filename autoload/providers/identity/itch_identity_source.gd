@@ -15,16 +15,11 @@ extends IdentitySource
 ##     GodotApp.java forwards the URI into the game via
 ##     user://deep_link_uri.txt (user:// == app files dir on 4.6 Android).
 ##     There is no loopback listener: the browser is a separate app and
-##     localhost cleartext is blocked by default. The hosted callback page
-##     (public/index.html, served at the GitHub Pages site root) re-emits the
-##     token as a *query* string — a fragment would never reach the intent.
-##   Desktop: the game opens the itch authorize page in the browser and
-##     catches the loopback redirect on http://127.0.0.1:<port>/callback with
-##     a local TCPServer (no native code, no manifest changes). The token
-##     travels in the URL *hash*, which browsers never send to the server, so
-##     the listener serves a tiny page whose JavaScript reads the hash and
-##     POSTs it back to the loopback address — same machine, so the token
-##     never leaves the device.
+##     localhost cleartext is blocked by default. itch.io delivers the
+##     credential in the URL *hash*; Android hands the full URI (fragment
+##     included) to the app, and _handle_callback_uri() parses that fragment
+##     (it also tolerates a query-string emission, e.g. from the hosted relay
+##     page re-emitting the token).
 ##   Web: itch.io game pages always embed the game in a cross-origin iframe,
 ##     where in-frame redirects are blocked (X-Frame-Options: sameorigin) and
 ##     the token hash would land on the parent page the iframe cannot read.
@@ -61,15 +56,12 @@ const DEEP_LINK_PATH := "user://deep_link_uri.txt"
 
 var _client_id: String = ""
 var _redirect_uri: String = ""
-var _port: int = 39201
 var _is_web: bool = false
 var _is_android: bool = false
 
 var _state: String = ""
 var _signing_in: bool = false
 var _sign_in_started_at: float = 0.0
-var _listener: TCPServer = null
-var _pending_conn: StreamPeerTCP = null
 
 var _access_token: String = ""
 var _user_id: String = ""
@@ -97,11 +89,6 @@ func _ready() -> void:
 		_client_id = str(ProjectSettings.get_setting("identity/itch_android_client_id", ""))
 		_redirect_uri = str(ProjectSettings.get_setting(
 			"identity/itch_android_redirect_uri", "picturepuzzle://callback"))
-	else:
-		_client_id = str(ProjectSettings.get_setting("identity/itch_loopback_client_id", ""))
-		_redirect_uri = str(ProjectSettings.get_setting(
-			"identity/itch_loopback_redirect_uri", "http://127.0.0.1:39201/callback"))
-		_port = int(str(ProjectSettings.get_setting("identity/itch_loopback_port", 39201)))
 	_http.request_completed.connect(_on_http_completed)
 	_load_session()
 	if not _access_token.is_empty():
@@ -135,10 +122,8 @@ func sign_in() -> void:
 	if _client_id.is_empty():
 		if _is_web:
 			sign_in_failed.emit("identity/itch_web_client_id is not configured")
-		elif _is_android:
-			sign_in_failed.emit("identity/itch_android_client_id is not configured")
 		else:
-			sign_in_failed.emit("identity/itch_loopback_client_id is not configured")
+			sign_in_failed.emit("identity/itch_android_client_id is not configured")
 		return
 	_sign_in_started_at = Time.get_ticks_msec() / 1000.0
 	_signing_in = true
@@ -161,14 +146,12 @@ func sign_in() -> void:
 		# into user://deep_link_uri.txt and _process() consumes it below.
 		OS.shell_open(_build_authorize_url())
 	else:
-		if not _start_loopback_listener():
-			return  # failure already reported via sign_in_failed
-		OS.shell_open(_build_authorize_url())
+		sign_in_failed.emit("itch sign-in is only supported on web and Android")
+		return
 
 
 func sign_out() -> void:
 	_signing_in = false
-	_stop_listener()
 	# Cancel any in-flight profile fetch so a late response can't re-sign the
 	# user in after a sign-out.
 	_http.cancel_request()
@@ -184,26 +167,10 @@ func _process(_delta: float) -> void:
 	if Time.get_ticks_msec() / 1000.0 - _sign_in_started_at > SIGN_IN_TIMEOUT_SEC:
 		printerr("ItchIdentitySource: sign-in timed out")
 		_signing_in = false
-		_stop_listener()
 		sign_in_failed.emit("Sign-in timed out")
 		return
 	if _is_android:
 		_check_deep_link_file()
-		return
-	if _is_web:
-		return
-	if _listener != null:
-		if _listener.is_connection_available() and _pending_conn == null:
-			_pending_conn = _listener.take_connection()
-	if _pending_conn != null:
-		_pending_conn.poll()
-		if _pending_conn.get_available_bytes() > 0:
-			var result := _handle_connection(_pending_conn)
-			if result != -1:
-				_pending_conn.disconnect_from_host()
-				_pending_conn = null
-				if result == 1:
-					_stop_listener()
 
 
 ## ── Android custom-scheme callback ─────────────────────────────────────────
@@ -231,17 +198,27 @@ func _check_deep_link_file() -> void:
 	_handle_callback_uri(uri)
 
 
-## Parses the custom-scheme callback (query string, because a fragment never
-## leaves the browser — the hosted relay page re-emits it as query), validates
-## the OAuth state, then completes sign-in exactly like every other flow.
+## Parses the custom-scheme callback and validates the OAuth state, then
+## completes sign-in exactly like every other flow. itch.io delivers the
+## credential in the URL *hash* and Android's intent data carries the full URI
+## (fragment included), so the fragment is parsed first; a query-string
+## emission (e.g. the hosted relay page re-emitting the token) is tolerated as
+## a fallback.
 func _handle_callback_uri(uri: String) -> void:
-	var query_start := uri.find("?")
-	if query_start == -1:
+	var params_source := ""
+	var fragment_start := uri.find("#")
+	if fragment_start != -1:
+		params_source = uri.substr(fragment_start + 1)
+	else:
+		var query_start := uri.find("?")
+		if query_start != -1:
+			params_source = uri.substr(query_start + 1)
+	if params_source.is_empty():
 		printerr("ItchIdentitySource: callback uri had no query string")
 		sign_in_failed.emit("itch.io sign-in failed (token missing from callback)")
 		return
 	var params := {}
-	for pair in uri.substr(query_start + 1).split("&"):
+	for pair in params_source.split("&"):
 		if not pair.contains("="):
 			continue
 		var kv := pair.split("=", true, 1)
@@ -355,7 +332,7 @@ func submit_manual_token(token: String) -> void:
 ## so browser builds cannot call api.itch.io directly — the fetch is blocked
 ## before any data returns. identity/itch_api_proxy_url points at a tiny
 ## pass-through proxy (see tools/itch_api_proxy_worker.js) that forwards the
-## Authorization header and adds Access-Control-Allow-Origin. Desktop/Android
+## Authorization header and adds Access-Control-Allow-Origin. Android builds
 ## use the API directly (native HTTP has no CORS).
 func _fetch_profile() -> void:
 	if _is_web:
@@ -417,111 +394,7 @@ func _on_http_completed(result: int, response_code: int, _headers: PackedStringA
 
 func _sign_in_fail(reason: String) -> void:
 	_signing_in = false
-	_stop_listener()
 	sign_in_failed.emit(reason)
-
-
-## ── Loopback listener (Android / desktop) ──────────────────────────────────
-
-
-## Starts the loopback listener. Returns false (and emits sign_in_failed) when
-## the port can't be bound — callers should not open the browser in that case.
-func _start_loopback_listener() -> bool:
-	_stop_listener()
-	_listener = TCPServer.new()
-	var err := _listener.listen(_port, "127.0.0.1")
-	if err != OK:
-		printerr("ItchIdentitySource: loopback listen failed: %d" % err)
-		_signing_in = false
-		sign_in_failed.emit("Could not start the local OAuth listener (port %d in use?)" % _port)
-		return false
-	return true
-
-
-func _stop_listener() -> void:
-	if _listener != null:
-		_listener.stop()
-		_listener = null
-	_pending_conn = null
-
-
-## Handles one browser connection to the loopback listener.
-##
-## Returns:
-##   1 — an OAuth callback was consumed (stop the listener),
-##   0 — the connection was handled and can be closed,
-##   -1 — need more data (keep the connection for the next poll).
-func _handle_connection(conn: StreamPeerTCP) -> int:
-	var read: Array = conn.get_partial_data(conn.get_available_bytes())
-	var raw := PackedByteArray()
-	if read[0] == OK:
-		raw = read[1] as PackedByteArray
-	var text := raw.get_string_from_utf8()
-	if not text.contains("\r\n\r\n"):
-		return -1  # headers not fully arrived yet
-	var header_part := text.split("\r\n\r\n")[0]
-	var body: String = text.split("\r\n\r\n", true, 1)[1] if text.contains("\r\n\r\n") else ""
-	var lines := header_part.split("\r\n")
-	if lines.is_empty():
-		return 0
-	var tokens := lines[0].split(" ")
-	if tokens.size() < 2:
-		return 0
-	var method := tokens[0]
-	var path := tokens[1]
-	if method == "GET":
-		if path.begins_with("/callback"):
-			# The token is in the URL hash, which the browser never sends to the
-			# server — serve a page whose JS reads it and POSTs it back to us.
-			var page := _callback_page_html()
-			conn.put_data(("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
-				+ "Content-Length: %d\r\nConnection: close\r\n\r\n%s" % [page.length(), page]).to_utf8_buffer())
-		# Any other GET (favicon probes etc.) is ignored so the flow isn't
-		# aborted by noise.
-		return 0
-	if method == "POST":
-		if body.is_empty():
-			return -1  # body may arrive in a second packet
-		var parsed: Variant = JSON.parse_string(body)
-		if not (parsed is Dictionary):
-			printerr("ItchIdentitySource: loopback POST was not JSON")
-			return 0
-		var token: String = str(parsed.get("access_token", ""))
-		if token.is_empty():
-			printerr("ItchIdentitySource: loopback POST had no access_token")
-			return 0
-		if str(parsed.get("state", "")) != _state:
-			printerr("ItchIdentitySource: OAuth state mismatch")
-			_signing_in = false
-			conn.put_data(("HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n").to_utf8_buffer())
-			sign_in_failed.emit("OAuth state mismatch")
-			return 1
-		var msg := "Signed in! You can close this window."
-		conn.put_data(("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n"
-			+ "Content-Length: %d\r\nConnection: close\r\n\r\n%s" % [msg.length(), msg]).to_utf8_buffer())
-		_signing_in = false
-		_access_token = token
-		_save_session()
-		_fetch_profile()
-		return 1
-	return 0
-
-
-## The page served at /callback: reads access_token + state out of the URL hash
-## and POSTs them back to the loopback listener (same machine — the token never
-## leaves the device).
-func _callback_page_html() -> String:
-	return """<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sign-in</title></head>
-<body><p>Signing you in... You can close this window when it says done.</p>
-<script>
-var params = new URLSearchParams(window.location.hash.slice(1));
-fetch('http://127.0.0.1:%d/', {
-  method: 'POST',
-  body: JSON.stringify({ access_token: params.get('access_token'), state: params.get('state') })
-}).then(function (r) { return r.text(); }).then(function (t) {
-  document.body.innerHTML = '<p>' + t + '</p>';
-});
-</script></body></html>""" % _port
 
 
 ## ── Web callback (same-window redirect) ────────────────────────────────────
