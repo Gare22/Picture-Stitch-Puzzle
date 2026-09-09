@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment complete — Picture Puzzle</title>
+<style>
+  body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333;margin:0}
+  .card{max-width:26em;margin:0 auto;padding:0 1em}
+  button{font-size:18px;padding:14px 28px;margin-top:24px;border:none;border-radius:10px;
+         background:#7b2d8b;color:#fff;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Payment complete!</h1>
+  <p>Your Picture Puzzle unlock is confirmed.</p>
+  <p id="status">Return to the app to use it&hellip;</p>
+  <p><button id="open-app" onclick="openApp()" style="display:none">Return to Picture Puzzle</button></p>
+</div>
+<script>
+// Landed here via the RevenueCat Web Purchase Link "custom success page"
+// redirect (https://puzzle.gares.games/payment_success). RevenueCat appends
+// ?app_user_id=... — we never trust it; the game re-checks entitlements
+// server-side when it reopens. This page's only job is the browser -> app
+// jump. Programmatic custom-scheme navigation is blocked by browsers, so the
+// button is the guaranteed user-gesture path (same pattern as the OAuth relay);
+// a best-effort automatic attempt is made alongside it.
+(function () {
+  var deepLink = "picturepuzzle://callback?source=revenuecat";
+  window.openApp = function () { window.location.href = deepLink; };
+
+  var isAndroid = /Android/i.test(navigator.userAgent);
+  if (isAndroid) {
+    var btn = document.getElementById("open-app");
+    btn.style.display = "block";
+    document.getElementById("status").textContent =
+      "Tap the button to reopen Picture Puzzle\u2026";
+    // Best effort for browsers that allow it; the button above is always shown.
+    window.location.replace(deepLink);
+  } else {
+    document.getElementById("status").textContent =
+      "You can close this tab — Picture Puzzle is unlocked.";
+  }
+})();
+</script>
+</body>
+</html>
