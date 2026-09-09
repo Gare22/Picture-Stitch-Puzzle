@@ -32,6 +32,9 @@ extends IapProvider
 
 const API_BASE := "https://api.revenuecat.com/v1"
 const IDENTITY_PATH := "user://iap_identity.cfg"
+## Poll cadence + path for the web-checkout return deep link (see _process()).
+const DEEP_LINK_POLL_SECONDS := 0.5
+const DEEP_LINK_PATH := "user://deep_link_uri.txt"
 
 var _price: String = ""
 var _app_user_id: String = ""
@@ -41,6 +44,8 @@ var _request_in_flight: bool = false
 ## creates it). Used so the identified checkout link never hits an unknown
 ## customer (which RevenueCat answers with 404).
 var _initial_check_done: bool = false
+## Accumulator for the web-checkout return deep-link poll.
+var _deep_link_timer: float = 0.0
 
 ## Anonymous install identity (always persisted; used when not signed in).
 var _anon_id: String = ""
@@ -120,6 +125,42 @@ func confirm_payment() -> void:
 	if LevelManager.all_puzzles_unlocked:
 		return
 	_fetch_customer_info(true)
+
+
+## ── Web-checkout return detection ───────────────────────────────────────────
+
+
+func _process(delta: float) -> void:
+	_deep_link_timer += delta
+	if _deep_link_timer < DEEP_LINK_POLL_SECONDS:
+		return
+	_deep_link_timer = 0.0
+	_check_checkout_return()
+
+
+## Watches for the deep link the phone browser sends when RevenueCat's web
+## checkout is configured to "redirect to a custom success page". The redirect
+## lands in user://deep_link_uri.txt — written by GodotApp.java for ANY incoming
+## VIEW intent (see forwardDeepLink). Only links that are NOT the itch OAuth
+## callback (no access_token) and that carry a RevenueCat marker are consumed;
+## on a match the server-backed confirm_payment() re-checks entitlements and
+## grants the unlock — the URI itself is never trusted.
+func _check_checkout_return() -> void:
+	if _request_in_flight or not FileAccess.file_exists(DEEP_LINK_PATH):
+		return
+	var uri: String = FileAccess.get_file_as_string(DEEP_LINK_PATH).strip_edges()
+	# The itch identity poller owns access_token-carrying callbacks.
+	if uri.contains("access_token"):
+		return
+	# RevenueCat appends the App User ID to a custom success redirect
+	# (?app_user_id=...); an explicit marker is accepted as well.
+	if not (uri.contains("source=revenuecat") or uri.contains("app_user_id")):
+		return
+	if DirAccess.remove_absolute(DEEP_LINK_PATH) != OK:
+		printerr("RevenueCatIapProvider: failed to consume checkout return link")
+		return
+	print("RevenueCatIapProvider: web-checkout return link detected — confirming payment")
+	confirm_payment()
 
 
 ## Server-backed restore: queries RevenueCat for the current identity's
