@@ -7,8 +7,8 @@
 <style>
   body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333;margin:0}
   .card{max-width:26em;margin:0 auto;padding:0 1em}
-  button{font-size:18px;padding:14px 28px;margin-top:24px;border:none;border-radius:10px;
-         background:#7b2d8b;color:#fff;cursor:pointer}
+  a.btn{display:inline-block;font-size:18px;padding:14px 28px;margin-top:24px;border-radius:10px;
+        background:#7b2d8b;color:#fff;text-decoration:none}
 </style>
 </head>
 <body>
@@ -16,31 +16,41 @@
   <h1>Payment complete!</h1>
   <p>Your Picture Puzzle unlock is confirmed.</p>
   <p id="status">Return to the app to use it&hellip;</p>
-  <p><button id="open-app" onclick="openApp()" style="display:none">Return to Picture Puzzle</button></p>
+  <p><a id="open-app" class="btn" style="display:none" href="#">Return to Picture Puzzle</a></p>
 </div>
 <script>
-// Landed here via the RevenueCat Web Purchase Link "custom success page"
-// redirect (https://puzzle.gares.games/payment_success). RevenueCat appends
-// ?app_user_id=... — we never trust it; the game re-checks entitlements
-// server-side when it reopens. This page's only job is the browser -> app
-// jump. Programmatic custom-scheme navigation is blocked by browsers, so the
-// button is the guaranteed user-gesture path (same pattern as the OAuth relay);
-// a best-effort automatic attempt is made alongside it.
+// Landed here via the RevenueCat Web Purchase Link success redirect
+// (https://puzzle.gares.games/payment_success?app_user_id=...). This page is a
+// static bridge — its only job is the browser -> app jump; the game verifies
+// the purchase server-side when it reopens and never trusts this URL.
+//
+// Chrome (and Chrome-derivatives like Samsung Internet) block script-assigned
+// custom-scheme navigations, including window.location.href in click handlers
+// ("Navigation is blocked: Intent blocked by chrome"). The sanctioned launch is
+// a real anchor whose href is an intent:// URI — the click itself is the user
+// gesture and Chrome emits the equivalent of:
+//   am start -a android.intent.action.VIEW -d picturepuzzle://callback?...
+// Non-Chrome browsers get the plain custom-scheme anchor (Firefox/Safari still
+// honor those from a user click).
 (function () {
-  var deepLink = "picturepuzzle://callback?source=revenuecat";
-  window.openApp = function () { window.location.href = deepLink; };
-
   var isAndroid = /Android/i.test(navigator.userAgent);
-  if (isAndroid) {
-    var btn = document.getElementById("open-app");
-    btn.style.display = "block";
-    document.getElementById("status").textContent =
-      "Tap the button to reopen Picture Puzzle\u2026";
-    // Best effort for browsers that allow it; the button above is always shown.
-    window.location.replace(deepLink);
-  } else {
+  var isChrome = /Chrome\//.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent);
+  var btn = document.getElementById("open-app");
+  if (!isAndroid) {
     document.getElementById("status").textContent =
       "You can close this tab — Picture Puzzle is unlocked.";
+    return;
+  }
+  btn.style.display = "inline-block";
+  document.getElementById("status").textContent =
+    "Tap the button to reopen Picture Puzzle\u2026";
+  if (isChrome) {
+    var fallback = encodeURIComponent("https://puzzle.gares.games/payment_success");
+    btn.href = "intent://callback?source=revenuecat" +
+      "#Intent;scheme=picturepuzzle;package=games.gares.picturepuzzle;" +
+      "S.browser_fallback_url=" + fallback + ";end";
+  } else {
+    btn.href = "picturepuzzle://callback?source=revenuecat";
   }
 })();
 </script>

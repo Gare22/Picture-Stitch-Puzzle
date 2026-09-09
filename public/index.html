@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <title>Picture Puzzle — sign-in / payment</title>
-<style>body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333}button{font-size:16px;padding:12px 24px;margin-top:24px}</style>
+<style>body{font-family:sans-serif;text-align:center;padding-top:80px;color:#333}#open-app-link{display:inline-block;font-size:16px;padding:12px 24px;margin-top:24px;background:#7b2d8b;color:#fff;text-decoration:none;border-radius:8px}</style>
 </head>
 <body>
 <p id="status">Signing in&hellip;</p>
 <p id="open-app" style="display:none">
-<button onclick="openApp()">Return to Picture Puzzle</button>
+<a id="open-app-link" href="#">Return to Picture Puzzle</a>
 </p>
 <script>
 (function () {
@@ -19,25 +19,29 @@
   var state = params.get("state");
   var status = document.getElementById("status");
 
-  // Custom-scheme deep link. The token goes in the QUERY string (not the hash)
-  // so it survives the intent -> activity hand-off on Android. The hash never
-  // leaves the browser, which is why this page re-emits it as a query.
+  var isAndroid = /Android/i.test(navigator.userAgent);
+  var isChrome = /Chrome\//.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent);
+
+  // The token goes in the QUERY string (not the hash) so it survives the
+  // intent -> activity hand-off on Android. Chrome blocks script-assigned
+  // custom-scheme navigations ("Intent blocked by chrome"); the sanctioned
+  // launch is a REAL anchor whose href is an intent:// URI — the click itself
+  // is the user gesture. GodotApp.java forwards the resulting VIEW intent's
+  // URI into the game via deep_link_uri.txt (user://).
   function deepLink() {
+    if (isChrome) {
+      return "intent://callback?access_token=" +
+        encodeURIComponent(token) + "&state=" + encodeURIComponent(state || "") +
+        "#Intent;scheme=picturepuzzle;package=games.gares.picturepuzzle;end";
+    }
     return "picturepuzzle://callback?access_token=" +
       encodeURIComponent(token) + "&state=" + encodeURIComponent(state || "");
   }
-  window.openApp = function () { window.location.href = deepLink(); };
 
-  var isAndroid = /Android/i.test(navigator.userAgent);
   if (isAndroid && token) {
-    // The game's GodotApp.java forwards this URI into the game via
-    // deep_link_uri.txt in the app files dir (user://). Some browsers block
-    // automatic custom-scheme launches without a user gesture, so the manual
-    // button above works either way — it is always shown, and tapping it is a
-    // guaranteed user gesture.
+    document.getElementById("open-app-link").href = deepLink();
     document.getElementById("open-app").style.display = "block";
     status.textContent = "Returning to the app\u2026";
-    window.location.replace(deepLink());
   } else if (token && window.opener) {
     // Desktop/web popup: relay the token to the game window that opened us,
     // then clean up.
